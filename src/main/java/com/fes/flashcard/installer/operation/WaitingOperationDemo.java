@@ -1,0 +1,69 @@
+package com.fes.flashcard.installer.operation;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import java.awt.*;
+import java.util.List;
+
+import static java.awt.BorderLayout.*;
+import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+
+/**
+ * A demo to try out {@link WaitingOperation}
+ */
+class WaitingOperationDemo {
+
+	static void main() {
+		class TestFrame extends JFrame implements OperationListener {
+
+			final JLabel    progress     = new JLabel("Progress: 0");
+			final JTextArea textArea     = new JTextArea();
+			final JButton   cancelButton = new JButton("Cancel");
+
+			TestFrame(Operation operation) {
+				setTitle("Waiting Operation Demo");
+				setDefaultCloseOperation(EXIT_ON_CLOSE);
+				setLayout(new BorderLayout());
+
+				add(progress, NORTH);
+				add(new JScrollPane(textArea), CENTER);
+				add(cancelButton, SOUTH);
+
+				operation.addListener(this);
+				cancelButton.addActionListener(_ -> operation.cancel(true));
+				textArea.setText(operation.getStatus().getDisplayText() + "\n");
+			}
+
+			@Override
+			public void statusChanged(OperationStatus status) {
+				textArea.append(status.getDisplayText() + "\n");
+			}
+
+			@Override
+			public void progressChanged(int progress) {
+				this.progress.setText("Progress: " + progress);
+			}
+
+			@Override
+			public void intermediateResults(List<String> intermediateResults) {
+				textArea.append(String.join("\n", intermediateResults) + "\n");
+			}
+		}
+
+		invokeLater(() -> {
+			var operation = new WaitingOperation("Wait a few seconds", 10, true);
+			var frame     = new TestFrame(operation);
+			frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+			frame.pack();
+			frame.setSize(new Dimension(400, 400));
+			frame.setLocationRelativeTo(null);
+			frame.setVisible(true);
+
+			operation.execute();
+		});
+	}
+}
