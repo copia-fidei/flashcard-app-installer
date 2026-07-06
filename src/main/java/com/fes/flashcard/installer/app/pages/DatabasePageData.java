@@ -1,5 +1,8 @@
-package com.fes.flashcard.installer;
+package com.fes.flashcard.installer.app.pages;
 
+import com.fes.flashcard.installer.app.Database;
+import com.fes.flashcard.installer.page.PageData;
+import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.validation.Severity;
 import com.fes.flashcard.installer.validation.ValidationResult;
 import com.fes.flashcard.installer.validation.ValidationResults;
@@ -81,7 +84,7 @@ public class DatabasePageData extends PageData {
 	}
 
 	@Override
-	void loadDefaults() {
+	public void loadDefaults() {
 		database = Database.PostgreSQL;
 		selectedPostgresqlVersion = "14";
 		selectedH2Version = "2.4";

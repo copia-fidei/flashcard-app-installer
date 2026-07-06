@@ -10,7 +10,6 @@ import java.util.concurrent.ExecutionException;
 
 public abstract class Operation extends SwingWorker<String, String> implements PropertyChangeListener {
 
-	// TODO thread safe? does it matter? it is immutable
 	private OperationStatus status = OperationStatus.NOT_STARTED;
 
 	private final List<OperationListener> listeners = new ArrayList<>();

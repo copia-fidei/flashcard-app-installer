@@ -1,5 +1,7 @@
-package com.fes.flashcard.installer;
+package com.fes.flashcard.installer.app.pages;
 
+import com.fes.flashcard.installer.page.PageData;
+import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.validation.Severity;
 import com.fes.flashcard.installer.validation.ValidationResult;
 import com.fes.flashcard.installer.validation.ValidationResults;
@@ -20,7 +22,7 @@ public class KarafPageData extends PageData {
 	private static final String KARAF_INSTALLATION_DIR = "karaf.installation.dir";
 
 	// Default values
-	private final Path defaultKarafInstallationDir = HOME_PATH.resolve(".local/bin/apache-karaf-4.4.8");
+	private static final Path defaultKarafInstallationDir = HOME_PATH.resolve(".local/bin/apache-karaf-4.4.8");
 
 	// Values
 	private Path karafInstallationDir = defaultKarafInstallationDir;
@@ -30,13 +32,15 @@ public class KarafPageData extends PageData {
 	}
 
 	// Test
-	void main() {
+	static void main() {
+		println(HOME_PATH);
 		println(defaultKarafInstallationDir);
 	}
 
 	@Override
 	public void load() {
 		String karafInstallationDir = preferences.get(KARAF_INSTALLATION_DIR, defaultKarafInstallationDir.toString());
+		println("Loading karafInstallationDir: " + karafInstallationDir);
 		this.karafInstallationDir = Path.of(karafInstallationDir);
 	}
 
@@ -46,20 +50,20 @@ public class KarafPageData extends PageData {
 	}
 
 	@Override
-	void loadDefaults() {
+	public void loadDefaults() {
 		karafInstallationDir = defaultKarafInstallationDir;
 		preferences.remove(KARAF_INSTALLATION_DIR);
 	}
 
 	@Override
 	public ValidationResults validate() {
-		List<ValidationResult> validationResults = new ArrayList<>();
+		List<ValidationResult> results = new ArrayList<>();
 
 		if (!karafInstallationDir.startsWith(HOME_PATH)) {
-			validationResults.add(new ValidationResult("Karaf Installation Directory", "Karaf installation directory must be inside home directory", Severity.ERROR));
+			results.add(new ValidationResult("Karaf Installation Directory", "Karaf installation directory must be inside home directory", Severity.ERROR));
 		}
 
-		return new ValidationResults(validationResults);
+		return new ValidationResults(results);
 	}
 
 	public Path getKarafInstallationDir() {

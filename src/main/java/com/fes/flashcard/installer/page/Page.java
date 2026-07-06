@@ -1,4 +1,4 @@
-package com.fes.flashcard.installer;
+package com.fes.flashcard.installer.page;
 
 import com.fes.flashcard.installer.toast.StatusBar;
 import com.fes.flashcard.installer.toast.Toast;
@@ -9,6 +9,7 @@ import com.fes.flashcard.installer.validation.ValidationResults;
 import javax.swing.JComponent;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.LayerUI;
 import java.awt.*;
 import java.util.stream.Stream;
@@ -16,67 +17,90 @@ import java.util.stream.Stream;
 import static com.fes.flashcard.installer.validation.Severity.ERROR;
 import static com.fes.flashcard.installer.validation.Severity.INFO;
 import static com.fes.flashcard.installer.validation.Severity.WARNING;
+import static java.lang.IO.println;
 import static java.util.Comparator.comparing;
-import static javax.swing.SwingUtilities.invokeLater;
 
 public abstract class Page {
 
-	protected final PageData  pageData;
-	protected final ButtonBar buttonBar;
+	protected final PageData pageData;
+	//	protected final ButtonBar buttonBar;
 
 	protected final JPanel content = new JPanel(new GridBagLayout());
 
 	private final StatusBar      statusBar      = new StatusBar();
 	private final JLayer<JPanel> statusBarLayer = new JLayer<>(content, new ToastLayerUI(statusBar.toast()));
 
-	public Page(PageData pageData, ButtonBar buttonBar) {
+	private boolean isValid;
+
+	private final Runnable onValidationChanged;
+
+	public Page(PageData pageData, Runnable onValidationChanged) {
 		this.pageData = pageData;
-		this.buttonBar = buttonBar;
+		this.onValidationChanged = onValidationChanged;
 
 		statusBar.toast().setVisible(false);
 	}
 
-	private boolean updating;
+	public boolean isValid() {
+		return isValid;
+	}
 
 	protected final void pageChanged() {
-		if (updating) return;
-
-		updating = true;
+		println("pageChanged");
+		removeListeners();
 		updatePageData();
-
 		evaluateValidationResults();
-
-		invokeLater(() -> {
+		SwingUtilities.invokeLater(() -> {
 			updateGUI();
 			updateDependantValues();
-			updating = false;
+			addListeners();
 		});
 	}
 
 	private void evaluateValidationResults() {
 		ValidationResults results = pageData.validate();
+		ValidationSummary summary = new ValidationSummary(results);
+
 		if (results.contains(ERROR)) {
-			statusBar.displayError(filter(results, ERROR).min(comparing(ValidationResult::getPriority)).get().getDescription());
+			statusBar.displayError(summary.mostImportantError());
 		} else if (results.contains(WARNING)) {
-			statusBar.displayWarning(filter(results, WARNING).findFirst().get().getDescription());
+			statusBar.displayWarning(summary.first(WARNING));
 		} else if (results.contains(INFO)) {
-			statusBar.displayInfo(filter(results, INFO).findFirst().get().getDescription());
+			statusBar.displayInfo(summary.first(INFO));
 		} else {
 			statusBar.toast().setVisible(false);
 		}
 		statusBarLayer.repaint();
 
-		buttonBar.getNextButton().setEnabled(!results.contains(ERROR));
+		// TODO ValidationDialog
+
+		isValid = !results.contains(ERROR);
+		onValidationChanged.run();
 	}
 
-	private static Stream<ValidationResult> filter(ValidationResults results, Severity severity) {
-		return results.list().stream().filter(result -> result.getSeverity() == severity);
+	record ValidationSummary(ValidationResults results) {
+
+		String mostImportantError() {
+			//noinspection OptionalGetWithoutIsPresent
+			return filter(ERROR).min(comparing(ValidationResult::getPriority)).get().getDescription();
+		}
+
+		String first(Severity severity) {
+			//noinspection OptionalGetWithoutIsPresent
+			return filter(severity).findFirst().get().getDescription();
+		}
+
+		private Stream<ValidationResult> filter(Severity severity) {
+			return results.list().stream().filter(result -> result.getSeverity() == severity);
+		}
 	}
 
 
 	public abstract void build();
 
 	protected abstract void addListeners();
+
+	protected abstract void removeListeners();
 
 
 	public void willBecomeVisible() {
@@ -87,7 +111,16 @@ public abstract class Page {
 	}
 
 	public void willBecomeInvisible() {
+		removeListeners();
 		pageData.save();
+	}
+
+	public void restoreDefaults() {
+		removeListeners();
+		pageData.loadDefaults();
+		fillGUI();
+		evaluateValidationResults();
+		addListeners();
 	}
 
 	protected abstract void fillGUI();
@@ -108,6 +141,8 @@ public abstract class Page {
 
 	static class ToastLayerUI extends LayerUI<JPanel> {
 
+		private static final int GAP = 20;
+
 		private final Toast toast;
 
 		ToastLayerUI(Toast toast) { this.toast = toast; }
@@ -116,14 +151,14 @@ public abstract class Page {
 		public void paint(Graphics g, JComponent c) {
 			super.paint(g, c);
 
-			Graphics2D g2 = (Graphics2D) g.create();
-
 			if (!toast.isVisible()) {
 				return;
 			}
+
+			var g2   = (Graphics2D) g.create();
 			var size = toast.getPreferredSize();
 			int x    = (c.getWidth() - size.width) / 2;
-			int y    = c.getHeight() - size.height - 20;
+			int y    = c.getHeight() - size.height - GAP;
 
 			toast.setBounds(x, y, size.width, size.height);
 			g2.translate(x, y);
@@ -134,4 +169,8 @@ public abstract class Page {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return getTitle();
+	}
 }

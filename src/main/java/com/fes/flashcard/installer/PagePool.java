@@ -1,9 +1,18 @@
 package com.fes.flashcard.installer;
 
+import com.fes.flashcard.installer.app.pages.DatabasePage;
+import com.fes.flashcard.installer.app.pages.DatabasePageData;
+import com.fes.flashcard.installer.app.pages.JavaPage;
+import com.fes.flashcard.installer.app.pages.JavaPageData;
+import com.fes.flashcard.installer.app.pages.KarafPage;
+import com.fes.flashcard.installer.app.pages.KarafPageData;
+import com.fes.flashcard.installer.page.Page;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// This is also application specific, maybe make an abstract class for this
 public class PagePool {
 
 	private final List<Page>   pages = new ArrayList<>();
@@ -12,22 +21,28 @@ public class PagePool {
 
 	private Page currentPage;
 
-
 	public PagePool(PageFrame pageFrame) {
 		this.pageFrame = pageFrame;
 		this.pageDataPool = new PageDataPool();
 	}
 
 	public void init() {
+		// This is application specific
 		var karafPageData = new KarafPageData(pageDataPool);
 		pageDataPool.add(karafPageData);
-		var karafPage = new KarafPage(karafPageData, pageFrame.getButtonsBar());
+		var karafPage = new KarafPage(karafPageData, this::updateButtons);
 		pages.add(karafPage);
 
 		var databasePageData = new DatabasePageData(pageDataPool);
 		pageDataPool.add(databasePageData);
-		var databasePage = new DatabasePage(databasePageData, pageFrame.getButtonsBar());
+		var databasePage = new DatabasePage(databasePageData, this::updateButtons);
 		pages.add(databasePage);
+
+		var javaPageData = new JavaPageData(pageDataPool);
+		pageDataPool.add(javaPageData);
+		var javaPage = new JavaPage(javaPageData, this::updateButtons);
+		pages.add(javaPage);
+		// This is application specific // END
 
 
 		for (Page page : pages) {
@@ -39,22 +54,38 @@ public class PagePool {
 		var buttonsBar = pageFrame.getButtonsBar();
 		buttonsBar.getNextButton().addActionListener(_ -> forward());
 		buttonsBar.getBackButton().addActionListener(_ -> back());
+		buttonsBar.getDefaultsButton().addActionListener(_ -> currentPage.restoreDefaults());
+
+
 	}
+
 
 	public void forward() {
 		int currentIndex = pages.indexOf(currentPage);
-		if (currentIndex < pages.size() - 1) {
-			Page nextPage = pages.get(currentIndex + 1);
-			switchPage(nextPage);
+		if (!(currentIndex < pages.size() - 1)) throw new IndexOutOfBoundsException("Cannot go forward");
+		Page nextPage = pages.get(currentIndex + 1);
+		switchPage(nextPage);
+		updateButtons();
+	}
+
+	private void updateButtons() {
+		int     index         = pages.indexOf(currentPage);
+		boolean isTheLastPage = (index >= pages.size() - 1);
+		if (isTheLastPage) {
+			pageFrame.getButtonsBar().getNextButton().setEnabled(false);
+		} else {
+			pageFrame.getButtonsBar().getNextButton().setEnabled(currentPage.isValid());
 		}
+		pageFrame.getButtonsBar().getBackButton().setEnabled(!(index <= 0));
 	}
 
 	public void back() {
-		int currentIndex = pages.indexOf(currentPage);
-		if (currentIndex > 0) {
-			Page previousPage = pages.get(currentIndex - 1);
-			switchPage(previousPage);
-		}
+		int currentIndex  = pages.indexOf(currentPage);
+		int previousIndex = currentIndex - 1;
+		if (currentIndex <= 0) throw new IndexOutOfBoundsException("Cannot go back");
+		Page previousPage = pages.get(previousIndex);
+		switchPage(previousPage);
+		updateButtons();
 	}
 
 	private void switchPage(Page newPage) {
@@ -63,9 +94,6 @@ public class PagePool {
 		}
 		currentPage = newPage;
 		currentPage.willBecomeVisible();
-
-
-//		JLayer<Page> layer = new JLayer<>(newPage, new ToastLayerUI());
 
 		pageFrame.getPageTitleList().setSelectedValue(newPage.getTitle(), true);
 		pageFrame.showPage(newPage);
@@ -78,7 +106,7 @@ public class PagePool {
 
 		Dimension biggest = null;
 		for (Page page : pages) {
-			var preferredSize = page.content.getPreferredSize();
+			var preferredSize = page.getContent().getPreferredSize();
 			if (biggest == null) {
 				biggest = preferredSize;
 			}
@@ -87,7 +115,8 @@ public class PagePool {
 			}
 		}
 		var firstPage = pages.getFirst();
-		firstPage.content.setPreferredSize(new Dimension(biggest.width + 50, biggest.height + 50));
+		firstPage.getContent().setPreferredSize(new Dimension(biggest.width + 50, biggest.height + 50));
 		switchPage(firstPage);
+		updateButtons();
 	}
 }

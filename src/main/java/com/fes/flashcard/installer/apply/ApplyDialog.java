@@ -153,7 +153,6 @@ public class ApplyDialog extends JDialog {
 		return operations.stream().anyMatch(operation -> operation.getStatus() == OperationStatus.RUNNING);
 	}
 
-
 	private final SwingWorker<Void, Void> operationsExecutor = new OperationsExecutor();
 
 	private class OperationsExecutor extends SwingWorker<Void, Void> {

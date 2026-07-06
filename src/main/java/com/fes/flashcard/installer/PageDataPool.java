@@ -1,5 +1,7 @@
 package com.fes.flashcard.installer;
 
+import com.fes.flashcard.installer.page.PageData;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

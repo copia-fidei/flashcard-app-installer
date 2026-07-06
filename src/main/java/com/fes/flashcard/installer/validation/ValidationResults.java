@@ -18,9 +18,4 @@ public class ValidationResults {
 	public boolean contains(Severity severity) {
 		return results.stream().anyMatch(result -> result.getSeverity() == severity);
 	}
-
-	// FIXME remove maybe
-	public boolean isValid() {
-		return results.isEmpty() || results.stream().noneMatch(result -> result.getSeverity() != Severity.ERROR);
-	}
 }

@@ -1,5 +1,7 @@
 package com.fes.flashcard.installer;
 
+import com.fes.flashcard.installer.page.Page;
+
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;

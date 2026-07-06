@@ -16,8 +16,8 @@ import static javax.swing.SwingUtilities.windowForComponent;
 
 public class ProgressSegment extends JPanel {
 
-	private final Operation operation;
-	private final JButton   cancelButton  = new SVGButton("icons/svgrepo/cancel-svgrepo-com.svg", 20);
+	private final Operation    operation;
+	private final JButton      cancelButton  = new SVGButton("icons/svgrepo/cancel-svgrepo-com.svg", 20);
 	private final JProgressBar progressBar   = new JProgressBar(0, 100);
 	private final JButton      detailsButton = new JButton("...");
 

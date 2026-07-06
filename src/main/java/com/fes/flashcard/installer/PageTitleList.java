@@ -20,6 +20,7 @@ public class PageTitleList extends JList<String> {
 		setCellRenderer(new UnderlineSelected());
 	}
 
+	// TODO nicer look
 	static class UnderlineSelected extends JLabel implements ListCellRenderer<Object> {
 
 		private final Font normalFont;

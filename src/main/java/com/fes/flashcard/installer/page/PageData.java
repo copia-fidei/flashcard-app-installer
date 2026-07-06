@@ -1,5 +1,6 @@
-package com.fes.flashcard.installer;
+package com.fes.flashcard.installer.page;
 
+import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.validation.ValidationResults;
 
 import java.util.prefs.Preferences;
@@ -12,7 +13,7 @@ public abstract class PageData {
 
     protected PageDataPool pageDataPool;
 
-    PageData(PageDataPool pageDataPool) {
+    public PageData(PageDataPool pageDataPool) {
         this.pageDataPool = pageDataPool;
 	}
 
@@ -22,5 +23,5 @@ public abstract class PageData {
 
 	public abstract ValidationResults validate();
 
-    abstract void loadDefaults();
+    public abstract void loadDefaults();
 }

@@ -1,12 +1,17 @@
-package com.fes.flashcard.installer;
+package com.fes.flashcard.installer.app.pages;
+
+import com.fes.flashcard.installer.PageDataPool;
+import com.fes.flashcard.installer.TestFrames;
+import com.fes.flashcard.installer.app.Database;
+import com.fes.flashcard.installer.page.Page;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import java.awt.*;
+import java.awt.event.ItemListener;
 
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
@@ -20,13 +25,17 @@ public class DatabasePage extends Page {
 	private final JComboBox<Database> dbImplementationComboBox = new JComboBox<>();
 	private final JComboBox<String>   versionsComboBox         = new JComboBox<>();
 	private final JTextField          usernameField            = new JTextField(20);
-	private final JPasswordField      passwordField            = new JPasswordField(20);
+	private final JTextField          passwordField            = new JTextField(20);
 	private final JTextField          dbNameField              = new JTextField(20);
 	private final JTextField          portField                = new JTextField(20);
 	private final JTextField          hostField                = new JTextField(20);
 
-	public DatabasePage(DatabasePageData pageData, ButtonBar buttonBar) {
-		super(pageData, buttonBar);
+	private final DocumentAdapter documentListener = new DocumentAdapter(this::pageChanged);
+	private final ItemListener    comboBoxListener = _ -> pageChanged();
+
+
+	public DatabasePage(DatabasePageData pageData, Runnable onValidationChanged) {
+		super(pageData, onValidationChanged);
 		this.databasePageData = pageData;
 	}
 
@@ -38,14 +47,14 @@ public class DatabasePage extends Page {
 
 	@Override
 	public String getDescription() {
-		return "Datenbank und Version auswählen.";
+		return "Datenbank und Version auswählen";
 	}
 
 	static void main() {
 		EventQueue.invokeLater(() -> {
 			var pageDataPool = new PageDataPool();
 			var pageData     = new DatabasePageData(pageDataPool);
-			var page         = new DatabasePage(pageData, new ButtonBar());
+			var page         = new DatabasePage(pageData, () -> {});
 			page.build();
 			page.willBecomeVisible();
 			TestFrames.showComponent("Database Configuration", page.content);
@@ -54,15 +63,14 @@ public class DatabasePage extends Page {
 
 	@Override
 	public void build() {
-		JLabel databaseLabel = new JLabel("Implementation:");
-		JLabel versionLabel  = new JLabel("Version:");
-		JLabel usernameLabel = new JLabel("Nutzer:");
-		JLabel passwordLabel = new JLabel("Passwort:");
-		JLabel portLabel     = new JLabel("Port:");
-		JLabel hostLabel     = new JLabel("Host:");
-		JLabel dbNameLabel   = new JLabel("Datenbank:");
+		var databaseLabel = new JLabel("Implementation");
+		var versionLabel  = new JLabel("Version");
+		var usernameLabel = new JLabel("Nutzer");
+		var passwordLabel = new JLabel("Passwort");
+		var portLabel     = new JLabel("Port");
+		var hostLabel     = new JLabel("Host");
+		var dbNameLabel   = new JLabel("Datenbank");
 
-		dbImplementationComboBox.setModel(new DefaultComboBoxModel<>(Database.values()));
 		dbNameField.setEditable(false);
 		hostField.setEditable(false);
 
@@ -92,14 +100,22 @@ public class DatabasePage extends Page {
 	}
 
 	protected void addListeners() {
-		dbImplementationComboBox.addItemListener(_ -> pageChanged());
-		versionsComboBox.addItemListener(_ -> pageChanged());
-		usernameField.getDocument().addDocumentListener(new DocumentAdapter(this::pageChanged));
-		passwordField.getDocument().addDocumentListener(new DocumentAdapter(this::pageChanged));
-		portField.getDocument().addDocumentListener(new DocumentAdapter(this::pageChanged));
+		dbImplementationComboBox.addItemListener(comboBoxListener);
+		versionsComboBox.addItemListener(comboBoxListener);
+		usernameField.getDocument().addDocumentListener(documentListener);
+		passwordField.getDocument().addDocumentListener(documentListener);
+		portField.getDocument().addDocumentListener(documentListener);
 	}
 
-	// TODO simpler way
+	@Override
+	protected void removeListeners() {
+		dbImplementationComboBox.removeItemListener(comboBoxListener);
+		versionsComboBox.removeItemListener(comboBoxListener);
+		usernameField.getDocument().removeDocumentListener(documentListener);
+		passwordField.getDocument().removeDocumentListener(documentListener);
+		portField.getDocument().removeDocumentListener(documentListener);
+	}
+
 	protected void updatePageData() {
 		Database previousSelectedDbImp = databasePageData.getDatabaseImplementation();
 		Database dbImplementation      = (Database) dbImplementationComboBox.getSelectedItem();
@@ -107,16 +123,15 @@ public class DatabasePage extends Page {
 
 		switch (previousSelectedDbImp) {
 			case H2 -> {
-				databasePageData.setSelectedH2Version(versionsComboBox.getSelectedItem().toString());
-
+				databasePageData.setSelectedH2Version((String) versionsComboBox.getSelectedItem());
 				databasePageData.setH2Username(usernameField.getText());
-				databasePageData.setH2Password(new String(passwordField.getPassword())); // TODO store as char[]
+				databasePageData.setH2Password(passwordField.getText());
 			}
 			case PostgreSQL -> {
-				databasePageData.setSelectedPostgresqlVersion(versionsComboBox.getSelectedItem().toString());
+				databasePageData.setSelectedPostgresqlVersion((String) versionsComboBox.getSelectedItem());
 
 				databasePageData.setPostgresqlUsername(usernameField.getText());
-				databasePageData.setPostgresqlPassword(new String(passwordField.getPassword()));
+				databasePageData.setPostgresqlPassword(passwordField.getText());
 
 				databasePageData.setPostgresqlPort(portField.getText());
 				databasePageData.setPostgresqlHost(hostField.getText());
@@ -126,6 +141,7 @@ public class DatabasePage extends Page {
 
 	@Override
 	protected void fillGUI() {
+		dbImplementationComboBox.setModel(new DefaultComboBoxModel<>(Database.values()));
 		Database dbImpl = databasePageData.getDatabaseImplementation();
 		dbImplementationComboBox.setSelectedItem(dbImpl);
 		updateGUI();
