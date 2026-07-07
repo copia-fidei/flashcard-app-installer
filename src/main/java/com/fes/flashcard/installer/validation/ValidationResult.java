@@ -37,4 +37,8 @@ public class ValidationResult {
 		return priority;
 	}
 
+	@Override
+	public String toString() {
+		return severity + " - " + title + " - " + description + " - " + priority;
+	}
 }

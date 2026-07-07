@@ -2,6 +2,7 @@ package com.fes.flashcard.installer;
 
 import com.fes.flashcard.installer.page.Page;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,11 +16,10 @@ public class PageFrame extends JFrame {
 
 	private JPanel        content;
 	private PageTitleList pageTitleList;
-	private JPanel        pageContent;
-	private ButtonBar     buttonBar;
-	private JLabel        pageDescription;
-	// TODO is this necessary?
-	private JScrollPane   pageTitleListScrollPane;
+	private JPanel      pageContent;
+	private ButtonBar   buttonBar;
+	private JLabel      pageDescription;
+	private JScrollPane pageTitleListScrollPane;
 
 	public PageFrame() {
 		$$$setupUI$$$();
@@ -31,7 +31,14 @@ public class PageFrame extends JFrame {
 		setVisible(true);
 	}
 
+	// TODO add another panel around the scollpane
 	private void createUIComponents() {
+		pageTitleListScrollPane = new JScrollPane();
+		pageTitleListScrollPane.getViewport().setBackground(Color.WHITE);
+		pageTitleListScrollPane.setBackground(Color.WHITE);
+		pageTitleListScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		pageTitleList = new PageTitleList();
+		pageTitleList.setBackground(Color.WHITE);
 	}
 
 	void showPage(Page page) {
@@ -58,25 +65,12 @@ public class PageFrame extends JFrame {
 	 * @noinspection ALL
 	 */
 	private void $$$setupUI$$$() {
+		createUIComponents();
 		content = new JPanel();
 		content.setLayout(new GridBagLayout());
-		pageTitleListScrollPane = new JScrollPane();
-		GridBagConstraints gbc;
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridheight = 4;
-		gbc.weightx = 0.1;
-		gbc.weighty = 1.0;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.ipadx = 5;
-		gbc.ipady = 5;
-		content.add(pageTitleListScrollPane, gbc);
-		pageTitleList = new PageTitleList();
-		pageTitleList.setValueIsAdjusting(false);
-		pageTitleListScrollPane.setViewportView(pageTitleList);
 		pageDescription = new JLabel();
 		pageDescription.setText("<Description>");
+		GridBagConstraints gbc;
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.gridy = 0;
@@ -115,6 +109,17 @@ public class PageFrame extends JFrame {
 		gbc.gridwidth = 2;
 		gbc.fill = GridBagConstraints.BOTH;
 		content.add(separator2, gbc);
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridheight = 4;
+		gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.ipadx = 50;
+		gbc.ipady = 50;
+		content.add(pageTitleListScrollPane, gbc);
+		pageTitleList.setValueIsAdjusting(false);
+		pageTitleListScrollPane.setViewportView(pageTitleList);
 	}
 
 	/**

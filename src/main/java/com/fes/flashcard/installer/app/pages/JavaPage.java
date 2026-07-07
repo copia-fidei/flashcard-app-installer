@@ -42,9 +42,7 @@ public class JavaPage extends Page {
 	protected void addListeners() {}
 
 	@Override
-	protected void removeListeners() {
-
-	}
+	protected void removeListeners() {}
 
 	@Override
 	protected void fillGUI() {

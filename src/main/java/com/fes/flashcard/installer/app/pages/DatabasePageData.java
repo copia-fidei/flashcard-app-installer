@@ -111,35 +111,37 @@ public class DatabasePageData extends PageData {
 	public ValidationResults validate() {
 		List<ValidationResult> validationResults = new ArrayList<>();
 
+		// TODO instead of isEmpty isBlank
 		if (database == Database.PostgreSQL) {
-			if (postgresqlUsername == null || postgresqlUsername.trim().isEmpty()) {
-				validationResults.add(new ValidationResult("Datenbank Nutzer", "Benutzername darf nicht leer sein", Severity.ERROR));
+			if (!postgresqlUsername.equals(DEFAULT_POSTGRESQL_USERNAME)) {
+				validationResults.add(new ValidationResult("Datenbanknutzer nicht typisch", "Für den Datenbanknutzer wird per Konvention „postgres“ verwendet.", Severity.WARNING));
 			}
-
-			if (postgresqlPort == null || postgresqlPort.trim().isEmpty()) {
-				validationResults.add(new ValidationResult("Datenbank Port", "Port darf nicht leer sein", Severity.ERROR));
+			if (postgresqlUsername.isEmpty()) {
+				validationResults.add(new ValidationResult("Datenbank Nutzer", "Benutzername darf nicht leer sein", 0));
+			}
+			if (postgresqlPort.isEmpty()) {
+				validationResults.add(new ValidationResult("Datenbank Port", "Port darf nicht leer sein", 1));
 			} else {
 				try {
 					int portNum = Integer.parseInt(postgresqlPort);
 					if (portNum < 1 || portNum > 65535) {
-						validationResults.add(new ValidationResult("Datenbank Port", "Port muss zwischen 1 und 65535 liegen", Severity.ERROR));
+						validationResults.add(new ValidationResult("Datenbank Port", "Port muss zwischen 1 und 65535 liegen", 0));
 					}
 				} catch (NumberFormatException e) {
-					validationResults.add(new ValidationResult("Datenbank Port", "Port muss eine gültige Zahl sein", Severity.ERROR));
+					validationResults.add(new ValidationResult("Datenbank Port", "Port muss eine gültige Zahl sein", 0));
 				}
 			}
-
-			if (postgresqlHost == null || postgresqlHost.trim().isEmpty()) {
-				validationResults.add(new ValidationResult("Datenbank Host", "Host darf nicht leer sein", Severity.ERROR));
+			if (postgresqlHost.isEmpty()) {
+				validationResults.add(new ValidationResult("Datenbank Host", "Host darf nicht leer sein", 1));
 			}
 		} else {
-			if (h2Username == null || h2Username.trim().isEmpty()) {
-				validationResults.add(new ValidationResult("Datenbank Nutzer", "Benutzername darf nicht leer sein", Severity.ERROR));
+			if (h2Username.isEmpty()) {
+				validationResults.add(new ValidationResult("Datenbank Nutzer", "Benutzername darf nicht leer sein", 1));
 			}
 		}
 
-		if (dbName == null || dbName.trim().isEmpty()) {
-			validationResults.add(new ValidationResult("Datenbank Name", "Datenbankname darf nicht leer sein", Severity.ERROR));
+		if (dbName.isEmpty()) {
+			validationResults.add(new ValidationResult("Datenbank Name", "Datenbankname darf nicht leer sein", 1));
 		}
 
 		return new ValidationResults(validationResults);

@@ -2,35 +2,42 @@ package com.fes.flashcard.installer.page;
 
 import com.fes.flashcard.installer.toast.StatusBar;
 import com.fes.flashcard.installer.toast.Toast;
-import com.fes.flashcard.installer.validation.Severity;
-import com.fes.flashcard.installer.validation.ValidationResult;
 import com.fes.flashcard.installer.validation.ValidationResults;
+import com.fes.flashcard.installer.validation.ValidationResultsDialog;
 
 import javax.swing.JComponent;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.LayerUI;
-import java.awt.*;
-import java.util.stream.Stream;
+import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.util.List;
 
 import static com.fes.flashcard.installer.validation.Severity.ERROR;
 import static com.fes.flashcard.installer.validation.Severity.INFO;
 import static com.fes.flashcard.installer.validation.Severity.WARNING;
-import static java.lang.IO.println;
-import static java.util.Comparator.comparing;
+import static java.awt.AWTEvent.MOUSE_EVENT_MASK;
+import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
+import static java.awt.Cursor.HAND_CURSOR;
+import static java.awt.Cursor.getDefaultCursor;
+import static java.awt.event.MouseEvent.MOUSE_CLICKED;
+import static javax.swing.SwingUtilities.windowForComponent;
 
 public abstract class Page {
 
 	protected final PageData pageData;
-	//	protected final ButtonBar buttonBar;
-
-	protected final JPanel content = new JPanel(new GridBagLayout());
+	protected final JPanel   content = new JPanel(new GridBagLayout());
 
 	private final StatusBar      statusBar      = new StatusBar();
-	private final JLayer<JPanel> statusBarLayer = new JLayer<>(content, new ToastLayerUI(statusBar.toast()));
+	private final JLayer<JPanel> statusBarLayer = new JLayer<>(content, new ToastLayerUI());
 
-	private boolean isValid;
+	private boolean           isValid;
+	private ValidationResults latestValidationResults = new ValidationResults(List.of());
 
 	private final Runnable onValidationChanged;
 
@@ -41,12 +48,12 @@ public abstract class Page {
 		statusBar.toast().setVisible(false);
 	}
 
+
 	public boolean isValid() {
 		return isValid;
 	}
 
 	protected final void pageChanged() {
-		println("pageChanged");
 		removeListeners();
 		updatePageData();
 		evaluateValidationResults();
@@ -58,41 +65,22 @@ public abstract class Page {
 	}
 
 	private void evaluateValidationResults() {
-		ValidationResults results = pageData.validate();
-		ValidationSummary summary = new ValidationSummary(results);
+		latestValidationResults = pageData.validate();
+		ValidationSummary summary = new ValidationSummary(latestValidationResults);
 
-		if (results.contains(ERROR)) {
+		if (pageData.validate().contains(ERROR)) {
 			statusBar.displayError(summary.mostImportantError());
-		} else if (results.contains(WARNING)) {
+		} else if (pageData.validate().contains(WARNING)) {
 			statusBar.displayWarning(summary.first(WARNING));
-		} else if (results.contains(INFO)) {
+		} else if (pageData.validate().contains(INFO)) {
 			statusBar.displayInfo(summary.first(INFO));
 		} else {
 			statusBar.toast().setVisible(false);
 		}
 		statusBarLayer.repaint();
 
-		// TODO ValidationDialog
-
-		isValid = !results.contains(ERROR);
+		isValid = !pageData.validate().contains(ERROR);
 		onValidationChanged.run();
-	}
-
-	record ValidationSummary(ValidationResults results) {
-
-		String mostImportantError() {
-			//noinspection OptionalGetWithoutIsPresent
-			return filter(ERROR).min(comparing(ValidationResult::getPriority)).get().getDescription();
-		}
-
-		String first(Severity severity) {
-			//noinspection OptionalGetWithoutIsPresent
-			return filter(severity).findFirst().get().getDescription();
-		}
-
-		private Stream<ValidationResult> filter(Severity severity) {
-			return results.list().stream().filter(result -> result.getSeverity() == severity);
-		}
 	}
 
 
@@ -139,17 +127,40 @@ public abstract class Page {
 		return statusBarLayer;
 	}
 
-	static class ToastLayerUI extends LayerUI<JPanel> {
+	@SuppressWarnings("rawtypes")
+	class ToastLayerUI extends LayerUI<JPanel> {
 
 		private static final int GAP = 20;
 
-		private final Toast toast;
+		private boolean mouseIsInsideToast = false;
 
-		ToastLayerUI(Toast toast) { this.toast = toast; }
+		@Override
+		protected void processMouseEvent(MouseEvent e, JLayer<? extends JPanel> l) {
+			if (!mouseIsInsideToast) {
+				return;
+			}
+			if (e.getID() == MOUSE_CLICKED) {
+				new ValidationResultsDialog(windowForComponent(statusBarLayer), latestValidationResults).setVisible(true);
+			}
+		}
+
+
+		@Override
+		protected void processMouseMotionEvent(MouseEvent e, JLayer<? extends JPanel> layer) {
+			Rectangle bounds = statusBar.toast().getBounds();
+			boolean currentlyInside = bounds.contains(e.getPoint());
+			if (currentlyInside != mouseIsInsideToast) {
+				mouseIsInsideToast = currentlyInside;
+				layer.setCursor(currentlyInside ? new Cursor(HAND_CURSOR) : getDefaultCursor());
+			}
+		}
+
 
 		@Override
 		public void paint(Graphics g, JComponent c) {
 			super.paint(g, c);
+
+			Toast toast = statusBar.toast();
 
 			if (!toast.isVisible()) {
 				return;
@@ -167,7 +178,22 @@ public abstract class Page {
 
 			g2.dispose();
 		}
+
+		@Override
+		public void installUI(JComponent c) {
+			super.installUI(c);
+			var layer = (JLayer) c;
+			layer.setLayerEventMask(MOUSE_EVENT_MASK | MOUSE_MOTION_EVENT_MASK);
+		}
+
+		@Override
+		public void uninstallUI(JComponent c) {
+			var layer = (JLayer) c;
+			layer.setLayerEventMask(0);
+			super.uninstallUI(c);
+		}
 	}
+
 
 	@Override
 	public String toString() {
