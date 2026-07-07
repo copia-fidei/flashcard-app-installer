@@ -6,29 +6,43 @@ import com.fes.flashcard.installer.app.Database;
 import com.fes.flashcard.installer.page.Page;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.*;
+import javax.swing.SwingWorker;
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.event.ItemListener;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
+import static java.lang.IO.print;
 
 public class DatabasePage extends Page {
 
 	private final DatabasePageData databasePageData;
 
 	private final JComboBox<Database> dbImplementationComboBox = new JComboBox<>();
-	private final JComboBox<String>   versionsComboBox         = new JComboBox<>();
-	private final JTextField          usernameField            = new JTextField(20);
-	private final JTextField          passwordField            = new JTextField(20);
-	private final JTextField          dbNameField              = new JTextField(20);
-	private final JTextField          portField                = new JTextField(20);
-	private final JTextField          hostField                = new JTextField(20);
+
+	// TODO add is installed
+	private final JComboBox<String> versionsComboBox = new JComboBox<>();
+	private final JTextField        usernameField    = new JTextField(20);
+	private final JTextField        passwordField    = new JTextField(20);
+	private final JTextField        dbNameField      = new JTextField(20);
+	private final JTextField        portField        = new JTextField(20);
+	private final JTextField        hostField        = new JTextField(20);
 
 	private final DocumentAdapter documentListener = new DocumentAdapter(this::pageChanged);
 	private final ItemListener    comboBoxListener = _ -> pageChanged();
@@ -61,6 +75,33 @@ public class DatabasePage extends Page {
 		});
 	}
 
+	// TODO update, when page after Apply was pressed
+	private final Map<String, Boolean> postgresVersionsInstalled = new ConcurrentHashMap<>();
+
+	private void findOutIsPostgresInstalled(String[] versions) {
+		for (String version : versions) {
+			try {
+				Process process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", "postgresql" + "-" + version).start();
+				process.waitFor();
+
+				String status = "";
+				try (var reader = process.inputReader()) {
+					status = reader.readAllAsString();
+				}
+				print(status);
+				if (status.startsWith("ii")) {
+					postgresVersionsInstalled.put(version, true);
+				} else {
+					postgresVersionsInstalled.put(version, false);
+				}
+			} catch (IOException | InterruptedException e) {
+				Logger.getLogger(getClass().getName())
+				      .log(Level.WARNING, "Failed to find out if Postgres packages are installed", e);
+			}
+
+		}
+	}
+
 	@Override
 	public void build() {
 		var databaseLabel = new JLabel("Implementation");
@@ -70,6 +111,8 @@ public class DatabasePage extends Page {
 		var portLabel     = new JLabel("Port");
 		var hostLabel     = new JLabel("Host");
 		var dbNameLabel   = new JLabel("Datenbank");
+
+		versionsComboBox.setRenderer(new VersionListCellRenderer());
 
 		dbNameField.setEditable(false);
 		hostField.setEditable(false);
@@ -97,6 +140,20 @@ public class DatabasePage extends Page {
 
 		// Filler
 		content.add(new JPanel(), new GridBagConstraints(0, 7, 2, 1, 1.0, 1.0, LINE_START, BOTH, new Insets(5, 5, 5, 5), 0, 0));
+
+		new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				findOutIsPostgresInstalled(getVersions(Database.PostgreSQL));
+				return null;
+			}
+
+			@Override
+			protected void done() {
+				versionsComboBox.repaint();
+			}
+		}.execute();
 	}
 
 	protected void addListeners() {
@@ -175,6 +232,10 @@ public class DatabasePage extends Page {
 		boolean isPostgreSQL = dbImpl == Database.PostgreSQL;
 		portField.setEnabled(isPostgreSQL);
 		hostField.setEnabled(isPostgreSQL);
+
+		//		if (isPostgreSQL) {
+		//			preloadPostgresInstallationStatus(versions);
+		//		}
 	}
 
 	@Override
@@ -195,6 +256,27 @@ public class DatabasePage extends Page {
 			case H2 -> databasePageData.getSelectedH2Version();
 			case PostgreSQL -> databasePageData.getSelectedPostgresqlVersion();
 		};
+	}
+
+	private class VersionListCellRenderer extends DefaultListCellRenderer {
+
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel label   = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			String version = (String) value;
+
+			Database dbImpl = databasePageData.getDatabaseImplementation();
+
+			// TOOD for H2 too.
+			// In that case make Karaf the first page.
+			if (dbImpl == Database.PostgreSQL && postgresVersionsInstalled.containsKey(version)) {
+				boolean isInstalled = postgresVersionsInstalled.get(version);
+				String  statusText  = isInstalled ? "(installiert)" : "(nicht installiert)";
+				label.setText(version + " " + statusText);
+			}
+
+			return label;
+		}
 	}
 
 }

@@ -147,8 +147,8 @@ public abstract class Page {
 
 		@Override
 		protected void processMouseMotionEvent(MouseEvent e, JLayer<? extends JPanel> layer) {
-			Rectangle bounds = statusBar.toast().getBounds();
-			boolean currentlyInside = bounds.contains(e.getPoint());
+			Rectangle bounds          = statusBar.toast().getBounds();
+			boolean   currentlyInside = bounds.contains(e.getPoint());
 			if (currentlyInside != mouseIsInsideToast) {
 				mouseIsInsideToast = currentlyInside;
 				layer.setCursor(currentlyInside ? new Cursor(HAND_CURSOR) : getDefaultCursor());
