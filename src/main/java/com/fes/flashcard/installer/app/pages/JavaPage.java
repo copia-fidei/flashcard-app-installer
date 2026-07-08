@@ -62,6 +62,6 @@ public class JavaPage extends Page {
 
 	@Override
 	public String getDescription() {
-		return "Installiertes Java.";
+		return "Installiertes Java";
 	}
 }

@@ -36,7 +36,6 @@ public class DatabasePage extends Page {
 
 	private final JComboBox<Database> dbImplementationComboBox = new JComboBox<>();
 
-	// TODO add is installed
 	private final JComboBox<String> versionsComboBox = new JComboBox<>();
 	private final JTextField        usernameField    = new JTextField(20);
 	private final JTextField        passwordField    = new JTextField(20);
@@ -75,7 +74,8 @@ public class DatabasePage extends Page {
 		});
 	}
 
-	// TODO update, when page after Apply was pressed
+	// TODO clear, when page after Apply was pressed
+	// TODO implement for H2 too
 	private final Map<String, Boolean> postgresVersionsInstalled = new ConcurrentHashMap<>();
 
 	private void findOutIsPostgresInstalled(String[] versions) {
@@ -117,34 +117,34 @@ public class DatabasePage extends Page {
 		dbNameField.setEditable(false);
 		hostField.setEditable(false);
 
-		content.add(databaseLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(5, 5, 5, 5), 0, 0));
-		content.add(dbImplementationComboBox, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		content.add(databaseLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(dbImplementationComboBox, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
-		content.add(versionLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(5, 5, 5, 5), 0, 0));
-		content.add(versionsComboBox, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		content.add(versionLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(versionsComboBox, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
-		content.add(usernameLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(5, 5, 5, 5), 0, 0));
-		content.add(usernameField, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		content.add(usernameLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(usernameField, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
-		content.add(passwordLabel, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(5, 5, 5, 5), 0, 0));
-		content.add(passwordField, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		content.add(passwordLabel, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(passwordField, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
-		content.add(hostLabel, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(5, 5, 5, 5), 0, 0));
-		content.add(hostField, new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		content.add(hostLabel, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(hostField, new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
-		content.add(portLabel, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(5, 5, 5, 5), 0, 0));
-		content.add(portField, new GridBagConstraints(1, 5, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		content.add(portLabel, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(portField, new GridBagConstraints(1, 5, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
-		content.add(dbNameLabel, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(5, 5, 5, 5), 0, 0));
-		content.add(dbNameField, new GridBagConstraints(1, 6, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		content.add(dbNameLabel, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(dbNameField, new GridBagConstraints(1, 6, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
 		// Filler
-		content.add(new JPanel(), new GridBagConstraints(0, 7, 2, 1, 1.0, 1.0, LINE_START, BOTH, new Insets(5, 5, 5, 5), 0, 0));
+		content.add(new JPanel(), new GridBagConstraints(0, 7, 2, 1, 1.0, 1.0, LINE_START, BOTH, new Insets(10, 10, 10, 10), 0, 0));
 
 		new SwingWorker<Void, Void>() {
 
 			@Override
-			protected Void doInBackground() throws Exception {
+			protected Void doInBackground() {
 				findOutIsPostgresInstalled(getVersions(Database.PostgreSQL));
 				return null;
 			}
@@ -232,10 +232,6 @@ public class DatabasePage extends Page {
 		boolean isPostgreSQL = dbImpl == Database.PostgreSQL;
 		portField.setEnabled(isPostgreSQL);
 		hostField.setEnabled(isPostgreSQL);
-
-		//		if (isPostgreSQL) {
-		//			preloadPostgresInstallationStatus(versions);
-		//		}
 	}
 
 	@Override
@@ -271,7 +267,7 @@ public class DatabasePage extends Page {
 			// In that case make Karaf the first page.
 			if (dbImpl == Database.PostgreSQL && postgresVersionsInstalled.containsKey(version)) {
 				boolean isInstalled = postgresVersionsInstalled.get(version);
-				String  statusText  = isInstalled ? "(installiert)" : "(nicht installiert)";
+				String  statusText  = isInstalled ? "(bereits installiert)" : "(nicht installiert)";
 				label.setText(version + " " + statusText);
 			}
 

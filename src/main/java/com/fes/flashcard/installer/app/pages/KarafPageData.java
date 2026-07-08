@@ -39,9 +39,7 @@ public class KarafPageData extends PageData {
 
 	@Override
 	public void load() {
-		String karafInstallationDir = preferences.get(KARAF_INSTALLATION_DIR, defaultKarafInstallationDir.toString());
-		println("Loading karafInstallationDir: " + karafInstallationDir);
-		this.karafInstallationDir = Path.of(karafInstallationDir);
+		this.karafInstallationDir = Path.of(preferences.get(KARAF_INSTALLATION_DIR, defaultKarafInstallationDir.toString()));
 	}
 
 	@Override

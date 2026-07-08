@@ -6,6 +6,8 @@ import com.fes.flashcard.installer.app.pages.JavaPage;
 import com.fes.flashcard.installer.app.pages.JavaPageData;
 import com.fes.flashcard.installer.app.pages.KarafPage;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
+import com.fes.flashcard.installer.app.pages.RootPasswordPage;
+import com.fes.flashcard.installer.app.pages.RootPasswordPageData;
 import com.fes.flashcard.installer.page.Page;
 
 import java.awt.*;
@@ -42,6 +44,11 @@ public class PagePool {
 		pageDataPool.add(javaPageData);
 		var javaPage = new JavaPage(javaPageData, this::updateButtons);
 		pages.add(javaPage);
+
+		var rootPwPageData = new RootPasswordPageData(pageDataPool);
+		pageDataPool.add(rootPwPageData);
+		var rootPwPage = new RootPasswordPage(rootPwPageData, this::updateButtons);
+		pages.add(rootPwPage);
 		// This is application specific // END
 
 
@@ -103,15 +110,15 @@ public class PagePool {
 
 	public void showFirstPage() {
 		if (pages.isEmpty()) return;
-
-		Dimension biggest = null;
+		// make the biggest x, and y
+		Dimension biggest = new Dimension(0, 0);
 		for (Page page : pages) {
 			var preferredSize = page.getContent().getPreferredSize();
-			if (biggest == null) {
-				biggest = preferredSize;
+			if (preferredSize.height > biggest.height) {
+				biggest.height = preferredSize.height;
 			}
-			if (preferredSize.height > biggest.height && preferredSize.width > biggest.width) {
-				biggest = preferredSize;
+			if (preferredSize.width > biggest.width) {
+				biggest.width = preferredSize.width;
 			}
 		}
 		var firstPage = pages.getFirst();

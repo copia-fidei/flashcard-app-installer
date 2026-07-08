@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.plaf.LayerUI;
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -17,6 +18,9 @@ import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.fes.flashcard.installer.validation.Severity.ERROR;
 import static com.fes.flashcard.installer.validation.Severity.INFO;
@@ -36,10 +40,13 @@ public abstract class Page {
 	private final StatusBar      statusBar      = new StatusBar();
 	private final JLayer<JPanel> statusBarLayer = new JLayer<>(content, new ToastLayerUI());
 
-	private boolean           isValid;
-	private ValidationResults latestValidationResults = new ValidationResults(List.of());
+
+	private boolean                              isValid;
+	private ValidationResults                    latestValidationResults = new ValidationResults(List.of());
+	private SwingWorker<ValidationResults, Void> validator               = new Validator();
 
 	private final Runnable onValidationChanged;
+
 
 	public Page(PageData pageData, Runnable onValidationChanged) {
 		this.pageData = pageData;
@@ -56,7 +63,7 @@ public abstract class Page {
 	protected final void pageChanged() {
 		removeListeners();
 		updatePageData();
-		evaluateValidationResults();
+		validate();
 		SwingUtilities.invokeLater(() -> {
 			updateGUI();
 			updateDependantValues();
@@ -64,23 +71,14 @@ public abstract class Page {
 		});
 	}
 
-	private void evaluateValidationResults() {
-		latestValidationResults = pageData.validate();
-		ValidationSummary summary = new ValidationSummary(latestValidationResults);
 
-		if (pageData.validate().contains(ERROR)) {
-			statusBar.displayError(summary.mostImportantError());
-		} else if (pageData.validate().contains(WARNING)) {
-			statusBar.displayWarning(summary.first(WARNING));
-		} else if (pageData.validate().contains(INFO)) {
-			statusBar.displayInfo(summary.first(INFO));
-		} else {
-			statusBar.toast().setVisible(false);
+	private void validate() {
+		isValid = false;
+		if (!validator.isDone()) {
+			validator.cancel(true);
 		}
-		statusBarLayer.repaint();
-
-		isValid = !pageData.validate().contains(ERROR);
-		onValidationChanged.run();
+		validator = new Validator();
+		validator.execute();
 	}
 
 
@@ -95,7 +93,7 @@ public abstract class Page {
 		pageData.load();
 		fillGUI();
 		addListeners();
-		evaluateValidationResults();
+		validate();
 	}
 
 	public void willBecomeInvisible() {
@@ -107,7 +105,7 @@ public abstract class Page {
 		removeListeners();
 		pageData.loadDefaults();
 		fillGUI();
-		evaluateValidationResults();
+		validate();
 		addListeners();
 	}
 
@@ -198,5 +196,43 @@ public abstract class Page {
 	@Override
 	public String toString() {
 		return getTitle();
+	}
+
+	private class Validator extends SwingWorker<ValidationResults, Void> {
+
+		@Override
+		protected ValidationResults doInBackground() {
+			return pageData.validate();
+		}
+
+		@Override
+		protected void done() {
+			if (isCancelled()) {
+				return;
+			}
+
+			try {
+				latestValidationResults = get();
+				ValidationSummary summary = new ValidationSummary(latestValidationResults);
+
+				if (latestValidationResults.contains(ERROR)) {
+					statusBar.displayError(summary.mostImportantError());
+				} else if (latestValidationResults.contains(WARNING)) {
+					statusBar.displayWarning(summary.first(WARNING));
+				} else if (latestValidationResults.contains(INFO)) {
+					statusBar.displayInfo(summary.first(INFO));
+				} else {
+					statusBar.toast().setVisible(false);
+				}
+				statusBarLayer.repaint();
+
+				isValid = !latestValidationResults.contains(ERROR);
+				onValidationChanged.run();
+			} catch (InterruptedException e) {
+				Logger.getLogger(getClass().getName()).log(Level.WARNING, "Validation interrupted", e);
+			} catch (ExecutionException e) {
+				Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Validation failed", e);
+			}
+		}
 	}
 }

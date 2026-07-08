@@ -16,12 +16,12 @@ import static java.util.Comparator.comparing;
 record ValidationSummary(ValidationResults results) {
 
 	String mostImportantError() {
-		return filter(ERROR).max(comparing(ValidationResult::getPriority)).get().getDescription();
+		return filter(ERROR).max(comparing(ValidationResult::getPriority)).get().getTitle();
 	}
 
 	// does not consider priority
 	String first(Severity severity) {
-		return filter(severity).findFirst().get().getDescription();
+		return filter(severity).findFirst().get().getTitle();
 	}
 
 	private Stream<ValidationResult> filter(Severity severity) {
