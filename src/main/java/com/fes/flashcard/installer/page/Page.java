@@ -37,15 +37,15 @@ public abstract class Page {
 	protected final PageData pageData;
 	protected final JPanel   content = new JPanel(new GridBagLayout());
 
+	protected boolean isValid;
+
 	private final StatusBar      statusBar      = new StatusBar();
 	private final JLayer<JPanel> statusBarLayer = new JLayer<>(content, new ToastLayerUI());
 
-
-	private boolean                              isValid;
 	private ValidationResults                    latestValidationResults = new ValidationResults(List.of());
 	private SwingWorker<ValidationResults, Void> validator               = new Validator();
 
-	private final Runnable onValidationChanged;
+	protected final Runnable onValidationChanged;
 
 
 	public Page(PageData pageData, Runnable onValidationChanged) {

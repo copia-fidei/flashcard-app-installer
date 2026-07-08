@@ -6,6 +6,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
@@ -20,7 +23,7 @@ public class RootPasswordPage extends Page {
 
 	private final JPasswordField passwordField = new JPasswordField(20);
 
-	private final DelayedDocumentListener documentListener = new DelayedDocumentListener(this::pageChanged);
+	private final DelayedDocumentListener documentListener = new DelayedDocumentListener();
 
 	public RootPasswordPage(RootPasswordPageData pageData, Runnable onValidationChanged) {
 		super(pageData, onValidationChanged);
@@ -46,8 +49,8 @@ public class RootPasswordPage extends Page {
 		description.setOpaque(false);
 		var label = new JLabel("Passwort (sudo)");
 
-		content.add(description,   new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(label, 		   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
+		content.add(description, new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(label, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
 		content.add(passwordField, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
 		// Filler
@@ -79,4 +82,36 @@ public class RootPasswordPage extends Page {
 
 	@Override
 	public void updateDependantValues() {}
+
+	class DelayedDocumentListener implements DocumentListener {
+
+		private final Timer timer;
+
+		DelayedDocumentListener() {
+			this.timer = new Timer(1000, _ -> pageChanged());
+			this.timer.setRepeats(false);
+		}
+
+		private void handleEvent() {
+			isValid = false;
+			onValidationChanged.run();
+			timer.restart();
+		}
+
+		@Override
+		public void insertUpdate(DocumentEvent e) {
+			handleEvent();
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent e) {
+			handleEvent();
+		}
+
+		@Override
+		public void changedUpdate(DocumentEvent e) {
+			handleEvent();
+		}
+	}
+
 }

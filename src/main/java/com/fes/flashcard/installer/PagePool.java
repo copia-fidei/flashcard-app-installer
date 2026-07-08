@@ -8,9 +8,11 @@ import com.fes.flashcard.installer.app.pages.KarafPage;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
 import com.fes.flashcard.installer.app.pages.RootPasswordPage;
 import com.fes.flashcard.installer.app.pages.RootPasswordPageData;
+import com.fes.flashcard.installer.apply.ApplyDialog;
+import com.fes.flashcard.installer.apply.ApplyDialogDemo;
 import com.fes.flashcard.installer.page.Page;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,8 +64,8 @@ public class PagePool {
 		buttonsBar.getNextButton().addActionListener(_ -> forward());
 		buttonsBar.getBackButton().addActionListener(_ -> back());
 		buttonsBar.getDefaultsButton().addActionListener(_ -> currentPage.restoreDefaults());
-
-
+		buttonsBar.getApplyButton().addActionListener(_ ->
+				new ApplyDialog(pageFrame, ApplyDialogDemo.TEST_OPERATIONS).setVisible(true));
 	}
 
 
@@ -80,8 +82,10 @@ public class PagePool {
 		boolean isTheLastPage = (index >= pages.size() - 1);
 		if (isTheLastPage) {
 			pageFrame.getButtonsBar().getNextButton().setEnabled(false);
+			pageFrame.getButtonsBar().getApplyButton().setEnabled(currentPage.isValid());
 		} else {
 			pageFrame.getButtonsBar().getNextButton().setEnabled(currentPage.isValid());
+			pageFrame.getButtonsBar().getApplyButton().setEnabled(false);
 		}
 		pageFrame.getButtonsBar().getBackButton().setEnabled(!(index <= 0));
 	}

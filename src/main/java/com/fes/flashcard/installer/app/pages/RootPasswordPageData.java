@@ -49,8 +49,10 @@ public class RootPasswordPageData extends PageData {
 			if (exitCode != 0) {
 				validationResults.add(new ValidationResult("Falsches Passwort", "Das Passwort für Rootuser ist falsch.", Severity.ERROR));
 			}
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Failed to validate root password", e);
+		} catch (InterruptedException e) {
+			Logger.getLogger(getClass().getName()).log(Level.INFO, "Validation interrupted", e);
 		}
 		return new ValidationResults(validationResults);
 	}
