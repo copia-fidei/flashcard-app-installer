@@ -3,6 +3,8 @@ package com.fes.flashcard.installer.operation;
 import javax.swing.SwingWorker;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -81,10 +83,11 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 		listeners.forEach(listener -> listener.statusChanged(status));
 	}
 
-	// convert property change events to OperationStatus and Progress Events
+	/**
+	 * Transform PropertyChangeEvents to OperationStatus and progress events.
+	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		//		println("Property changed: " + evt);
 		Object newValue = evt.getNewValue();
 		switch (evt.getPropertyName()) {
 			case "state" -> {
@@ -107,4 +110,29 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 		return description;
 	}
 
+	public class CancellableWriter extends Writer {
+
+		private final StringBuffer buffer = new StringBuffer();
+
+		@Override
+		public void write(char[] cbuf, int off, int len) throws IOException {
+			if (isCancelled()) {
+				throw new IOException("Cancelled");
+			}
+			var str = new String(cbuf, off, len);
+			buffer.append(str);
+			publish(str);
+		}
+
+		@Override
+		public void flush() {}
+
+		@Override
+		public void close() {}
+
+		@Override
+		public String toString() {
+			return buffer.toString();
+		}
+	}
 }

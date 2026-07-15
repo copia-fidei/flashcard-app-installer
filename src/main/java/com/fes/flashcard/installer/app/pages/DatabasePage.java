@@ -22,13 +22,12 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
-import static java.lang.IO.print;
+import static java.util.logging.Logger.getLogger;
 
 public class DatabasePage extends Page {
 
@@ -84,19 +83,17 @@ public class DatabasePage extends Page {
 				Process process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", "postgresql" + "-" + version).start();
 				process.waitFor();
 
-				String status = "";
+				String status;
 				try (var reader = process.inputReader()) {
 					status = reader.readAllAsString();
 				}
-				print(status);
 				if (status.startsWith("ii")) {
 					postgresVersionsInstalled.put(version, true);
 				} else {
 					postgresVersionsInstalled.put(version, false);
 				}
 			} catch (IOException | InterruptedException e) {
-				Logger.getLogger(getClass().getName())
-				      .log(Level.WARNING, "Failed to find out if Postgres packages are installed", e);
+				getLogger(getClass().getName()).log(Level.WARNING, "Failed to find out if Postgres packages are installed", e);
 			}
 
 		}
@@ -263,8 +260,8 @@ public class DatabasePage extends Page {
 
 			Database dbImpl = databasePageData.getDatabaseImplementation();
 
-			// TOOD for H2 too.
-			// In that case make Karaf the first page.
+			// TODO for H2 too.
+			// In that case make Resources the first page.
 			if (dbImpl == Database.PostgreSQL && postgresVersionsInstalled.containsKey(version)) {
 				boolean isInstalled = postgresVersionsInstalled.get(version);
 				String  statusText  = isInstalled ? "(bereits installiert)" : "(nicht installiert)";

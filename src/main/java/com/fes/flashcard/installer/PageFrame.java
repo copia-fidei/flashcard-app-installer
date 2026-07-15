@@ -53,7 +53,7 @@ public class PageFrame extends JFrame {
 		return pageTitleList;
 	}
 
-	public ButtonBar getButtonsBar() {
+	public ButtonBar getButtonBar() {
 		return buttonBar;
 	}
 

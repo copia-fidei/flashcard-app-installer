@@ -9,7 +9,7 @@ import java.util.List;
 public class JavaPageData extends PageData {
 
 	// Values
-	private final String javaPackageName = "openjdk-21-jdk";
+	private static final String JAVA_PACKAGE_NAME = "openjdk-21-jdk";
 
 	public JavaPageData(PageDataPool pageDataPool) {
 		super(pageDataPool);
@@ -30,6 +30,6 @@ public class JavaPageData extends PageData {
 	}
 
 	public String getJavaPackageName() {
-		return javaPackageName;
+		return JAVA_PACKAGE_NAME;
 	}
 }

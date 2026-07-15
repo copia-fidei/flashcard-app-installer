@@ -1,5 +1,7 @@
 package com.fes.flashcard.installer;
 
+import com.fes.flashcard.installer.app.operations.InstallJavaOperation;
+import com.fes.flashcard.installer.app.operations.InstallKarafOperation;
 import com.fes.flashcard.installer.app.pages.DatabasePage;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.JavaPage;
@@ -9,12 +11,13 @@ import com.fes.flashcard.installer.app.pages.KarafPageData;
 import com.fes.flashcard.installer.app.pages.RootPasswordPage;
 import com.fes.flashcard.installer.app.pages.RootPasswordPageData;
 import com.fes.flashcard.installer.apply.ApplyDialog;
-import com.fes.flashcard.installer.apply.ApplyDialogDemo;
 import com.fes.flashcard.installer.page.Page;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.logging.Logger.getLogger;
 
 // This is also application specific, maybe make an abstract class for this
 public class PagePool {
@@ -22,11 +25,13 @@ public class PagePool {
 	private final List<Page>   pages = new ArrayList<>();
 	private final PageFrame    pageFrame;
 	private final PageDataPool pageDataPool;
+	private final ButtonBar    buttonBar;
 
 	private Page currentPage;
 
 	public PagePool(PageFrame pageFrame) {
 		this.pageFrame = pageFrame;
+		this.buttonBar = pageFrame.getButtonBar();
 		this.pageDataPool = new PageDataPool();
 	}
 
@@ -60,12 +65,14 @@ public class PagePool {
 
 		pageFrame.getPageTitleList().setListData(pages.stream().map(Page::getTitle).toArray(String[]::new));
 
-		var buttonsBar = pageFrame.getButtonsBar();
-		buttonsBar.getNextButton().addActionListener(_ -> forward());
-		buttonsBar.getBackButton().addActionListener(_ -> back());
-		buttonsBar.getDefaultsButton().addActionListener(_ -> currentPage.restoreDefaults());
-		buttonsBar.getApplyButton().addActionListener(_ ->
-				new ApplyDialog(pageFrame, ApplyDialogDemo.TEST_OPERATIONS).setVisible(true));
+		buttonBar.getNextButton().addActionListener(_ -> forward());
+		buttonBar.getBackButton().addActionListener(_ -> back());
+		buttonBar.getDefaultsButton().addActionListener(_ -> currentPage.restoreDefaults());
+		buttonBar.getApplyButton()
+		         .addActionListener(_ -> new ApplyDialog(pageFrame, List.of(
+						 new InstallJavaOperation(javaPageData),
+						 new InstallKarafOperation(karafPageData)
+				 )).setVisible(true));
 	}
 
 
@@ -81,13 +88,13 @@ public class PagePool {
 		int     index         = pages.indexOf(currentPage);
 		boolean isTheLastPage = (index >= pages.size() - 1);
 		if (isTheLastPage) {
-			pageFrame.getButtonsBar().getNextButton().setEnabled(false);
-			pageFrame.getButtonsBar().getApplyButton().setEnabled(currentPage.isValid());
+			buttonBar.getNextButton().setEnabled(false);
+			buttonBar.getApplyButton().setEnabled(currentPage.isValid());
 		} else {
-			pageFrame.getButtonsBar().getNextButton().setEnabled(currentPage.isValid());
-			pageFrame.getButtonsBar().getApplyButton().setEnabled(false);
+			buttonBar.getNextButton().setEnabled(currentPage.isValid());
+			buttonBar.getApplyButton().setEnabled(false);
 		}
-		pageFrame.getButtonsBar().getBackButton().setEnabled(!(index <= 0));
+		buttonBar.getBackButton().setEnabled(!(index <= 0));
 	}
 
 	public void back() {
@@ -111,10 +118,18 @@ public class PagePool {
 	}
 
 
-
 	public void showFirstPage() {
-		if (pages.isEmpty()) return;
-		// make the biggest x, and y
+		if (pages.isEmpty()) {
+			getLogger(getClass().getName()).info("pages is empty");
+			return;
+		}
+		var firstPage = pages.getFirst();
+		firstPage.getContent().setPreferredSize(getLargest());
+		switchPage(firstPage);
+		updateButtons();
+	}
+
+	private Dimension getLargest() {
 		Dimension biggest = new Dimension(0, 0);
 		for (Page page : pages) {
 			var preferredSize = page.getContent().getPreferredSize();
@@ -125,9 +140,6 @@ public class PagePool {
 				biggest.width = preferredSize.width;
 			}
 		}
-		var firstPage = pages.getFirst();
-		firstPage.getContent().setPreferredSize(new Dimension(biggest.width + 50, biggest.height + 50));
-		switchPage(firstPage);
-		updateButtons();
+		return biggest;
 	}
 }

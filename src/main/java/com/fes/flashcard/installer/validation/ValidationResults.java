@@ -3,19 +3,27 @@ package com.fes.flashcard.installer.validation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ValidationResults {
+import static com.fes.flashcard.installer.validation.Severity.ERROR;
 
-	private final List<ValidationResult> results = new ArrayList<>();
+public record ValidationResults(List<ValidationResult> list) {
 
-	public ValidationResults(List<ValidationResult> results) {
-		this.results.addAll(results);
+	public ValidationResults() {
+		this(new ArrayList<>());
 	}
 
-	public List<ValidationResult> list() {
-		return results;
+	public void add(ValidationResult result) {
+		list.add(result);
+	}
+
+	public void addError(String title, String description, int priority) {
+		this.add(new ValidationResult(title, description, ERROR, priority));
+	}
+
+	public void add(String title, String description, Severity severity) {
+		this.add(new ValidationResult(title, description, severity, 0));
 	}
 
 	public boolean contains(Severity severity) {
-		return results.stream().anyMatch(result -> result.getSeverity() == severity);
+		return list.stream().anyMatch(result -> result.severity() == severity);
 	}
 }

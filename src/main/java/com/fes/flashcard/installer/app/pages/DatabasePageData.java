@@ -1,8 +1,8 @@
 package com.fes.flashcard.installer.app.pages;
 
+import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.app.Database;
 import com.fes.flashcard.installer.page.PageData;
-import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.validation.Severity;
 import com.fes.flashcard.installer.validation.ValidationResult;
 import com.fes.flashcard.installer.validation.ValidationResults;
@@ -13,35 +13,36 @@ import java.util.List;
 public class DatabasePageData extends PageData {
 
 	// Preferences keys
-	private static final String DB_TYPE                = "db.type";
-	private static final String DB_VERSION_POSTGRESQL  = "db.version.postgresql";
-	private static final String DB_VERSION_H2          = "db.version.h2";
-	private static final String DB_POSTGRESQL_USERNAME = "db.postgresql.username";
-	private static final String DB_POSTGRESQL_PASSWORD = "db.postgresql.password";
-	private static final String DB_POSTGRESQL_PORT     = "db.postgresql.port";
-	private static final String DB_POSTGRESQL_HOST     = "db.postgresql.host";
-	private static final String DB_H2_USERNAME         = "db.h2.username";
-	private static final String DB_H2_PASSWORD         = "db.h2.password";
-	private static final String DB_NAME                = "db.name";
+	private static final String KEY_TYPE                        = "db.type";
+	private static final String KEY_SELECTED_POSTGRESQL_VERSION = "db.postgresql.selected.version";
+	private static final String KEY_VERSION_H2                  = "db.h2.selected.version";
+	private static final String KEY_POSTGRESQL_USERNAME         = "db.postgresql.username";
+	private static final String KEY_POSTGRESQL_PASSWORD         = "db.postgresql.password";
+	private static final String KEY_POSTGRESQL_PORT             = "db.postgresql.port";
+	private static final String KEY_POSTGRESQL_HOST             = "db.postgresql.host";
+	private static final String KEY_H2_USERNAME                 = "db.h2.username";
+	private static final String KEY_H2_PASSWORD                 = "db.h2.password";
+	private static final String KEY_NAME                        = "db.name";
 
 	// Default values
-	private static final String DEFAULT_POSTGRESQL_USERNAME = "postgres";
-	private static final String DEFAULT_POSTGRESQL_PASSWORD = "";
-	private static final String DEFAULT_POSTGRESQL_PORT     = "5432";
-	private static final String DEFAULT_POSTGRESQL_HOST     = "localhost";
-	private static final String DEFAULT_H2_USERNAME         = "sa";
-	private static final String DEFAULT_H2_PASSWORD         = "";
-	private static final String DEFAULT_DB_NAME             = "collections";
+	private static final String DEFAULT_SELECTED_POSTGRESQL_VERSION = "14";
+	private static final String DEFAULT_POSTGRESQL_USERNAME         = "postgres";
+	private static final String DEFAULT_POSTGRESQL_PASSWORD         = "";
+	private static final String DEFAULT_POSTGRESQL_PORT             = "5432";
+	private static final String DEFAULT_POSTGRESQL_HOST             = "localhost";
+	public static final  String DEFAULT_SELECTED_H2_VERSION         = "2.4";
+	private static final String DEFAULT_H2_USERNAME                 = "sa";
+	private static final String DEFAULT_H2_PASSWORD                 = "";
+	private static final String DEFAULT_DB_NAME                     = "collections";
 
-	// PostgreSQL versions
+	// version options
 	private static final String[] POSTGRESQL_VERSIONS = {"14", "15", "16", "17", "18"};
-	// H2 versions
 	private static final String[] H2_VERSIONS         = {"2.2", "2.3", "2.4"};
 
 	// Values
 	private Database database                  = Database.PostgreSQL;
-	private String   selectedPostgresqlVersion = "14";
-	private String   selectedH2Version         = "2.4";
+	private String   selectedPostgresqlVersion = DEFAULT_SELECTED_POSTGRESQL_VERSION;
+	private String   selectedH2Version         = DEFAULT_SELECTED_H2_VERSION;
 	private String   postgresqlUsername        = DEFAULT_POSTGRESQL_USERNAME;
 	private String   postgresqlPassword        = DEFAULT_POSTGRESQL_PASSWORD;
 	private String   postgresqlPort            = DEFAULT_POSTGRESQL_PORT;
@@ -56,38 +57,37 @@ public class DatabasePageData extends PageData {
 
 	@Override
 	public void load() {
-		String typeStr = preferences.get(DB_TYPE, Database.PostgreSQL.name());
-		database = Database.valueOf(typeStr);
-		selectedPostgresqlVersion = preferences.get(DB_VERSION_POSTGRESQL, "14");
-		selectedH2Version = preferences.get(DB_VERSION_H2, "2.4");
-		postgresqlUsername = preferences.get(DB_POSTGRESQL_USERNAME, DEFAULT_POSTGRESQL_USERNAME);
-		postgresqlPassword = preferences.get(DB_POSTGRESQL_PASSWORD, DEFAULT_POSTGRESQL_PASSWORD);
-		postgresqlPort = preferences.get(DB_POSTGRESQL_PORT, DEFAULT_POSTGRESQL_PORT);
-		postgresqlHost = preferences.get(DB_POSTGRESQL_HOST, DEFAULT_POSTGRESQL_HOST);
-		h2Username = preferences.get(DB_H2_USERNAME, DEFAULT_H2_USERNAME);
-		h2Password = preferences.get(DB_H2_PASSWORD, DEFAULT_H2_PASSWORD);
-		dbName = preferences.get(DB_NAME, DEFAULT_DB_NAME);
+		database = Database.valueOf(preferences.get(KEY_TYPE, Database.PostgreSQL.name()));
+		selectedPostgresqlVersion = preferences.get(KEY_SELECTED_POSTGRESQL_VERSION, DEFAULT_SELECTED_POSTGRESQL_VERSION);
+		selectedH2Version = preferences.get(KEY_VERSION_H2, DEFAULT_SELECTED_H2_VERSION);
+		postgresqlUsername = preferences.get(KEY_POSTGRESQL_USERNAME, DEFAULT_POSTGRESQL_USERNAME);
+		postgresqlPassword = preferences.get(KEY_POSTGRESQL_PASSWORD, DEFAULT_POSTGRESQL_PASSWORD);
+		postgresqlPort = preferences.get(KEY_POSTGRESQL_PORT, DEFAULT_POSTGRESQL_PORT);
+		postgresqlHost = preferences.get(KEY_POSTGRESQL_HOST, DEFAULT_POSTGRESQL_HOST);
+		h2Username = preferences.get(KEY_H2_USERNAME, DEFAULT_H2_USERNAME);
+		h2Password = preferences.get(KEY_H2_PASSWORD, DEFAULT_H2_PASSWORD);
+		dbName = preferences.get(KEY_NAME, DEFAULT_DB_NAME);
 	}
 
 	@Override
 	public void save() {
-		preferences.put(DB_TYPE, database.name());
-		preferences.put(DB_VERSION_POSTGRESQL, selectedPostgresqlVersion);
-		preferences.put(DB_VERSION_H2, selectedH2Version);
-		preferences.put(DB_POSTGRESQL_USERNAME, postgresqlUsername);
-		preferences.put(DB_POSTGRESQL_PASSWORD, postgresqlPassword);
-		preferences.put(DB_POSTGRESQL_PORT, postgresqlPort);
-		preferences.put(DB_POSTGRESQL_HOST, postgresqlHost);
-		preferences.put(DB_H2_USERNAME, h2Username);
-		preferences.put(DB_H2_PASSWORD, h2Password);
-		preferences.put(DB_NAME, dbName);
+		preferences.put(KEY_TYPE, database.name());
+		preferences.put(KEY_SELECTED_POSTGRESQL_VERSION, selectedPostgresqlVersion);
+		preferences.put(KEY_VERSION_H2, selectedH2Version);
+		preferences.put(KEY_POSTGRESQL_USERNAME, postgresqlUsername);
+		preferences.put(KEY_POSTGRESQL_PASSWORD, postgresqlPassword);
+		preferences.put(KEY_POSTGRESQL_PORT, postgresqlPort);
+		preferences.put(KEY_POSTGRESQL_HOST, postgresqlHost);
+		preferences.put(KEY_H2_USERNAME, h2Username);
+		preferences.put(KEY_H2_PASSWORD, h2Password);
+		preferences.put(KEY_NAME, dbName);
 	}
 
 	@Override
 	public void loadDefaults() {
 		database = Database.PostgreSQL;
-		selectedPostgresqlVersion = "14";
-		selectedH2Version = "2.4";
+		selectedPostgresqlVersion = DEFAULT_SELECTED_POSTGRESQL_VERSION;
+		selectedH2Version = DEFAULT_SELECTED_H2_VERSION;
 		postgresqlUsername = DEFAULT_POSTGRESQL_USERNAME;
 		postgresqlPassword = DEFAULT_POSTGRESQL_PASSWORD;
 		postgresqlPort = DEFAULT_POSTGRESQL_PORT;
@@ -95,16 +95,17 @@ public class DatabasePageData extends PageData {
 		h2Username = DEFAULT_H2_USERNAME;
 		h2Password = DEFAULT_H2_PASSWORD;
 		dbName = DEFAULT_DB_NAME;
-		preferences.remove(DB_TYPE);
-		preferences.remove(DB_VERSION_POSTGRESQL);
-		preferences.remove(DB_VERSION_H2);
-		preferences.remove(DB_POSTGRESQL_USERNAME);
-		preferences.remove(DB_POSTGRESQL_PASSWORD);
-		preferences.remove(DB_POSTGRESQL_PORT);
-		preferences.remove(DB_POSTGRESQL_HOST);
-		preferences.remove(DB_H2_USERNAME);
-		preferences.remove(DB_H2_PASSWORD);
-		preferences.remove(DB_NAME);
+
+		preferences.remove(KEY_TYPE);
+		preferences.remove(KEY_SELECTED_POSTGRESQL_VERSION);
+		preferences.remove(KEY_VERSION_H2);
+		preferences.remove(KEY_POSTGRESQL_USERNAME);
+		preferences.remove(KEY_POSTGRESQL_PASSWORD);
+		preferences.remove(KEY_POSTGRESQL_PORT);
+		preferences.remove(KEY_POSTGRESQL_HOST);
+		preferences.remove(KEY_H2_USERNAME);
+		preferences.remove(KEY_H2_PASSWORD);
+		preferences.remove(KEY_NAME);
 	}
 
 	@Override

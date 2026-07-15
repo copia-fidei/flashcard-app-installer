@@ -28,6 +28,7 @@ import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.SwingUtilities.windowForComponent;
 
+// TODO do not show exception type
 public class DetailsDialog extends JDialog {
 
 	private final Operation operation;
@@ -37,7 +38,7 @@ public class DetailsDialog extends JDialog {
 	private final JButton   closeButton      = new JButton("Schließen");
 
 	public DetailsDialog(Window parent, Operation operation) {
-		super(parent, operation.getDescription());
+		super(parent, operation.getTitle());
 		this.operation = operation;
 
 		buildGUI();
@@ -78,7 +79,7 @@ public class DetailsDialog extends JDialog {
 		buttonPanel.add(closeButton);
 
 		add(descriptionLabel, 		new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, 		 new Insets(10, 10,  0, 10), 0, 0));
-		add(descriptionScrollPane, 	new GridBagConstraints(0, 1, 1, 1, 1.0, 0.1, LINE_START, BOTH, 		 new Insets(10, 10,  0, 10), 0, 0));
+		add(descriptionScrollPane, 	new GridBagConstraints(0, 1, 1, 1, 1.0, 0.5, LINE_START, BOTH, 		 new Insets(10, 10,  0, 10), 0, 0));
 		add(statusTitleLabel, 		new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, LINE_START, NONE, 		 new Insets(10, 10,  0, 10), 0, 0));
 		add(statusLabel, 			new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, LINE_START, NONE, 		 new Insets(10, 10,  0, 10), 0, 0));
 		add(progressTitleLabel, 	new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, LINE_START, NONE, 		 new Insets(10, 10,  0, 10), 0, 0));

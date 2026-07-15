@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import java.awt.*;
 
-import static java.awt.BorderLayout.*;
+import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.WEST;
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;

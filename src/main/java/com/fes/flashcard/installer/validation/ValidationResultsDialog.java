@@ -100,8 +100,8 @@ public class ValidationResultsDialog extends JDialog {
 			if (rowIndex < sortedResults.size()) {
 				ValidationResult result = sortedResults.get(rowIndex);
 				return switch (columnIndex) {
-					case 0 -> result.getSeverity().getDisplayName();
-					case 1 -> result.getDescription();
+					case 0 -> result.severity().getDisplayName();
+					case 1 -> result.description();
 					default -> "";
 				};
 			}
@@ -113,11 +113,11 @@ public class ValidationResultsDialog extends JDialog {
 
 		@Override
 		public int compare(ValidationResult result1, ValidationResult result2) {
-			int severityComparison = Integer.compare(result2.getSeverity().ordinal(), result1.getSeverity().ordinal());
+			int severityComparison = Integer.compare(result2.severity().ordinal(), result1.severity().ordinal());
 			if (severityComparison != 0) {
 				return severityComparison;
 			}
-			return Integer.compare(result2.getPriority(), result1.getPriority());
+			return Integer.compare(result2.priority(), result1.priority());
 		}
 	}
 }
