@@ -3,7 +3,9 @@ package com.fes.flashcard.installer.app.pages;
 import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.TestFrames;
 import com.fes.flashcard.installer.app.Database;
+import com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState;
 import com.fes.flashcard.installer.page.Page;
+import com.fes.flashcard.installer.swing.DocumentAdapter;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -19,28 +21,28 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ItemListener;
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
-import static java.util.logging.Logger.getLogger;
+import static java.util.logging.Level.WARNING;
 
+// TODO tooltips
 public class DatabasePage extends Page {
 
 	private final DatabasePageData databasePageData;
 
 	private final JComboBox<Database> dbImplementationComboBox = new JComboBox<>();
 
-	private final JComboBox<String> versionsComboBox = new JComboBox<>();
-	private final JTextField        usernameField    = new JTextField(20);
-	private final JTextField        passwordField    = new JTextField(20);
-	private final JTextField        dbNameField      = new JTextField(20);
-	private final JTextField        portField        = new JTextField(20);
-	private final JTextField        hostField        = new JTextField(20);
+	private final JComboBox<String> versionsComboBox   = new JComboBox<>();
+	private final JTextField        adminField         = new JTextField(20);
+	private final JTextField        adminPasswordField = new JTextField(20);
+	private final JTextField        userField          = new JTextField(20);
+	private final JTextField        userPasswordField  = new JTextField(20);
+	private final JTextField        dbNameField        = new JTextField(20);
+	private final JTextField        portField          = new JTextField(20);
+	private final JTextField        hostField          = new JTextField(20);
 
 	private final DocumentAdapter documentListener = new DocumentAdapter(this::pageChanged);
 	private final ItemListener    comboBoxListener = _ -> pageChanged();
@@ -54,7 +56,7 @@ public class DatabasePage extends Page {
 
 	@Override
 	public String getTitle() {
-		return "Datenbankauswahl";
+		return "Datenbank";
 	}
 
 	@Override
@@ -73,14 +75,11 @@ public class DatabasePage extends Page {
 		});
 	}
 
-	// TODO clear, when page after Apply was pressed
 	// TODO implement for H2 too
-	private final Map<String, Boolean> postgresVersionsInstalled = new ConcurrentHashMap<>();
-
 	private void findOutIsPostgresInstalled(String[] versions) {
 		for (String version : versions) {
 			try {
-				Process process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", "postgresql" + "-" + version).start();
+				var process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", "postgresql" + "-" + version).start();
 				process.waitFor();
 
 				String status;
@@ -88,12 +87,12 @@ public class DatabasePage extends Page {
 					status = reader.readAllAsString();
 				}
 				if (status.startsWith("ii")) {
-					postgresVersionsInstalled.put(version, true);
+					databasePageData.getPostgresInstallStates().put(version, PostgresState.ALREADY_INSTALLED);
 				} else {
-					postgresVersionsInstalled.put(version, false);
+					databasePageData.getPostgresInstallStates().put(version, PostgresState.NOT_INSTALLED);
 				}
 			} catch (IOException | InterruptedException e) {
-				getLogger(getClass().getName()).log(Level.WARNING, "Failed to find out if Postgres packages are installed", e);
+				log.log(WARNING, "Failed to find out if Postgres packages are installed", e);
 			}
 
 		}
@@ -101,18 +100,22 @@ public class DatabasePage extends Page {
 
 	@Override
 	public void build() {
-		var databaseLabel = new JLabel("Implementation");
-		var versionLabel  = new JLabel("Version");
-		var usernameLabel = new JLabel("Nutzer");
-		var passwordLabel = new JLabel("Passwort");
-		var portLabel     = new JLabel("Port");
-		var hostLabel     = new JLabel("Host");
-		var dbNameLabel   = new JLabel("Datenbank");
+		var databaseLabel      = new JLabel("Implementation");
+		var versionLabel       = new JLabel("Version");
+		var adminLabel         = new JLabel("Administrator");
+		var adminPasswordLabel = new JLabel("Administratorpasswort");
+		var portLabel          = new JLabel("Port");
+		var hostLabel          = new JLabel("Host");
+		var dbNameLabel        = new JLabel("Datenbankname");
+		var userLabel          = new JLabel("Benutzer");
+		var userPasswordLabel  = new JLabel("Benutzerpasswort");
 
 		versionsComboBox.setRenderer(new VersionListCellRenderer());
 
+		adminField.setEditable(false);
 		dbNameField.setEditable(false);
 		hostField.setEditable(false);
+		userField.setEditable(false);
 
 		content.add(databaseLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
 		content.add(dbImplementationComboBox, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
@@ -120,11 +123,11 @@ public class DatabasePage extends Page {
 		content.add(versionLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
 		content.add(versionsComboBox, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
-		content.add(usernameLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(usernameField, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(adminLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(adminField, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
-		content.add(passwordLabel, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(passwordField, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(adminPasswordLabel, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(adminPasswordField, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
 		content.add(hostLabel, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
 		content.add(hostField, new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
@@ -135,8 +138,14 @@ public class DatabasePage extends Page {
 		content.add(dbNameLabel, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
 		content.add(dbNameField, new GridBagConstraints(1, 6, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
+		content.add(userLabel, new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(userField, new GridBagConstraints(1, 7, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+
+		content.add(userPasswordLabel, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(userPasswordField, new GridBagConstraints(1, 8, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+
 		// Filler
-		content.add(new JPanel(), new GridBagConstraints(0, 7, 2, 1, 1.0, 1.0, LINE_START, BOTH, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(new JPanel(), new GridBagConstraints(0, 9, 2, 1, 1.0, 1.0, LINE_START, BOTH, new Insets(10, 10, 10, 10), 0, 0));
 
 		new SwingWorker<Void, Void>() {
 
@@ -156,8 +165,10 @@ public class DatabasePage extends Page {
 	protected void addListeners() {
 		dbImplementationComboBox.addItemListener(comboBoxListener);
 		versionsComboBox.addItemListener(comboBoxListener);
-		usernameField.getDocument().addDocumentListener(documentListener);
-		passwordField.getDocument().addDocumentListener(documentListener);
+		adminField.getDocument().addDocumentListener(documentListener);
+		adminPasswordField.getDocument().addDocumentListener(documentListener);
+		userField.getDocument().addDocumentListener(documentListener);
+		userPasswordField.getDocument().addDocumentListener(documentListener);
 		portField.getDocument().addDocumentListener(documentListener);
 	}
 
@@ -165,8 +176,10 @@ public class DatabasePage extends Page {
 	protected void removeListeners() {
 		dbImplementationComboBox.removeItemListener(comboBoxListener);
 		versionsComboBox.removeItemListener(comboBoxListener);
-		usernameField.getDocument().removeDocumentListener(documentListener);
-		passwordField.getDocument().removeDocumentListener(documentListener);
+		adminField.getDocument().removeDocumentListener(documentListener);
+		adminPasswordField.getDocument().removeDocumentListener(documentListener);
+		userField.getDocument().removeDocumentListener(documentListener);
+		userPasswordField.getDocument().removeDocumentListener(documentListener);
 		portField.getDocument().removeDocumentListener(documentListener);
 	}
 
@@ -178,17 +191,19 @@ public class DatabasePage extends Page {
 		switch (previousSelectedDbImp) {
 			case H2 -> {
 				databasePageData.setSelectedH2Version((String) versionsComboBox.getSelectedItem());
-				databasePageData.setH2Username(usernameField.getText());
-				databasePageData.setH2Password(passwordField.getText());
+				databasePageData.setH2Admin(adminField.getText());
+				databasePageData.setH2AdminPassword(adminPasswordField.getText());
 			}
 			case PostgreSQL -> {
-				databasePageData.setSelectedPostgresqlVersion((String) versionsComboBox.getSelectedItem());
+				databasePageData.setSelectedPostgresVersion((String) versionsComboBox.getSelectedItem());
 
-				databasePageData.setPostgresqlUsername(usernameField.getText());
-				databasePageData.setPostgresqlPassword(passwordField.getText());
+				databasePageData.setPostgresAdmin(adminField.getText());
+				databasePageData.setPostgresAdminPassword(adminPasswordField.getText());
 
-				databasePageData.setPostgresqlPort(portField.getText());
-				databasePageData.setPostgresqlHost(hostField.getText());
+				databasePageData.setPostgresPort(portField.getText());
+				databasePageData.setPostgresHost(hostField.getText());
+				databasePageData.setPostgresUser(userField.getText());
+				databasePageData.setPostgresUserPassword(userPasswordField.getText());
 			}
 		}
 	}
@@ -206,17 +221,21 @@ public class DatabasePage extends Page {
 		versionsComboBox.setSelectedItem(getSelectedVersion(dbImp));
 
 		if (dbImp == Database.H2) {
-			usernameField.setText(databasePageData.getH2Username());
-			passwordField.setText(databasePageData.getH2Password());
+			adminField.setText(databasePageData.getH2Admin());
+			adminPasswordField.setText(databasePageData.getH2AdminPassword());
 			dbNameField.setText(databasePageData.getDbName());
 			portField.setText("");
 			hostField.setText("");
+			userField.setText("");
+			userPasswordField.setText("");
 		} else {
-			usernameField.setText(databasePageData.getPostgresqlUsername());
-			passwordField.setText(databasePageData.getPostgresqlPassword());
+			adminField.setText(databasePageData.getPostgresAdmin());
+			adminPasswordField.setText(databasePageData.getPostgresAdminPassword());
 			dbNameField.setText(databasePageData.getDbName());
-			portField.setText(databasePageData.getPostgresqlPort());
-			hostField.setText(databasePageData.getPostgresqlHost());
+			portField.setText(databasePageData.getPostgresPort());
+			hostField.setText(databasePageData.getPostgresHost());
+			userField.setText(databasePageData.getPostgresUser());
+			userPasswordField.setText(databasePageData.getPostgresUserPassword());
 		}
 	}
 
@@ -226,9 +245,11 @@ public class DatabasePage extends Page {
 		String[] versions = getVersions(dbImpl);
 		versionsComboBox.setModel(new DefaultComboBoxModel<>(versions));
 
-		boolean isPostgreSQL = dbImpl == Database.PostgreSQL;
-		portField.setEnabled(isPostgreSQL);
-		hostField.setEnabled(isPostgreSQL);
+		boolean isPostgres = dbImpl == Database.PostgreSQL;
+		portField.setEnabled(isPostgres);
+		hostField.setEnabled(isPostgres);
+		userField.setEnabled(isPostgres);
+		userPasswordField.setEnabled(isPostgres);
 	}
 
 	@Override
@@ -240,14 +261,14 @@ public class DatabasePage extends Page {
 	private String[] getVersions(Database currentDbImp) {
 		return switch (currentDbImp) {
 			case H2 -> databasePageData.getH2Versions();
-			case PostgreSQL -> databasePageData.getPostgresqlVersions();
+			case PostgreSQL -> databasePageData.getPostgresVersions();
 		};
 	}
 
 	private String getSelectedVersion(Database currentDbImp) {
 		return switch (currentDbImp) {
 			case H2 -> databasePageData.getSelectedH2Version();
-			case PostgreSQL -> databasePageData.getSelectedPostgresqlVersion();
+			case PostgreSQL -> databasePageData.getSelectedPostgresVersion();
 		};
 	}
 
@@ -260,11 +281,10 @@ public class DatabasePage extends Page {
 
 			Database dbImpl = databasePageData.getDatabaseImplementation();
 
-			// TODO for H2 too.
-			// In that case make Resources the first page.
-			if (dbImpl == Database.PostgreSQL && postgresVersionsInstalled.containsKey(version)) {
-				boolean isInstalled = postgresVersionsInstalled.get(version);
-				String  statusText  = isInstalled ? "(bereits installiert)" : "(nicht installiert)";
+			// TODO for H2 too. In that case make Karaf the first page.
+			if (dbImpl == Database.PostgreSQL && databasePageData.getPostgresInstallStates().containsKey(version)) {
+				PostgresState isInstalled = databasePageData.getPostgresInstallStates().get(version);
+				String        statusText  = isInstalled == PostgresState.ALREADY_INSTALLED || isInstalled == PostgresState.INSTALLED_BY_INSTALLER ? "(bereits installiert)" : "(nicht installiert)";
 				label.setText(version + " " + statusText);
 			}
 

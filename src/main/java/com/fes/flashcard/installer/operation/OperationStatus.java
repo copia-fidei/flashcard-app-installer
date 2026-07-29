@@ -2,7 +2,7 @@ package com.fes.flashcard.installer.operation;
 
 public enum OperationStatus {
 
-	// remove descriptions
+	// TODO remove descriptions
 	NOT_STARTED("🔘", "Die Operation wurde noch nicht gestartet"),
 	RUNNING("⚙️", "Die Operation läuft"),
 	ERROR("⚠️", "Die Operation wurde aufgrund eines Fehlers abgebrochen"),
@@ -16,15 +16,15 @@ public enum OperationStatus {
 		this.icon = icon;
 		this.description = description;
 	}
-
+	// TODO separate icon from enum
 	public String getIcon() {
 		return icon;
 	}
-
+	// TODO separate description message from enum
 	public String getDescription() {
 		return description;
 	}
-	// icon is not returned
+	// TODO fix icon not returned
 	public String getDisplayText() {
 		return icon + " " + description;
 	}

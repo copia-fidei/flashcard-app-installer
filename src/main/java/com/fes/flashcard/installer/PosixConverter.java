@@ -1,4 +1,4 @@
-package com.fes.flashcard.installer.app.operations;
+package com.fes.flashcard.installer;
 
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;

@@ -2,7 +2,7 @@ package com.fes.flashcard.installer;
 
 import java.nio.file.Path;
 
-import static java.lang.IO.print;
+import static java.lang.IO.println;
 import static java.lang.System.getProperty;
 
 /**
@@ -13,6 +13,6 @@ public interface Home {
 	Path PATH = Path.of(getProperty("user.home"));
 
 	static void main() {
-		print(PATH);
+		println(PATH);
 	}
 }

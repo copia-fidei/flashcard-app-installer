@@ -1,6 +1,7 @@
 package com.fes.flashcard.installer.app.pages;
 
 import com.fes.flashcard.installer.page.Page;
+import com.fes.flashcard.installer.swing.DocumentAdapter;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;

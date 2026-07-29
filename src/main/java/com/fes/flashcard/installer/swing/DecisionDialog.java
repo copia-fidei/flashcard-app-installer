@@ -1,4 +1,4 @@
-package com.fes.flashcard.installer.app.operations;
+package com.fes.flashcard.installer.swing;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;

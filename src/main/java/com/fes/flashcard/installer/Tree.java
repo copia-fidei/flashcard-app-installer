@@ -1,4 +1,6 @@
-package com.fes.flashcard.installer.app;
+package com.fes.flashcard.installer;
+
+import com.fes.flashcard.installer.app.Resources;
 
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;

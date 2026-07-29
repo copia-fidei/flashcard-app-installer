@@ -8,8 +8,9 @@ import com.fes.flashcard.installer.validation.ValidationResults;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
 
 public class RootPasswordPageData extends PageData {
 
@@ -50,9 +51,9 @@ public class RootPasswordPageData extends PageData {
 				validationResults.add(new ValidationResult("Falsches Passwort", "Das Passwort für Rootuser ist falsch.", Severity.ERROR));
 			}
 		} catch (IOException e) {
-			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Failed to validate root password", e);
+			log.log(WARNING, "Failed to validate root password", e);
 		} catch (InterruptedException e) {
-			Logger.getLogger(getClass().getName()).log(Level.INFO, "Validation interrupted", e);
+			log.log(INFO, "Validation interrupted", e);
 		}
 		return new ValidationResults(validationResults);
 	}

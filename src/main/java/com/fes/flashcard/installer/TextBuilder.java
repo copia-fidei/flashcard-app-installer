@@ -1,17 +1,17 @@
-package com.fes.flashcard.installer.app.operations;
+package com.fes.flashcard.installer;
 
 import static java.lang.System.lineSeparator;
 
 /**
  * Similar to a string builder, but each appended string is in a new line.
  */
-record TextBuilder(StringBuilder builder) {
+public record TextBuilder(StringBuilder builder) {
 
-	TextBuilder() {
+	public TextBuilder() {
 		this(new StringBuilder());
 	}
 
-	TextBuilder line(String s) {
+	public TextBuilder line(String s) {
 		builder.append(s);
 		builder.append(lineSeparator());
 		return this;

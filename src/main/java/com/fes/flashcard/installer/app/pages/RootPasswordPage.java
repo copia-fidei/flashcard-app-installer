@@ -73,9 +73,7 @@ public class RootPasswordPage extends Page {
 	}
 
 	@Override
-	protected void fillGUI() {
-		passwordField.setText(new String(rootpasswordPageData.getRootPassword()));
-	}
+	protected void fillGUI() {}
 
 	@Override
 	public void updateGUI() {}
@@ -88,7 +86,7 @@ public class RootPasswordPage extends Page {
 		private final Timer timer;
 
 		DelayedDocumentListener() {
-			this.timer = new Timer(1000, _ -> pageChanged());
+			this.timer = new Timer(1500, _ -> pageChanged());
 			this.timer.setRepeats(false);
 		}
 

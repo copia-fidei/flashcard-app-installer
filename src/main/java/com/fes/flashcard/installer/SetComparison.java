@@ -1,4 +1,4 @@
-package com.fes.flashcard.installer.app;
+package com.fes.flashcard.installer;
 
 import java.util.HashSet;
 import java.util.Set;

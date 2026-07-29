@@ -1,9 +1,9 @@
-package com.fes.flashcard.installer.app.pages;
+package com.fes.flashcard.installer.swing;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-record DocumentAdapter(Runnable runnable) implements DocumentListener {
+public record DocumentAdapter(Runnable runnable) implements DocumentListener {
 
 	@Override
 	public void insertUpdate(DocumentEvent e) { runnable.run(); }

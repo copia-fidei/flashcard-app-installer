@@ -1,13 +1,17 @@
 package com.fes.flashcard.installer.app.operations;
 
 
-import com.fes.flashcard.installer.app.Dir;
+import com.fes.flashcard.installer.DangerousPaths;
+import com.fes.flashcard.installer.Directory;
+import com.fes.flashcard.installer.PosixConverter;
+import com.fes.flashcard.installer.TarGz;
+import com.fes.flashcard.installer.TextBuilder;
 import com.fes.flashcard.installer.app.Resources;
-import com.fes.flashcard.installer.app.TarGz;
-import com.fes.flashcard.installer.app.operations.DecisionDialog.Option;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
+import com.fes.flashcard.installer.operation.Counter;
 import com.fes.flashcard.installer.operation.Operation;
-import io.github.compress4j.archivers.tar.TarGzArchiveExtractor;
+import com.fes.flashcard.installer.swing.DecisionDialog;
+import com.fes.flashcard.installer.swing.DecisionDialog.Option;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -22,8 +26,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Set;
 
-import static io.github.compress4j.archivers.ArchiveExtractor.ErrorHandlerChoice.RETRY;
-import static io.github.compress4j.archivers.ArchiveExtractor.EscapingSymlinkPolicy.DISALLOW;
+import static com.fes.flashcard.installer.app.Resources.KARAF_ZIP_NAME;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.createDirectories;
@@ -35,23 +38,23 @@ import static java.nio.file.Files.walkFileTree;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 
-public class InstallKarafOperation extends Operation {
+public class InstallKarafOp extends Operation {
 
 	private final Path directoryToInstallKarafInto;
 
-	public InstallKarafOperation(KarafPageData karafPageData) {
+	public InstallKarafOp(KarafPageData karafPageData) {
 		super("Karaf", "Installiere Apache Karaf 4.4.11");
 
 		directoryToInstallKarafInto = karafPageData.getKarafInstallationDir();
 	}
 
 	public String getDescription() {
-		var description = new TextBuilder();
-		description.line("Installiere Apache Karaf 4.4.11");
-		description.line("Prüfe, ob in " + directoryToInstallKarafInto + " bereits eine Karaf-Installation vorhanden ist");
-		description.line("Entferne den bestehenden Inhalt von " + directoryToInstallKarafInto + ", falls vorhanden");
-		description.line("Entpacke " + Resources.KARAF_ZIP_NAME + " nach " + directoryToInstallKarafInto);
-		return description.toString();
+		var test = new TextBuilder();
+		test.line("Installiere Apache Karaf 4.4.11");
+		test.line("Prüfe, ob in " + directoryToInstallKarafInto + " bereits eine Karaf-Installation vorhanden ist");
+		test.line("Entferne den bestehenden Inhalt von " + directoryToInstallKarafInto + ", falls vorhanden");
+		test.line("Entpacke " + KARAF_ZIP_NAME + " nach " + directoryToInstallKarafInto);
+		return test.toString();
 	}
 
 	@Override
@@ -59,20 +62,20 @@ public class InstallKarafOperation extends Operation {
 		setProgress(0);
 		DangerousPaths.check(directoryToInstallKarafInto);
 		setProgress(1);
-		publish("Prüfe ob Karaf bereits installiert ist...");
+		publishLn("Prüfe ob Karaf bereits installiert ist...");
 		Installed state = isKarafInstalled();
 		setProgress(2);
 		switch (state) {
 			case FULLY -> {
-				publish("Karaf ist bereits vollständig installiert.");
+				publishLn("Karaf ist bereits vollständig installiert.");
 				handleExistingInstallation(true);
 			}
 			case PARTIALLY -> {
-				publish("Karaf ist teilweise installiert.");
+				publishLn("Karaf ist teilweise installiert.");
 				handleExistingInstallation(false);
 			}
 			case NOT -> {
-				publish("Installiere Karaf...");
+				publishLn("Installiere Karaf...");
 				installKaraf();
 			}
 		}
@@ -86,12 +89,12 @@ public class InstallKarafOperation extends Operation {
 		setProgress(4);
 		if (choice == Choice.REINSTALL) {
 			setProgress(5);
-			publish("Entferne vorhandene Installation...");
+			publishLn("Entferne vorhandene Installation...");
 			removeKaraf();
-			publish("Installiere Karaf neu...");
+			publishLn("Installiere Karaf neu...");
 			installKaraf();
 		} else {
-			publish("Vorhandene Karaf-Installation wird wiederverwendet.");
+			publishLn("Vorhandene Karaf-Installation wird wiederverwendet.");
 		}
 		setProgress(99);
 	}
@@ -131,26 +134,26 @@ public class InstallKarafOperation extends Operation {
 		if (!exists(directoryToInstallKarafInto)) {
 			return Installed.NOT;
 		}
-		Set<String> karafTarEntries = TarGz.entriesWithoutTopLevelDirectory(Resources.KARAF.openStream());
-		Set<String> karafDirFiles   = Dir.descendantsOf(directoryToInstallKarafInto);
+		Set<String> karafTarEntries  = TarGz.entriesWithoutTopLevelDirectory(Resources.KARAF.openStream());
+		Set<String> karafDirChildren = Directory.descendantsOf(directoryToInstallKarafInto);
 		karafTarEntriesCount = karafTarEntries.size();
-		karafDirFileCount = karafDirFiles.size();
+		karafDirFileCount = karafDirChildren.size();
 
-		if (karafDirFiles.containsAll(karafTarEntries) && karafDirFiles.size() >= karafTarEntries.size()) {
+		if (karafDirChildren.containsAll(karafTarEntries) && karafDirChildren.size() >= karafTarEntries.size()) {
 			return Installed.FULLY;
-		} else if (!karafDirFiles.isEmpty()) {
+		} else if (!karafDirChildren.isEmpty()) {
 			return Installed.PARTIALLY;
 		}
 		return Installed.NOT;
 	}
 
 	private void installKaraf() throws IOException {
-		publish("Erstelle Installationsverzeichnis: " + directoryToInstallKarafInto);
+		publishLn("Erstelle Installationsverzeichnis: " + directoryToInstallKarafInto);
 		createDirectories(directoryToInstallKarafInto);
-		publish("Entpacke Karaf: " + Resources.KARAF_ZIP_NAME);
+		publishLn("Entpacke Karaf: " + KARAF_ZIP_NAME);
 		extractTarGz(Resources.KARAF.openStream(), directoryToInstallKarafInto);
-		publish("Karaf entpackt nach " + directoryToInstallKarafInto);
-		publish("Karaf erfolgreich installiert.");
+		publishLn("Karaf entpackt nach " + directoryToInstallKarafInto);
+		publishLn("Karaf erfolgreich installiert.");
 	}
 
 
@@ -158,22 +161,27 @@ public class InstallKarafOperation extends Operation {
 		var counter = new Counter(getProgress(), 50, karafDirFileCount);
 
 		if (exists(directoryToInstallKarafInto)) {
-			publish("Lösche Verzeichnis: " + directoryToInstallKarafInto);
+			publishLn("Lösche Verzeichnis: " + directoryToInstallKarafInto);
 			walkFileTree(directoryToInstallKarafInto, new SimpleFileVisitor<>() {
 
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					publish("Datei " + file + " wird gelöscht");
+					if (isCancelled()) {
+						return FileVisitResult.TERMINATE;
+					}
+					publishLn("Datei " + file + " wird gelöscht");
 					delete(file);
 					setProgress(counter.up());
-
 					return CONTINUE;
 				}
 
 				@Override
 				public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+					if (isCancelled()) {
+						return FileVisitResult.TERMINATE;
+					}
 					if (exc == null) {
-						publish("Verzeichnis " + dir + " wird gelöscht");
+						publishLn("Verzeichnis " + dir + " wird gelöscht");
 						delete(dir);
 						setProgress(counter.up());
 						return CONTINUE;
@@ -191,6 +199,9 @@ public class InstallKarafOperation extends Operation {
 		try (var tarGzArchive = new TarArchiveInputStream(new GzipCompressorInputStream(new BufferedInputStream(tarGz)))) {
 			TarArchiveEntry entry;
 			while ((entry = tarGzArchive.getNextEntry()) != null) {
+				if(isCancelled()) {
+					return;
+				}
 				String name = entry.getName();
 				// Strip top-level directory
 				int slash = name.indexOf('/');
@@ -209,32 +220,13 @@ public class InstallKarafOperation extends Operation {
 					setPosixFilePermissions(outputPath, PosixConverter.posixPermissionsFromDecimal(entry.getMode()));
 				}
 				setProgress(counter.up());
-				publish("Entpackt: " + name);
+				publishLn("Entpackt: " + name);
 			}
-		}
-	}
-
-	// TODO remove compress4j dependency
-	private void extractTarGz_old(InputStream tarGz, Path destination) throws IOException {
-		Counter counter = new Counter(getProgress(), 98, karafTarEntriesCount);
-
-		try (var extractor = TarGzArchiveExtractor.builder(tarGz).errorHandler((entry, exception) -> {
-			publish(entry.name() + " konnte nicht entpackt werden");
-			return RETRY;
-		}).escapingSymlinkPolicy(DISALLOW).postProcessor((entry, path) -> {
-			setProgress(counter.up());
-			publish(entry.name());
-		}).overwrite(true).build()) {
-			extractor.extract(destination);
 		}
 	}
 
 	private enum Installed {
 		NOT, PARTIALLY, FULLY
-	}
-
-	private enum Choice {
-		REUSE, REINSTALL
 	}
 }
 

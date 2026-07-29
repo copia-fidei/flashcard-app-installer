@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+// TODO make process cancellable always
 public abstract class Operation extends SwingWorker<String, String> implements PropertyChangeListener {
 
 	private OperationStatus status = OperationStatus.NOT_STARTED;
@@ -34,6 +35,10 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 
 	public List<String> getLogs() {
 		return new ArrayList<>(logs);
+	}
+
+	protected void publishLn(String line) {
+		publish(line + "\n");
 	}
 
 	@Override
@@ -110,18 +115,29 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 		return description;
 	}
 
+	protected void progress() {
+		int newProgress = getProgress() + 1;
+		if (newProgress <= 100) {
+			setProgress(newProgress);
+		}
+	}
+
 	public class CancellableWriter extends Writer {
 
-		private final StringBuffer buffer = new StringBuffer();
+		private final StringBuffer written = new StringBuffer();
 
 		@Override
 		public void write(char[] cbuf, int off, int len) throws IOException {
 			if (isCancelled()) {
-				throw new IOException("Cancelled");
+				throw new IOException("Cancelled"); // localize
 			}
 			var str = new String(cbuf, off, len);
-			buffer.append(str);
+			written.append(str);
 			publish(str);
+		}
+
+		public String written() {
+			return written.toString();
 		}
 
 		@Override
@@ -129,10 +145,49 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 
 		@Override
 		public void close() {}
+	}
 
-		@Override
-		public String toString() {
-			return buffer.toString();
+	protected Result redirectOutputs(Process process) throws IOException, InterruptedException {
+		var out = new CancellableWriter();
+		var err = new CancellableWriter();
+		try (var stdout = process.inputReader(); var stderr = process.errorReader()) {
+			stdout.transferTo(out);
+			stderr.transferTo(err);
+		} catch (IOException e) {
+			if (!isCancelled()) {
+				throw e;
+			}
+			process.destroy();
+			publishLn("Cancelled process with id " + process.pid()); // TODO localize
+		}
+		int exitCode = process.waitFor();
+		return new Result(out, err, exitCode);
+	}
+
+	public static class Result {
+
+		private final CancellableWriter output;
+		private final CancellableWriter error;
+		private final int               exitCode;
+
+		Result(CancellableWriter output, CancellableWriter error, int exitCode) {
+			this.output = output;
+			this.error = error;
+			this.exitCode = exitCode;
+		}
+
+		public String output() {
+			return output.written();
+		}
+
+		public String error() {
+			return error.written();
+		}
+
+		public int exitCode() {
+			return exitCode;
 		}
 	}
+
+
 }

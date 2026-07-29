@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+
+set package [lindex $argv 0]
+
+if {$package == ""} {
+    puts "Usage: $argv0 <package>"
+    exit 1
+}
+
+spawn apt purge -y $package
+
+expect {
+    -re {.*Remove PostgreSQL directories.*} {
+        send "no\r"
+        exp_continue
+    }
+    -re {PostgreSQL-Verzeichnisse[[:space:]\r\n]+entfernen.*endgültig gelöscht wird\?.*\[ja/nein\]} {
+        send "nein\r"
+        exp_continue
+    }
+    eof
+}

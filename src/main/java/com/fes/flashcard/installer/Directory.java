@@ -1,14 +1,18 @@
-package com.fes.flashcard.installer.app;
+package com.fes.flashcard.installer;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.logging.Level;
 
+import static java.nio.file.Files.exists;
 import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.newDirectoryStream;
 import static java.nio.file.Files.walk;
+import static java.util.logging.Logger.getLogger;
 import static java.util.stream.Collectors.toSet;
 
-public interface Dir {
+public interface Directory {
 
 	/// Gets all files and directories below the specified directory.
 	///
@@ -29,6 +33,18 @@ public interface Dir {
 				}
 				return path;
 			}).filter(path -> !path.isEmpty()).collect(toSet());
+		}
+	}
+
+	static boolean isEmpty(Path directory) {
+		if (!exists(directory)) {
+			return true;
+		}
+		try (var entries = newDirectoryStream(directory)) {
+			return !entries.iterator().hasNext();
+		} catch (IOException e) {
+			getLogger(Directory.class.getName()).log(Level.WARNING, "Could not check if directory is empty", e);
+			return false;
 		}
 	}
 }

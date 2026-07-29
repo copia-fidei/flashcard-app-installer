@@ -1,5 +1,6 @@
-package com.fes.flashcard.installer.app;
+package com.fes.flashcard.installer;
 
+import com.fes.flashcard.installer.app.Resources;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;

@@ -30,9 +30,12 @@ import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
 import static java.awt.Cursor.HAND_CURSOR;
 import static java.awt.Cursor.getDefaultCursor;
 import static java.awt.event.MouseEvent.MOUSE_CLICKED;
+import static java.util.logging.Logger.getLogger;
 import static javax.swing.SwingUtilities.windowForComponent;
 
 public abstract class Page {
+
+	protected final Logger log = getLogger(getClass().getName());
 
 	protected final PageData pageData;
 	protected final JPanel   content = new JPanel(new GridBagLayout());
@@ -229,9 +232,9 @@ public abstract class Page {
 				isValid = !latestValidationResults.contains(ERROR);
 				onValidationChanged.run();
 			} catch (InterruptedException e) {
-				Logger.getLogger(getClass().getName()).log(Level.WARNING, "Validation interrupted", e);
+				getLogger(getClass().getName()).log(Level.WARNING, "Validation interrupted", e);
 			} catch (ExecutionException e) {
-				Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Validation failed", e);
+				getLogger(getClass().getName()).log(Level.SEVERE, "Validation failed", e);
 			}
 		}
 	}

@@ -1,19 +1,17 @@
 package com.fes.flashcard.installer.app.pages;
 
+import com.fes.flashcard.installer.Directory;
 import com.fes.flashcard.installer.Home;
 import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.page.PageData;
 import com.fes.flashcard.installer.validation.ValidationResults;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Level;
 
 import static com.fes.flashcard.installer.validation.Severity.WARNING;
 import static java.lang.IO.println;
 import static java.util.Objects.requireNonNull;
-import static java.util.logging.Logger.getLogger;
 
 public class KarafPageData extends PageData {
 
@@ -82,22 +80,10 @@ public class KarafPageData extends PageData {
 		if (parentDir.getFileName().toString().equals(folderName)) {
 			results.add("Verdächtiger Verzeichnispfad", "Ordner und übergeordneter Ordner haben den gleichen Namen.", WARNING);
 		}
-		if (!isDirEmpty(getKarafInstallationDir())) {
+		if (!Directory.isEmpty(getKarafInstallationDir())) {
 			results.add("Ordner ist nicht leer", "Der ausgewählte Ordner ist nicht leer. Sein Inhalt wird bei der Installation gelöscht.", WARNING);
 		}
 		return results;
-	}
-
-	private static boolean isDirEmpty(Path directory) {
-		if (!Files.exists(directory)) {
-			return true;
-		}
-		try (var entries = Files.newDirectoryStream(directory)) {
-			return !entries.iterator().hasNext();
-		} catch (IOException e) {
-			getLogger(KarafPageData.class.getName()).log(Level.WARNING, "Could not check if directory is empty", e);
-			return false;
-		}
 	}
 
 	public Path getParentDir() {

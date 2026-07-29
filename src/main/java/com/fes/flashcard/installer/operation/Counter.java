@@ -1,9 +1,9 @@
-package com.fes.flashcard.installer.app.operations;
+package com.fes.flashcard.installer.operation;
 
 /**
- * A counter that maps the processing of a fixed number of items to a progress range.
+ * A counter that maps the processing of a fixed number of items to a progress range between 0 and 100.
  */
-class Counter {
+public class Counter {
 
 	private final int start; // inclusive
 	private final int end;
@@ -11,7 +11,7 @@ class Counter {
 
 	int processed = 0;
 
-	Counter(int start, int end, int maxProcessed) {
+	public Counter(int start, int end, int maxProcessed) {
 		if (start < 0 || start > 100) {
 			throw new IllegalArgumentException("start must be between 0 and 100");
 		}
@@ -27,7 +27,7 @@ class Counter {
 		this.maxProcessed = maxProcessed;
 	}
 
-	int up() {
+	public int up() {
 		if (maxProcessed == 0) {
 			return end;
 		}

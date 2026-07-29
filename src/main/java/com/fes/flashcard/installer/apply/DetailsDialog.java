@@ -15,7 +15,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Window;
 import java.util.List;
 
 import static java.awt.GridBagConstraints.BOTH;
@@ -114,19 +118,64 @@ public class DetailsDialog extends JDialog {
 
 			@Override
 			public void intermediateResults(List<String> intermediateResults) {
-				 updateUI();
+				updateUI();
 			}
 		});
 	}
 
 	private void updateUI() {
 		OperationStatus status = operation.getStatus();
+		// TODO label text is too thick
 		statusLabel.setText(status.getDisplayText());
 
-		String progressText = String.join("\n", operation.getLogs());
-		progressTextArea.setText(progressText);
+		progressTextArea.setText(getText(operation.getLogs()));
 		progressTextArea.setCaretPosition(progressTextArea.getDocument().getLength());
 
 		cancelButton.setEnabled(status == OperationStatus.RUNNING);
+	}
+
+	private static String getText(List<String> logs) {
+		StringBuilder result = new StringBuilder();
+		StringBuilder currentLine = new StringBuilder();
+		int cursorX = 0;
+		boolean pendingCR = false;
+
+		for (String log : logs) {
+			for (int i = 0; i < log.length(); i++) {
+				char c = log.charAt(i);
+				if (pendingCR) {
+					pendingCR = false;
+					if (c == '\n') {
+						// \r\n → flush current line and start a new one
+						result.append(currentLine).append('\n');
+						currentLine.setLength(0);
+						cursorX = 0;
+						continue;
+					}
+					// bare \r → move cursor to column 0, but do NOT clear
+					cursorX = 0;
+				}
+				if (c == '\r') {
+					pendingCR = true;
+				} else if (c == '\n') {
+					result.append(currentLine).append('\n');
+					currentLine.setLength(0);
+					cursorX = 0;
+				} else {
+					// overwrite at cursor position, pad with spaces if cursor jumped ahead
+					if (cursorX < currentLine.length()) {
+						currentLine.setCharAt(cursorX, c);
+					} else {
+						while (cursorX > currentLine.length()) {
+							currentLine.append(' ');
+						}
+						currentLine.append(c);
+					}
+					cursorX++;
+				}
+			}
+		}
+		result.append(currentLine);
+		return result.toString();
 	}
 }
