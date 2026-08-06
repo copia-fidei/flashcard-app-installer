@@ -37,7 +37,6 @@ import static java.nio.file.Files.setPosixFilePermissions;
 import static java.nio.file.Files.walkFileTree;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
-
 public class InstallKarafOp extends Operation {
 
 	private final Path directoryToInstallKarafInto;

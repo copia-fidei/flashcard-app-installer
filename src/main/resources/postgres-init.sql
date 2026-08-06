@@ -2,12 +2,12 @@ CREATE DATABASE collections;
 
 \c collections
 
-CREATE TABLE collections(
+CREATE TABLE IF NOT EXISTS collections(
 	name TEXT NOT NULL,
 	PRIMARY KEY (name)
 );
 
-CREATE TABLE flashcards(
+CREATE TABLE IF NOT EXISTS flashcards(
 	collection TEXT NOT NULL,
 	front TEXT NOT NULL,
 	back TEXT NOT NULL,

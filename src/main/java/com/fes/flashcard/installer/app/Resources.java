@@ -1,10 +1,14 @@
 package com.fes.flashcard.installer.app;
 
-import java.net.URISyntaxException;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static java.lang.IO.println;
+import static java.nio.file.Files.createTempFile;
+import static java.nio.file.Files.setPosixFilePermissions;
+import static java.nio.file.attribute.PosixFilePermissions.fromString;
 import static java.util.Objects.requireNonNull;
 
 public interface Resources {
@@ -13,32 +17,19 @@ public interface Resources {
 
 	String FLASHCARDS_APP_BUNDLE_NAME = "flashcards.jar";
 
-	String PURGE_AND_INSTALL_POSTGRES_SCRIPT_NAME = "purge_and_install_postgres.sh";
-
-	String APT_PURGE_POSTGRES_EXP_NAME = "apt_purge_postgres.exp";
+	String POSTGRES_INIT_SQL_NAME = "postgres-init.sql";
 
 	URL KARAF = getResource(KARAF_ZIP_NAME);
 
 	URL FLASHCARDS_APP_BUNDLE = getResource(FLASHCARDS_APP_BUNDLE_NAME);
 
-	URL PURGE_AND_INSTALL_POSTGRES_SCRIPT = getResource(PURGE_AND_INSTALL_POSTGRES_SCRIPT_NAME);
+	URL POSTGRES_INIT_SQL = getResource(POSTGRES_INIT_SQL_NAME);
 
-	URL APT_PURGE_POSTGRES_EXP = getResource(APT_PURGE_POSTGRES_EXP_NAME);
-
-	static void main() {
-		println(KARAF);
-	}
-
-	// this should throw exceptions on startup
-	private static Path pathOf(String resourceName) {
-		try {
-			URL resource = Resources.class.getResource(resourceName);
-
-			requireNonNull(resource);
-			return Path.of(resource.toURI());
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
+	static void main() throws IOException {
+		println(POSTGRES_INIT_SQL);
+		Path tempFile = copyToTmp(POSTGRES_INIT_SQL);
+		println(tempFile);
+		Files.deleteIfExists(tempFile);
 	}
 
 	private static URL getResource(String name) {
@@ -47,4 +38,27 @@ public interface Resources {
 		return resource;
 	}
 
+	// TODO decide for a tmp folder
+	static Path copyToTmp(URL resource) throws IOException {
+		String path   = resource.getPath();
+		String name   = path.substring(path.lastIndexOf('/') + 1);
+		String prefix = name;
+		String suffix = null;
+		if (name.contains(".")) {
+			int extIdx = name.lastIndexOf('.');
+			prefix = name.substring(0, extIdx);
+			suffix = name.substring(extIdx);
+		}
+		Path tmp = createTempFile(prefix, suffix);
+		try (var is = resource.openStream()) {
+			Files.write(tmp, is.readAllBytes());
+		}
+		// Make file readable by others
+		try {
+			setPosixFilePermissions(tmp, fromString("rw-r--r--"));
+		} catch (UnsupportedOperationException e) {
+			// On non-POSIX systems (e.g., Windows), skip permission setting
+		}
+		return tmp;
+	}
 }

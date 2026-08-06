@@ -1,5 +1,6 @@
 package com.fes.flashcard.installer.app.operations;
 
+import com.fes.flashcard.installer.TextBuilder;
 import com.fes.flashcard.installer.WriterAdapter;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO setProgress
 public class InstallPostgresOp extends Operation {
 
 	private final DatabasePageData databasePageData;
@@ -32,6 +32,15 @@ public class InstallPostgresOp extends Operation {
 		this.postgresVersion = databasePageData.getSelectedPostgresVersion();
 		this.postgresPackageName = "postgresql-" + postgresVersion;
 
+	}
+
+	public String getDescription() {
+		var text = new TextBuilder();
+		text.line("Prüfe, ob PostgreSQL " + postgresVersion + " bereits installiert ist");
+		text.line("Falls bereits installiert: Frage Benutzer, ob neu installiert oder wiederverwendet werden soll");
+		text.line("Bei Neuinstallation: Entferne vorhandene PostgreSQL Konfiguration");
+		text.line("Installiere PostgreSQL " + postgresVersion + " über apt");
+		return text.toString();
 	}
 
 	@Override

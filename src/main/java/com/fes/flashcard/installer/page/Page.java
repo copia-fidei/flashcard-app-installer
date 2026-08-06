@@ -216,8 +216,7 @@ public abstract class Page {
 
 			try {
 				latestValidationResults = get();
-				ValidationSummary summary = new ValidationSummary(latestValidationResults);
-
+				var summary = new ValidationSummary(latestValidationResults);
 				if (latestValidationResults.contains(ERROR)) {
 					statusBar.displayError(summary.mostImportantError());
 				} else if (latestValidationResults.contains(WARNING)) {
@@ -232,9 +231,9 @@ public abstract class Page {
 				isValid = !latestValidationResults.contains(ERROR);
 				onValidationChanged.run();
 			} catch (InterruptedException e) {
-				getLogger(getClass().getName()).log(Level.WARNING, "Validation interrupted", e);
+				log.log(Level.WARNING, "Validation interrupted", e);
 			} catch (ExecutionException e) {
-				getLogger(getClass().getName()).log(Level.SEVERE, "Validation failed", e);
+				log.log(Level.SEVERE, "Validation failed", e);
 			}
 		}
 	}

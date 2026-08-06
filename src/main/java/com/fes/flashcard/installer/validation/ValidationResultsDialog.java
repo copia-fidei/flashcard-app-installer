@@ -23,6 +23,9 @@ import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
 import static javax.swing.BoxLayout.LINE_AXIS;
 
+// TODO resize behaviour
+// FIXME text cannot be viewed if it too long
+// TODO open message, or format cell like text area
 public class ValidationResultsDialog extends JDialog {
 
 	private final ValidationResults validationResults;

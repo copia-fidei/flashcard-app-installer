@@ -2,6 +2,7 @@ package com.fes.flashcard.installer.app;
 
 import com.fes.flashcard.installer.PageFrame;
 import com.fes.flashcard.installer.PagePool;
+import com.fes.flashcard.installer.app.operations.ConfigurePostgresOp;
 import com.fes.flashcard.installer.app.operations.InstallPostgresOp;
 import com.fes.flashcard.installer.app.pages.DatabasePage;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
@@ -25,26 +26,27 @@ public class AppPagePool extends PagePool {
 		var javaPageData     = new JavaPageData(pageDataPool);
 		var rootPwPageData   = new RootPasswordPageData(pageDataPool);
 
+		pageDataPool.add(rootPwPageData);
 		pageDataPool.add(karafPageData);
 		pageDataPool.add(databasePageData);
 		pageDataPool.add(javaPageData);
-		pageDataPool.add(rootPwPageData);
-		
+
+		// order important
+		var rootPwPage   = new RootPasswordPage(rootPwPageData, this::updateButtons);
 		var karafPage    = new KarafPage(karafPageData, this::updateButtons);
 		var databasePage = new DatabasePage(databasePageData, this::updateButtons);
 		var javaPage     = new JavaPage(javaPageData, this::updateButtons);
-		var rootPwPage   = new RootPasswordPage(rootPwPageData, this::updateButtons);
 
+		pages.add(rootPwPage);
 		pages.add(karafPage);
 		pages.add(databasePage);
 		pages.add(javaPage);
-		pages.add(rootPwPage);
 
 //		operations.add(new InstallJavaOp(javaPageData));
 //		operations.add(new InstallKarafOp(karafPageData));
 //		operations.add(new InstallKarafFeaturesOp(karafPageData));
 		operations.add(() -> new InstallPostgresOp(databasePageData, rootPwPageData));
-//		operations.add(new ConfigurePostgresOp(databasePageData));
+		operations.add(() -> new ConfigurePostgresOp(databasePageData));
 	}
 
 }

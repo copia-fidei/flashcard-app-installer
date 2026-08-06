@@ -9,9 +9,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 // TODO make process cancellable always
 public abstract class Operation extends SwingWorker<String, String> implements PropertyChangeListener {
+
+	protected final Logger log = Logger.getLogger(getClass().getName());
 
 	private OperationStatus status = OperationStatus.NOT_STARTED;
 
@@ -122,6 +125,13 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 		}
 	}
 
+	protected void progress(int by) {
+		int newProgress = getProgress() + by;
+		if (newProgress <= 100) {
+			setProgress(newProgress);
+		}
+	}
+
 	public class CancellableWriter extends Writer {
 
 		private final StringBuffer written = new StringBuffer();
@@ -160,33 +170,7 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 			process.destroy();
 			publishLn("Cancelled process with id " + process.pid()); // TODO localize
 		}
-		int exitCode = process.waitFor();
-		return new Result(out, err, exitCode);
-	}
-
-	public static class Result {
-
-		private final CancellableWriter output;
-		private final CancellableWriter error;
-		private final int               exitCode;
-
-		Result(CancellableWriter output, CancellableWriter error, int exitCode) {
-			this.output = output;
-			this.error = error;
-			this.exitCode = exitCode;
-		}
-
-		public String output() {
-			return output.written();
-		}
-
-		public String error() {
-			return error.written();
-		}
-
-		public int exitCode() {
-			return exitCode;
-		}
+		return new Result(out, err, process.waitFor());
 	}
 
 

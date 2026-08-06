@@ -201,8 +201,6 @@ public class DatabasePage extends Page {
 				databasePageData.setPostgresAdminPassword(adminPasswordField.getText());
 
 				databasePageData.setPostgresPort(portField.getText());
-				databasePageData.setPostgresHost(hostField.getText());
-				databasePageData.setPostgresUser(userField.getText());
 				databasePageData.setPostgresUserPassword(userPasswordField.getText());
 			}
 		}
@@ -281,7 +279,7 @@ public class DatabasePage extends Page {
 
 			Database dbImpl = databasePageData.getDatabaseImplementation();
 
-			// TODO for H2 too. In that case make Karaf the first page.
+			// TODO for H2 too
 			if (dbImpl == Database.PostgreSQL && databasePageData.getPostgresInstallStates().containsKey(version)) {
 				PostgresState isInstalled = databasePageData.getPostgresInstallStates().get(version);
 				String        statusText  = isInstalled == PostgresState.ALREADY_INSTALLED || isInstalled == PostgresState.INSTALLED_BY_INSTALLER ? "(bereits installiert)" : "(nicht installiert)";
