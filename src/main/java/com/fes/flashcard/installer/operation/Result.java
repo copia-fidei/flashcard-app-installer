@@ -1,7 +1,5 @@
 package com.fes.flashcard.installer.operation;
 
-import com.fes.flashcard.installer.operation.Operation.CancellableWriter;
-
 /// the result of an operation
 public class Result {
 

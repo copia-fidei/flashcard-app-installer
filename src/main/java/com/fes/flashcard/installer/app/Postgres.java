@@ -12,26 +12,32 @@ import static java.nio.file.Files.exists;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 // TODO localize exception messages
-public interface Postgres {
+public class Postgres {
 
-	static String getAuthFile(String postgresVersion) throws FileNotFoundException {
-		var authFile = Path.of("/etc/postgresql", postgresVersion, "main", "pg_hba.conf");
+	private final String version;
+
+	public Postgres(String version) {
+		this.version = version;
+	}
+
+	public String getAuthFile() throws FileNotFoundException {
+		var authFile = Path.of("/etc/postgresql", version, "main", "pg_hba.conf");
 		if (!exists(authFile)) {
 			throw new FileNotFoundException("pg_hba.conf not found at " + authFile);
 		}
 		return authFile.toString();
 	}
 
-	static String getConfigurationFile(String postgresVersion) throws FileNotFoundException {
-		var confPath = Path.of("/etc/postgresql", postgresVersion, "main", "postgresql.conf");
+	public String getConfigurationFile() throws FileNotFoundException {
+		var confPath = Path.of("/etc/postgresql", version, "main", "postgresql.conf");
 		if (!Files.exists(confPath)) {
 			throw new FileNotFoundException("postgresql.conf not found at " + confPath);
 		}
 		return confPath.toString();
 	}
 
-	static Optional<String> getAuthMethod(String postgresVersion, String user, String connectionType, String database) throws IOException, InterruptedException {
-		var process = new ProcessBuilder("sudo", "grep", "-E", "all|" + user, getAuthFile(postgresVersion)).start();
+	public Optional<String> getAuthMethod(String user, String connectionType, String database) throws IOException, InterruptedException {
+		var process = new ProcessBuilder("sudo", "grep", "-E", "all|" + user, getAuthFile()).start();
 		var output = new StringWriter();
 		try (var stdout = process.inputReader()) {
 			stdout.transferTo(output);

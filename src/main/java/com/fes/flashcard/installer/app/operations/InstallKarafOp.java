@@ -61,20 +61,20 @@ public class InstallKarafOp extends Operation {
 		setProgress(0);
 		DangerousPaths.check(directoryToInstallKarafInto);
 		setProgress(1);
-		publishLn("Prüfe ob Karaf bereits installiert ist...");
+		println("Prüfe ob Karaf bereits installiert ist...");
 		Installed state = isKarafInstalled();
 		setProgress(2);
 		switch (state) {
 			case FULLY -> {
-				publishLn("Karaf ist bereits vollständig installiert.");
+				println("Karaf ist bereits vollständig installiert.");
 				handleExistingInstallation(true);
 			}
 			case PARTIALLY -> {
-				publishLn("Karaf ist teilweise installiert.");
+				println("Karaf ist teilweise installiert.");
 				handleExistingInstallation(false);
 			}
 			case NOT -> {
-				publishLn("Installiere Karaf...");
+				println("Installiere Karaf...");
 				installKaraf();
 			}
 		}
@@ -88,12 +88,12 @@ public class InstallKarafOp extends Operation {
 		setProgress(4);
 		if (choice == Choice.REINSTALL) {
 			setProgress(5);
-			publishLn("Entferne vorhandene Installation...");
+			println("Entferne vorhandene Installation...");
 			removeKaraf();
-			publishLn("Installiere Karaf neu...");
+			println("Installiere Karaf neu...");
 			installKaraf();
 		} else {
-			publishLn("Vorhandene Karaf-Installation wird wiederverwendet.");
+			println("Vorhandene Karaf-Installation wird wiederverwendet.");
 		}
 		setProgress(99);
 	}
@@ -147,12 +147,12 @@ public class InstallKarafOp extends Operation {
 	}
 
 	private void installKaraf() throws IOException {
-		publishLn("Erstelle Installationsverzeichnis: " + directoryToInstallKarafInto);
+		println("Erstelle Installationsverzeichnis: " + directoryToInstallKarafInto);
 		createDirectories(directoryToInstallKarafInto);
-		publishLn("Entpacke Karaf: " + KARAF_ZIP_NAME);
+		println("Entpacke Karaf: " + KARAF_ZIP_NAME);
 		extractTarGz(Resources.KARAF.openStream(), directoryToInstallKarafInto);
-		publishLn("Karaf entpackt nach " + directoryToInstallKarafInto);
-		publishLn("Karaf erfolgreich installiert.");
+		println("Karaf entpackt nach " + directoryToInstallKarafInto);
+		println("Karaf erfolgreich installiert.");
 	}
 
 
@@ -160,7 +160,7 @@ public class InstallKarafOp extends Operation {
 		var counter = new Counter(getProgress(), 50, karafDirFileCount);
 
 		if (exists(directoryToInstallKarafInto)) {
-			publishLn("Lösche Verzeichnis: " + directoryToInstallKarafInto);
+			println("Lösche Verzeichnis: " + directoryToInstallKarafInto);
 			walkFileTree(directoryToInstallKarafInto, new SimpleFileVisitor<>() {
 
 				@Override
@@ -168,7 +168,7 @@ public class InstallKarafOp extends Operation {
 					if (isCancelled()) {
 						return FileVisitResult.TERMINATE;
 					}
-					publishLn("Datei " + file + " wird gelöscht");
+					println("Datei " + file + " wird gelöscht");
 					delete(file);
 					setProgress(counter.up());
 					return CONTINUE;
@@ -180,7 +180,7 @@ public class InstallKarafOp extends Operation {
 						return FileVisitResult.TERMINATE;
 					}
 					if (exc == null) {
-						publishLn("Verzeichnis " + dir + " wird gelöscht");
+						println("Verzeichnis " + dir + " wird gelöscht");
 						delete(dir);
 						setProgress(counter.up());
 						return CONTINUE;
@@ -219,7 +219,7 @@ public class InstallKarafOp extends Operation {
 					setPosixFilePermissions(outputPath, PosixConverter.posixPermissionsFromDecimal(entry.getMode()));
 				}
 				setProgress(counter.up());
-				publishLn("Entpackt: " + name);
+				println("Entpackt: " + name);
 			}
 		}
 	}

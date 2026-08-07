@@ -46,16 +46,16 @@ public class InstallPostgresOp extends Operation {
 	@Override
 	protected String doInBackground() throws Exception {
 		setProgress(0);
-		publishLn("Prüfe ob PostgreSQL bereits installiert ist...");
+		println("Prüfe ob PostgreSQL bereits installiert ist...");
 		setProgress(2);
 		switch (isPostgresInstalled()) {
 			case FULLY -> {
-				publishLn("PostgreSQL ist bereits installiert.");
+				println("PostgreSQL ist bereits installiert.");
 				databasePageData.getPostgresInstallStates().put(postgresVersion, PostgresState.ALREADY_INSTALLED);
 				handleExistingPostgres();
 			}
 			case NOT -> {
-				publishLn("Installiere PostgreSQL...");
+				println("Installiere PostgreSQL...");
 				installPostgres();
 			}
 		}
@@ -79,14 +79,14 @@ public class InstallPostgresOp extends Operation {
 		setProgress(4);
 		if (choice == Choice.REINSTALL) {
 			setProgress(5);
-			publishLn("Installiere PostgreSQL neu...");
+			println("Installiere PostgreSQL neu...");
 			purgePostgres();
 			if (isCancelled()) {
 				return;
 			}
 			installPostgres();
 		} else {
-			publishLn("Vorhandene PostgreSQL-Installation wird wiederverwendet.");
+			println("Vorhandene PostgreSQL-Installation wird wiederverwendet.");
 		}
 		setProgress(99);
 	}
@@ -109,21 +109,21 @@ public class InstallPostgresOp extends Operation {
 	}
 
 	private void installPostgres() throws IOException, InterruptedException {
-		publishLn("Installiere PostgreSQL " + postgresVersion);
+		println("Installiere PostgreSQL " + postgresVersion);
 		setProgress(20);
 		List<String> command = List.of("sudo", "apt", "install", postgresPackageName);
-		publishLn("Führe aus: " + String.join(" ", command));
+		println("Führe aus: " + String.join(" ", command));
 		setProgress(30);
 		var process = new ProcessBuilder(command).start();
 		setProgress(40);
-		int exitCode = redirectOutputs(process).exitCode();
+		int exitCode = execute(process).exitCode();
 		setProgress(50);
 		if (exitCode != 0) {
-			publishLn("Fehler beim Installieren von PostgreSQL");
+			println("Fehler beim Installieren von PostgreSQL");
 			return;
 		}
 		setProgress(90);
-		publishLn("PostgreSQL erfolgreich installiert.");
+		println("PostgreSQL erfolgreich installiert.");
 
 		databasePageData.getPostgresInstallStates().put(postgresVersion, PostgresState.INSTALLED_BY_INSTALLER);
 	}
@@ -132,7 +132,7 @@ public class InstallPostgresOp extends Operation {
 
 	private void purgePostgres() throws IOException, InterruptedException {
 		setProgress(10);
-		publishLn("Entferne PostgreSQL Installation...");
+		println("Entferne PostgreSQL Installation...");
 		setProgress(15);
 
 		var purgeB = new PtyProcessBuilder(new String[] {"sudo", "-S", "DEBIAN_FRONTEND=readline", "apt", "purge", "-y", postgresPackageName});
@@ -148,7 +148,7 @@ public class InstallPostgresOp extends Operation {
 				public void write(char @NotNull [] cbuf, int off, int len) throws IOException {
 					if (isCancelled()) {
 						purge.destroy();
-						publishLn("Cancelled process with id " + purge.pid()); // TODO localize
+						println("Cancelled process with id " + purge.pid()); // TODO localize
 						return;
 					}
 					var str = new String(cbuf, off, len);
@@ -177,7 +177,7 @@ public class InstallPostgresOp extends Operation {
 			throw new IOException("apt purge fehlgeschlagen mit Exit-Code " + purgeExitCode);
 		}
 		setProgress(60);
-		publishLn("PostgreSQL erfolgreich entfernt.");
+		println("PostgreSQL erfolgreich entfernt.");
 		setProgress(70);
 	}
 

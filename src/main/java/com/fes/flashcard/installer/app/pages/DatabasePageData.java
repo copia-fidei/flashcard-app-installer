@@ -61,6 +61,8 @@ public class DatabasePageData extends PageData {
 	private       String   h2AdminPassword         = DEFAULT_H2_ADMIN_PASSWORD;
 	private final String   dbName                  = "collections";
 
+	private final String dataSourceName = "collections";
+
 
 	public DatabasePageData(PageDataPool pageDataPool) {
 		super(pageDataPool);
@@ -154,9 +156,13 @@ public class DatabasePageData extends PageData {
 		return postgresInstallStates.get(selectedPostgresVersion) == PostgresState.ALREADY_INSTALLED;
 	}
 
+	private Postgres postgres;
+
 	private void validateAdminPassword(ValidationResults validationResults) {
+		postgres = new Postgres(selectedPostgresVersion);
+
 		try {
-			Optional<String> adminAuthMethodOpt = Postgres.getAuthMethod(selectedPostgresVersion, postgresAdmin, "local", "postgres");
+			Optional<String> adminAuthMethodOpt = postgres.getAuthMethod(postgresAdmin, "local", "postgres");
 			if (adminAuthMethodOpt.isEmpty()) {
 				log.severe("Keine Authentifizierungsmöglichkeit gefunden");
 				return;
@@ -188,7 +194,7 @@ public class DatabasePageData extends PageData {
 			validationResults.add("Leeres Benutzerpasswort", "Ein Benutzerpasswort ist erforderlich.", Severity.ERROR);
 		}
 		try {
-			Optional<String> userAuthMethodOpt = Postgres.getAuthMethod(selectedPostgresVersion, postgresUser, "host", dbName);
+			Optional<String> userAuthMethodOpt = postgres.getAuthMethod(postgresUser, "host", dataSourceName);
 			if (userAuthMethodOpt.isEmpty()) {
 				validationResults.add(unableToConnect());
 				return;
@@ -234,7 +240,7 @@ public class DatabasePageData extends PageData {
 
 	private boolean connectUser() {
 		try {
-			var pb = new ProcessBuilder("psql", "-U", postgresUser, "-h", "localhost", "-d", dbName, "-c", "SELECT 1;");
+			var pb = new ProcessBuilder("psql", "-U", postgresUser, "-h", "localhost", "-d", dataSourceName, "-c", "SELECT 1;");
 			pb.environment().put("PGPASSWORD", postgresUserPassword);
 			var     process  = pb.start();
 			boolean finished = process.waitFor(2, SECONDS);
@@ -329,7 +335,7 @@ public class DatabasePageData extends PageData {
 	}
 
 	public String getDbName() {
-		return dbName;
+		return dataSourceName;
 	}
 
 	public String[] getPostgresVersions() {
@@ -339,6 +345,11 @@ public class DatabasePageData extends PageData {
 	public String[] getH2Versions() {
 		return H2_VERSIONS;
 	}
+
+	public String getDataSourceName() {
+		return dataSourceName;
+	}
+
 
 	// TODO reset after apply
 	// TODO threading issues?

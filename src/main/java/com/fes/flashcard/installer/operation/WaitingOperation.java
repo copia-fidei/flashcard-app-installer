@@ -29,7 +29,7 @@ public class WaitingOperation extends Operation {
 				return "Cancelled";
 			}
 			SECONDS.sleep(1);
-			publishLn("Waited for " + i + " seconds");
+			println("Waited for " + i + " seconds");
 			int progress = i * 100 / secondsToWait;
 			setProgress(progress);
 			if (i > secondsToWait / 2 && throwExceptionAtHalftime) {

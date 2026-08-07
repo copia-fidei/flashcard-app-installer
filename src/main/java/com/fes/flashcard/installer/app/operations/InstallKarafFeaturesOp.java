@@ -1,52 +1,42 @@
 package com.fes.flashcard.installer.app.operations;
 
-import com.fes.flashcard.installer.Java;
 import com.fes.flashcard.installer.TextBuilder;
-import com.fes.flashcard.installer.app.Resources;
+import com.fes.flashcard.installer.app.Karaf;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
 import com.fes.flashcard.installer.operation.Operation;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static java.util.stream.Stream.concat;
+import static com.fes.flashcard.installer.app.Resources.FLASHCARDS_APP_BUNDLE;
+import static com.fes.flashcard.installer.app.Resources.FLASHCARDS_APP_BUNDLE_NAME;
+import static java.nio.file.Files.readAllLines;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+// TODO localize
 public class InstallKarafFeaturesOp extends Operation {
 
-	private final KarafPageData karafPageData;
-	private final Path          karafDirectory;
-	// the path to the karaf client script
-	private final String        karafClient;
-	private       String        JAVA_HOME;
-
+	private final Path karafLocation;
 
 	public InstallKarafFeaturesOp(KarafPageData karafPageData) {
 		super("Karaf Features", "Installiere Karaf Features");
 
-		this.karafPageData = karafPageData;
-		this.karafDirectory = karafPageData.getKarafInstallationDir();
-		this.karafClient = karafDirectory.resolve("bin/client").toString();
+		this.karafLocation = karafPageData.getKarafInstallationDir();
 	}
 
 	public String getDescription() {
 		var text = new TextBuilder();
 		text.line("Installiere Karaf Features");
-		text.line("Ermittle Java Installationspfad");
-		text.line("Konfiguriere Karaf Benutzer für Passwort-Login");
-		text.line("Starte Karaf in " + karafDirectory);
+		text.line("Aktiviere die Passwortanmeldung");
+		text.line("Starte Karaf in " + karafLocation);
 		text.line("Warte bis Karaf vollständig gestartet ist");
-		text.line("Füge Jersey Feature Repository hinzu");
-		text.line("Installiere jersey-karaf-feature");
-		text.line("Installiere war Feature");
-		text.line("Installiere http Feature");
-		text.line("Installiere jndi Feature");
-		text.line("Kopiere flashcards.jar in Karafs deploy Ordner");
+		text.line("Füge das Jersey Feature Repository hinzu");
+		text.line("Installiere das jersey-karaf-feature");
+		text.line("Installiere das  war Feature");
+		text.line("Installiere das  http Feature");
+		text.line("Installiere das jndi Feature");
+		text.line("Kopiere das flashcards.jar in Karafs deploy Ordner");
 		text.line("Stoppe Karaf");
 		return text.toString();
 	}
@@ -54,70 +44,72 @@ public class InstallKarafFeaturesOp extends Operation {
 	@Override
 	protected String doInBackground() throws Exception {
 		setProgress(1);
-		publishLn("Ermittle Java Installationspfad");
-		JAVA_HOME = Java.getLocation();
-		publishLn("Java ist installiert in " + JAVA_HOME);
-		setProgress(2);
+
+		progress(3);
+		println("Aktiviere Passwortlogin für den Benutzer Karaf");
 		activatePasswordLogin();
-		setProgress(3);
+		progress(3);
+
+		var karaf = new Karaf(karafLocation, this);
 		try {
-			publishLn("Starte Karaf");
-			setProgress(4);
-			startKaraf();
-			setProgress(5);
-			waitForKaraf();
-			setProgress(6);
-			publishLn("Füge Jersey Feature Repository hinzu");
-			setProgress(7);
-			executeKarafCommand("feature:repo-add mvn:no.priv.bang.karaf/jersey/LATEST/xml/features");
-			setProgress(8);
-			publishLn("Installiere jersey-karaf-feature");
-			setProgress(9);
-			executeKarafCommand("feature:install jersey-karaf-feature");
-			setProgress(10);
-			publishLn("Installiere war Feature");
-			setProgress(11);
-			executeKarafCommand("feature:install war");
-			setProgress(12);
-			publishLn("Installiere http Feature");
-			setProgress(13);
-			executeKarafCommand("feature:install http");
-			setProgress(14);
-			publishLn("Installiere jndi Feature");
-			setProgress(15);
-			executeKarafCommand("feature:install jndi");
-			setProgress(16);
-			publishLn("Kopiere flashcards.jar in Karafs deploy Ordner");
-			setProgress(17);
-			deployFlashcardsBundle();
-			setProgress(100);
+			println("Starte Karaf");
+			progress(3);
+			karaf.start();
+			progress(3);
+			println("Füge Jersey Feature Repository hinzu");
+			progress(3);
+			karaf.execute("feature:repo-add mvn:no.priv.bang.karaf/jersey/LATEST/xml/features");
+			progress(3);
+			println("Installiere jersey-karaf-feature");
+			progress(3);
+			karaf.execute("feature:install jersey-karaf-feature");
+			progress(3);
+			println("Installiere war Feature");
+			progress(3);
+			karaf.execute("feature:install war");
+			progress(3);
+			println("Installiere http Feature");
+			progress(3);
+			karaf.execute("feature:install http");
+			progress(3);
+			println("Installiere jndi Feature");
+			progress(3);
+			karaf.execute("feature:install jndi");
+			progress(3);
+			println("Kopiere flashcards.jar in Karafs deploy Ordner");
+			progress(3);
+			deployBundle();
+			//bundle:install -s mvn:org.glassfish.jersey.media/jersey-media-multipart/2.47.0
+			//bundle:install -s mvn:org.glassfish.jersey.ext/jersey-mvc/2.47.0
+			//bundle:install -s mvn:org.glassfish.jersey.ext/jersey-mvc-mustache/2.47.0
+
+			// TODO
+			karaf.execute("bundle:install mvn:org.glassfish.jersey.media/jersey-media-multipart/2.47");
+			karaf.execute("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc/2.47");
+			karaf.execute("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc-mustache/2.47");
+			karaf.execute("bundle:install wrap:mvn:com.github.spullara.mustache.java/compiler/0.9.14");
+			karaf.execute("bundle:install mvn:org.glassfish.jersey.media/jersey-media-multipart/2.47");
+			karaf.execute("bundle:install mvn:org.jvnet.mimepull/mimepull/1.9.15");
 		} finally {
-			publishLn("Stoppe Karaf");
-			stopKaraf();
+			println("Stoppe Karaf");
+			karaf.stop();
 		}
+		setProgress(100);
+
 		return "Installation abgeschlossen";
 	}
 
-	private void stopKaraf() throws IOException, InterruptedException {
-		executeCommand(karafDirectory.resolve("bin/stop").toString());
-	}
-
-	private void startKaraf() throws IOException, InterruptedException {
-		executeCommand(karafDirectory.resolve("bin/start").toString());
-	}
-
 	// Deploy flashcards.jar in Karaf
-	private void deployFlashcardsBundle() throws IOException {
-		Path destination = karafDirectory.resolve("deploy", Resources.FLASHCARDS_APP_BUNDLE_NAME);
-		try (var stream = Resources.FLASHCARDS_APP_BUNDLE.openStream()) {
-			Files.copy(stream, destination, StandardCopyOption.REPLACE_EXISTING);
+	private void deployBundle() throws IOException {
+		Path destination = karafLocation.resolve("deploy", FLASHCARDS_APP_BUNDLE_NAME);
+		try (var bundle = FLASHCARDS_APP_BUNDLE.openStream()) {
+			Files.copy(bundle, destination, REPLACE_EXISTING);
 		}
 	}
 
 	private void activatePasswordLogin() throws IOException {
-		Path usersFile = karafDirectory.resolve("etc/users.properties");
-		publishLn("Konfiguriere Karaf Benutzer");
-		List<String> lines = Files.readAllLines(usersFile);
+		Path usersFile = karafLocation.resolve("etc/users.properties");
+		var  lines     = readAllLines(usersFile);
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			if (line.startsWith("#karaf =") || line.startsWith("#_g_\\:admingroup")) {
@@ -125,46 +117,5 @@ public class InstallKarafFeaturesOp extends Operation {
 			}
 		}
 		Files.write(usersFile, lines);
-	}
-
-	private void executeKarafCommand(String command) throws IOException, InterruptedException {
-		executeCommand(karafClientCommand(command));
-	}
-
-	private String[] karafClientCommand(String... command) {
-		return concat(Stream.of(karafClient, "-u", "karaf", "-p", "karaf"), Arrays.stream(command)).toArray(String[]::new);
-	}
-
-	private void executeCommand(String... commands) throws IOException, InterruptedException {
-		var process  = startProcess(commands);
-		int exitCode = redirectOutputs(process).exitCode();
-		if (exitCode != 0) {
-			throw new IOException("Karaf command failed with exit code " + exitCode);
-		}
-	}
-
-	private void waitForKaraf() throws Exception {
-		publishLn("Warte bis Karaf gestartet ist...");
-
-		long timeout = System.currentTimeMillis() + 60_000; // 1 minute
-		while (System.currentTimeMillis() < timeout) {
-			try {
-				var process = startProcess(karafClientCommand("version"));
-				if (process.waitFor() == 0) {
-					publishLn("Karaf ist gestartet.");
-					return;
-				}
-			} catch (IOException _) {
-				// Karaf isn't accepting connections yet.
-			}
-			SECONDS.sleep(1);
-		}
-		throw new IOException("Timeout beim Warten auf den Start von Karaf.");
-	}
-
-	private Process startProcess(String... commands) throws IOException {
-		var pb = new ProcessBuilder(commands);
-		pb.environment().put("JAVA_HOME", JAVA_HOME);
-		return pb.start();
 	}
 }

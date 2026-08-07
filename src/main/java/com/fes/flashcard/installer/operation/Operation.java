@@ -4,7 +4,6 @@ import javax.swing.SwingWorker;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +39,7 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 		return new ArrayList<>(logs);
 	}
 
-	protected void publishLn(String line) {
+	public void println(String line) {
 		publish(line + "\n");
 	}
 
@@ -132,46 +131,21 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 		}
 	}
 
-	public class CancellableWriter extends Writer {
-
-		private final StringBuffer written = new StringBuffer();
-
-		@Override
-		public void write(char[] cbuf, int off, int len) throws IOException {
-			if (isCancelled()) {
-				throw new IOException("Cancelled"); // localize
-			}
-			var str = new String(cbuf, off, len);
-			written.append(str);
-			publish(str);
-		}
-
-		public String written() {
-			return written.toString();
-		}
-
-		@Override
-		public void flush() {}
-
-		@Override
-		public void close() {}
+	void print(String str) {
+		publish(str);
 	}
 
-	protected Result redirectOutputs(Process process) throws IOException, InterruptedException {
-		var out = new CancellableWriter();
-		var err = new CancellableWriter();
+	/// execute the given process and send its outputs
+	public Result execute(Process process) throws IOException, InterruptedException {
+		var out = new CancellableWriter(this);
+		var err = new CancellableWriter(this);
 		try (var stdout = process.inputReader(); var stderr = process.errorReader()) {
 			stdout.transferTo(out);
 			stderr.transferTo(err);
-		} catch (IOException e) {
-			if (!isCancelled()) {
-				throw e;
-			}
+		} catch (Cancelled _) {
 			process.destroy();
-			publishLn("Cancelled process with id " + process.pid()); // TODO localize
+			println("Cancelled process with id " + process.pid()); // TODO localize
 		}
 		return new Result(out, err, process.waitFor());
 	}
-
-
 }

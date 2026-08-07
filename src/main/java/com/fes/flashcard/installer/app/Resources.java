@@ -25,6 +25,7 @@ public interface Resources {
 
 	URL POSTGRES_INIT_SQL = getResource(POSTGRES_INIT_SQL_NAME);
 
+	// For testing
 	static void main() throws IOException {
 		println(POSTGRES_INIT_SQL);
 		Path tempFile = copyToTmp(POSTGRES_INIT_SQL);
