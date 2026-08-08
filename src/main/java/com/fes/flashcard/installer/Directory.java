@@ -1,6 +1,7 @@
 package com.fes.flashcard.installer;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.logging.Level;
@@ -12,7 +13,17 @@ import static java.nio.file.Files.walk;
 import static java.util.logging.Logger.getLogger;
 import static java.util.stream.Collectors.toSet;
 
-public interface Directory {
+public class Directory {
+
+	private final Path directory;
+
+	public Directory(Path directory) {
+		this.directory = directory;
+
+		if (!Files.isDirectory(directory) && Files.exists(directory)) {
+			throw new IllegalArgumentException("The specified path is not a directory");
+		}
+	}
 
 	/// Gets all files and directories below the specified directory.
 	///
@@ -21,10 +32,9 @@ public interface Directory {
 	/// - The starting directory itself is not included.
 	/// - Returned paths are relative to the specified directory and do not start with a slash.
 	///
-	/// @param directory the parent directory, must exist
 	/// @return all files and directories below the specified directory
 	/// @throws IOException if an I/O error occurs while traversing the directory
-	static Set<String> descendantsOf(Path directory) throws IOException {
+	public Set<String> getDescendants() throws IOException {
 		try (var descendants = walk(directory)) {
 			return descendants.map(file -> {
 				String path = directory.relativize(file).toString();
@@ -36,7 +46,7 @@ public interface Directory {
 		}
 	}
 
-	static boolean isEmpty(Path directory) {
+	public boolean isEmpty() {
 		if (!exists(directory)) {
 			return true;
 		}

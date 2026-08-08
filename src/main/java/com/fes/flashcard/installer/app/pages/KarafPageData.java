@@ -80,7 +80,7 @@ public class KarafPageData extends PageData {
 		if (parentDir.getFileName().toString().equals(folderName)) {
 			results.add("Verdächtiger Verzeichnispfad", "Ordner und übergeordneter Ordner haben den gleichen Namen.", WARNING);
 		}
-		if (!Directory.isEmpty(getKarafInstallationDir())) {
+		if (!new Directory(getKarafInstallationDir()).isEmpty()) {
 			results.add("Ordner ist nicht leer", "Der ausgewählte Ordner ist nicht leer. Sein Inhalt wird bei der Installation gelöscht.", WARNING);
 		}
 		return results;
