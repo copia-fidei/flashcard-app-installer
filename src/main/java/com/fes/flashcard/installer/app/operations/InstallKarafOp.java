@@ -133,7 +133,7 @@ public class InstallKarafOp extends Operation {
 		if (!exists(directoryToInstallKarafInto)) {
 			return Installed.NOT;
 		}
-		Set<String> karafTarEntries  = TarGz.entriesWithoutTopLevelDirectory(Resources.KARAF.openStream());
+		Set<String> karafTarEntries  = TarGz.getEntriesWithoutTopLevelDirectory(Resources.KARAF.openStream());
 		Set<String> karafDirChildren = new Directory(directoryToInstallKarafInto).getDescendants();
 		karafTarEntriesCount = karafTarEntries.size();
 		karafDirFileCount = karafDirChildren.size();

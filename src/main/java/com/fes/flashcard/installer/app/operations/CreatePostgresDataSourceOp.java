@@ -9,14 +9,14 @@ import com.fes.flashcard.installer.operation.Operation;
 
 import java.io.IOException;
 
-public class CreateDataSourceOp extends Operation {
+public class CreatePostgresDataSourceOp extends Operation {
 
 	private final KarafPageData    karafPageData;
 	private final DatabasePageData databasePageData;
 
 	private final String dataSourceName;
 
-	public CreateDataSourceOp(KarafPageData karafPageData, DatabasePageData databasePageData) {
+	public CreatePostgresDataSourceOp(KarafPageData karafPageData, DatabasePageData databasePageData) {
 		super("Karaf DataSource", "Erstelle Karaf JDBC DataSource");
 
 		this.karafPageData = karafPageData;
@@ -60,7 +60,8 @@ public class CreateDataSourceOp extends Operation {
 
 			println("Teste DataSource (SELECT version();)");
 			setProgress(90);
-			testDataSource(karaf);
+			karaf.execute("jdbc:query " + dataSourceName + " SELECT version();");
+			println("DataSource Test erfolgreich");
 
 		} finally {
 			println("Stoppe Karaf");
@@ -85,9 +86,5 @@ public class CreateDataSourceOp extends Operation {
 		String command = "jdbc:ds-create -dc org.postgresql.Driver -url " + url + " --username " + user + " --password " + password + " " + dataSourceName;
 		karaf.execute(command);
 		println("DataSource '" + dataSourceName + "' erfolgreich erstellt");
-	}
-	private void testDataSource(Karaf karaf) throws IOException, InterruptedException, ErrorCode {
-		karaf.execute("jdbc:query " + dataSourceName + " SELECT version();");
-		println("DataSource Test erfolgreich");
 	}
 }

@@ -4,7 +4,7 @@ import com.fes.flashcard.installer.Java;
 import com.fes.flashcard.installer.app.pages.JavaPageData;
 import com.fes.flashcard.installer.operation.Operation;
 
-
+// TODO progress
 public class InstallJavaOp extends Operation {
 
 	private final JavaPageData javaPageData;

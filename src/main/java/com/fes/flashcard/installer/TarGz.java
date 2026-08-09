@@ -24,8 +24,8 @@ public interface TarGz {
 	/**
 	 * @return the entries of the tar.gz file
 	 */
-	static Set<String> entriesOf(Path zipFile) throws IOException {
-		return entriesOf(Files.newInputStream(zipFile));
+	static Set<String> getEntries(Path zipFile) throws IOException {
+		return getEntries(Files.newInputStream(zipFile));
 	}
 
 	/**
@@ -34,16 +34,16 @@ public interface TarGz {
 	 *
 	 * @return the entries without the top level directory
 	 */
-	static Set<String> entriesWithoutTopLevelDirectory(Path tarGzFile) throws IOException {
-		return entriesWithoutTopLevelDirectory(Files.newInputStream(tarGzFile));
+	static Set<String> getEntriesWithoutTopLevelDirectory(Path tarGzFile) throws IOException {
+		return getEntriesWithoutTopLevelDirectory(Files.newInputStream(tarGzFile));
 	}
 
-	static Set<String> entriesWithoutTopLevelDirectory(InputStream zipFile) throws IOException {
+	static Set<String> getEntriesWithoutTopLevelDirectory(InputStream zipFile) throws IOException {
 		var entries = new HashSet<String>();
 		try (var tarGzArchive = newTarGzArchiveInputStream(zipFile)) {
 			TarArchiveEntry entry;
 			while ((entry = tarGzArchive.getNextEntry()) != null) {
-				entries.add(entryWithoutTopLevelDirectory(entry));
+				entries.add(getEntryWithoutTopLevelDirectory(entry));
 			}
 		} catch (IOException e) {
 			LOG.log(Level.WARNING, "Failed to read tar.gz file", e);
@@ -52,7 +52,7 @@ public interface TarGz {
 		return entries;
 	}
 
-	static Set<String> entriesOf(InputStream input) throws IOException {
+	static Set<String> getEntries(InputStream input) throws IOException {
 		var entries = new HashSet<String>();
 		try (var tarGzArchive = newTarGzArchiveInputStream(input)) {
 			TarArchiveEntry entry;
@@ -70,7 +70,7 @@ public interface TarGz {
 		return new TarArchiveInputStream(new GzipCompressorInputStream(new BufferedInputStream(tarGzFile)));
 	}
 
-	private static String entryWithoutTopLevelDirectory(TarArchiveEntry entry) {
+	private static String getEntryWithoutTopLevelDirectory(TarArchiveEntry entry) {
 		String name  = entry.getName();
 		int    slash = name.indexOf('/');
 		if (slash >= 0) {
@@ -80,6 +80,6 @@ public interface TarGz {
 	}
 
 	static void main() throws IOException {
-		entriesOf(Resources.KARAF.openStream()).forEach(IO::println);
+		getEntries(Resources.KARAF.openStream()).forEach(IO::println);
 	}
 }

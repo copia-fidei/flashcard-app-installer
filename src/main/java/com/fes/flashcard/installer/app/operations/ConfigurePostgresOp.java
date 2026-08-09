@@ -3,7 +3,6 @@ package com.fes.flashcard.installer.app.operations;
 import com.fes.flashcard.installer.TextBuilder;
 import com.fes.flashcard.installer.app.AuthMethod;
 import com.fes.flashcard.installer.app.Postgres;
-import com.fes.flashcard.installer.app.Resources;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState;
 import com.fes.flashcard.installer.operation.ErrorCode;
@@ -11,13 +10,14 @@ import com.fes.flashcard.installer.operation.Operation;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 
+import static com.fes.flashcard.installer.Temporary.use;
+import static com.fes.flashcard.installer.app.Resources.POSTGRES_INIT_SQL;
+import static com.fes.flashcard.installer.app.Resources.getTmpFile;
 import static com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState.INSTALLED_BY_INSTALLER;
 import static com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState.NOT_INSTALLED;
 import static java.sql.DriverManager.getConnection;
@@ -243,30 +243,21 @@ public class ConfigurePostgresOp extends Operation {
 		progress(2);
 	}
 
-	private void createDatabase(Supplier<ProcessBuilder> loginCommand) throws IOException, InterruptedException, ErrorCode {
+	private void createDatabase(Supplier<ProcessBuilder> loginCommand) throws Exception {
 		println("Erstelle Datenbank und Tabellen");
 		progress(2);
 
-		Path tmpScript = Resources.copyToTmp(Resources.POSTGRES_INIT_SQL);
-
-		println("Führe aus:");
-		println(Files.readString(tmpScript));
-
-		try {
+		use(getTmpFile(POSTGRES_INIT_SQL), script -> {
+			println("Führe aus:");
+			println(Files.readString(script));
 			var pb = loginCommand.get();
 			pb.command().add("-f");
-			pb.command().add(tmpScript.toString());
+			pb.command().add(script.toString());
 			execute(pb.start()).throwIfNonZeroExit("Datenbankerstellung fehlgeschlagen");
 
 			println("Datenbank und Tabellen erfolgreich erstellt");
 			progress(2);
-		} finally {
-			try {
-				Files.deleteIfExists(tmpScript);
-			} catch (IOException e) {
-				log.log(Level.WARNING, "Failed to delete temporary file: " + tmpScript, e);
-			}
-		}
+		});
 	}
 
 	private void grantUserOwnershipOfDatabase(Supplier<ProcessBuilder> loginCommand) throws Exception {

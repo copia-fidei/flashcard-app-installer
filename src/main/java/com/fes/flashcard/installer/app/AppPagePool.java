@@ -2,12 +2,10 @@ package com.fes.flashcard.installer.app;
 
 import com.fes.flashcard.installer.PageFrame;
 import com.fes.flashcard.installer.PagePool;
-import com.fes.flashcard.installer.app.operations.ConfigurePostgresOp;
-import com.fes.flashcard.installer.app.operations.CreateDataSourceOp;
+import com.fes.flashcard.installer.app.operations.ConfigureKarafOp;
+import com.fes.flashcard.installer.app.operations.InstallH2Operation;
 import com.fes.flashcard.installer.app.operations.InstallJavaOp;
-import com.fes.flashcard.installer.app.operations.InstallKarafFeaturesOp;
 import com.fes.flashcard.installer.app.operations.InstallKarafOp;
-import com.fes.flashcard.installer.app.operations.InstallPostgresOp;
 import com.fes.flashcard.installer.app.pages.DatabasePage;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.JavaPage;
@@ -48,10 +46,10 @@ public class AppPagePool extends PagePool {
 
 		operations.add(() -> new InstallJavaOp(javaPageData));
 		operations.add(() -> new InstallKarafOp(karafPageData));
-		operations.add(() -> new InstallKarafFeaturesOp(karafPageData));
-		operations.add(() -> new InstallPostgresOp(databasePageData, rootPwPageData));
-		operations.add(() -> new ConfigurePostgresOp(databasePageData));
-		operations.add(() -> new CreateDataSourceOp(karafPageData, databasePageData));
+		operations.add(() -> new ConfigureKarafOp(karafPageData));
+		//		operations.add(() -> new InstallPostgresOp(databasePageData, rootPwPageData));
+		//		operations.add(() -> new ConfigurePostgresOp(databasePageData));
+		//		operations.add(() -> new CreatePostgresDataSourceOp(karafPageData, databasePageData));
+		operations.add(() -> new InstallH2Operation(karafPageData, databasePageData));
 	}
-
 }

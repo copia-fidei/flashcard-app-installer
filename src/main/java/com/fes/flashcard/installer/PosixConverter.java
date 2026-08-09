@@ -10,8 +10,8 @@ public interface PosixConverter {
 		return PosixFilePermissions.fromString(posixStringFromOctal(decimal));
 	}
 
-	static String posixStringFromOctal(int decimal) {
-		return posixStringFromOctal(Integer.toOctalString(decimal));
+	static String posixStringFromOctal(int octal) {
+		return posixStringFromOctal(Integer.toOctalString(octal));
 	}
 
 	static String posixStringFromOctal(String octal) {

@@ -43,6 +43,11 @@ public class Karaf {
 	}
 
 	public void start() throws IOException, InterruptedException, ErrorCode {
+		// Check if Karaf is already running
+		if (isRunning()) {
+			operation.println("Karaf läuft bereits.");
+			return;
+		}
 		runSuccessfully(startProgram);
 
 		operation.println("Warte bis Karaf gestartet ist...");
@@ -51,22 +56,29 @@ public class Karaf {
 			if (operation.isCancelled()) {
 				throw new InterruptedException("Operation beim Warten auf den Start von Karaf abgebrochen.");
 			}
-			try {
-				var process = getBuilder(onKaraf("version")).start();
-				if (process.waitFor() == 0) {
-					operation.println("Karaf ist gestartet.");
-					return;
-				}
-			} catch (IOException _) {
-				// Karaf isn't accepting connections yet.
+			if (isRunning()) {
+				operation.println("Karaf ist gestartet.");
+				return;
 			}
 			SECONDS.sleep(1);
 		}
 		throw new IOException("Timeout beim Warten auf den Start von Karaf.");
 	}
 
+	private boolean isRunning() throws IOException, InterruptedException {
+		try {
+			var process = getBuilder(onKaraf("version")).start();
+			return process.waitFor() == 0;
+		} catch (IOException _) {
+			// Karaf isn't accepting connections yet.
+			return false;
+		}
+	}
+
 	public void stop() throws IOException, InterruptedException, ErrorCode {
 		runSuccessfully(stopProgram);
+
+		SECONDS.sleep(1); // stopping actually takes time
 	}
 
 	/// throws if the process returns a non-zero exit code

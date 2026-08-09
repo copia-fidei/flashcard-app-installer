@@ -40,8 +40,6 @@ public class DatabasePageData extends PageData {
 	private static final String DEFAULT_POSTGRES_PORT             = "5432";
 	private static final String DEFAULT_POSTGRES_USER_PASSWORD    = "";
 	private static final String DEFAULT_SELECTED_H2_VERSION       = "2.4";
-	private static final String DEFAULT_H2_ADMIN                  = "sa";
-	private static final String DEFAULT_H2_ADMIN_PASSWORD         = "";
 
 	// version options
 	private static final String[] POSTGRES_VERSIONS = {"14", "15", "16", "17", "18"};
@@ -57,8 +55,7 @@ public class DatabasePageData extends PageData {
 	private final String   postgresHost            = "localhost";
 	private final String   postgresUser            = "flashcards";
 	private       String   postgresUserPassword    = DEFAULT_POSTGRES_USER_PASSWORD;
-	private       String   h2Admin                 = DEFAULT_H2_ADMIN;
-	private       String   h2AdminPassword         = DEFAULT_H2_ADMIN_PASSWORD;
+	private final String   h2User                  = "sa";
 	private final String   dbName                  = "collections";
 
 	private final String dataSourceName = "collections";
@@ -77,8 +74,6 @@ public class DatabasePageData extends PageData {
 		postgresAdminPassword = preferences.get(KEY_POSTGRES_ADMIN_PASSWORD, DEFAULT_POSTGRES_ADMIN_PASSWORD);
 		postgresPort = preferences.get(KEY_POSTGRES_PORT, DEFAULT_POSTGRES_PORT);
 		postgresUserPassword = preferences.get(KEY_POSTGRES_USER_PASSWORD, DEFAULT_POSTGRES_USER_PASSWORD);
-		h2Admin = preferences.get(KEY_H2_ADMIN, DEFAULT_H2_ADMIN);
-		h2AdminPassword = preferences.get(KEY_H2_ADMIN_PASSWORD, DEFAULT_H2_ADMIN_PASSWORD);
 	}
 
 	@Override
@@ -92,8 +87,7 @@ public class DatabasePageData extends PageData {
 		preferences.put(KEY_POSTGRES_HOST, postgresHost);
 		preferences.put(KEY_POSTGRES_USER, postgresUser);
 		preferences.put(KEY_POSTGRES_USER_PASSWORD, postgresUserPassword);
-		preferences.put(KEY_H2_ADMIN, h2Admin);
-		preferences.put(KEY_H2_ADMIN_PASSWORD, h2AdminPassword);
+		preferences.put(KEY_H2_ADMIN, h2User);
 	}
 
 	@Override
@@ -105,8 +99,6 @@ public class DatabasePageData extends PageData {
 		postgresAdminPassword = DEFAULT_POSTGRES_ADMIN_PASSWORD;
 		postgresPort = DEFAULT_POSTGRES_PORT;
 		postgresUserPassword = DEFAULT_POSTGRES_USER_PASSWORD;
-		h2Admin = DEFAULT_H2_ADMIN;
-		h2AdminPassword = DEFAULT_H2_ADMIN_PASSWORD;
 
 		preferences.remove(KEY_TYPE);
 		preferences.remove(KEY_SELECTED_POSTGRES_VERSION);
@@ -141,11 +133,6 @@ public class DatabasePageData extends PageData {
 			if (isPostgresInstalled()) {
 				validateAdminPassword(results);
 				validateUserPassword(results);
-			}
-		} else {
-			// TODO h2
-			if (h2Admin.isBlank()) {
-				results.add(new ValidationResult("Datenbank Nutzer", "Benutzername darf nicht leer sein", 1));
 			}
 		}
 
@@ -318,20 +305,8 @@ public class DatabasePageData extends PageData {
 		return postgresHost;
 	}
 
-	public String getH2Admin() {
-		return h2Admin;
-	}
-
-	public void setH2Admin(String h2Admin) {
-		this.h2Admin = h2Admin;
-	}
-
-	public String getH2AdminPassword() {
-		return h2AdminPassword;
-	}
-
-	public void setH2AdminPassword(String h2AdminPassword) {
-		this.h2AdminPassword = h2AdminPassword;
+	public String getH2User() {
+		return h2User;
 	}
 
 	public String getDbName() {

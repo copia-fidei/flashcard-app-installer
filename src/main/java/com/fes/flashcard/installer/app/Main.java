@@ -31,7 +31,7 @@ public class Main {
 //							new InstallJavaOp(javaPageData),
 //							new InstallKarafOp(karafPageData),
 //							new InstallPostgresOp(databasePageData),
-//							new InstallKarafFeaturesOp(karafPageData),
+//							new ConfigureKarafOp(karafPageData),
 //							new ConfigurePostgresOp(databasePageData)
 //						));
 //			applyDialog.setVisible(true);

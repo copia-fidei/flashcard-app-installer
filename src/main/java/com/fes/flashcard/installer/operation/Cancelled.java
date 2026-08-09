@@ -2,7 +2,7 @@ package com.fes.flashcard.installer.operation;
 
 import java.io.IOException;
 
-// TODO
+// TODO localize
 class Cancelled extends IOException {
 
 	public Cancelled() {

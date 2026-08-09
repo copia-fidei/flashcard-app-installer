@@ -19,18 +19,27 @@ public interface Resources {
 
 	String POSTGRES_INIT_SQL_NAME = "postgres-init.sql";
 
+	String H2_INIT_SQL_NAME = "h2-init.sql";
+
 	URL KARAF = getResource(KARAF_ZIP_NAME);
 
 	URL FLASHCARDS_APP_BUNDLE = getResource(FLASHCARDS_APP_BUNDLE_NAME);
 
 	URL POSTGRES_INIT_SQL = getResource(POSTGRES_INIT_SQL_NAME);
 
+	URL H2_INIT_SQL = getResource(H2_INIT_SQL_NAME);
+
 	// For testing
 	static void main() throws IOException {
 		println(POSTGRES_INIT_SQL);
-		Path tempFile = copyToTmp(POSTGRES_INIT_SQL);
+		Path tempFile = getTmpFile(POSTGRES_INIT_SQL);
 		println(tempFile);
 		Files.deleteIfExists(tempFile);
+
+		println(H2_INIT_SQL);
+		Path h2TempFile = getTmpFile(H2_INIT_SQL);
+		println(h2TempFile);
+		Files.deleteIfExists(h2TempFile);
 	}
 
 	private static URL getResource(String name) {
@@ -40,7 +49,7 @@ public interface Resources {
 	}
 
 	// TODO decide for a tmp folder
-	static Path copyToTmp(URL resource) throws IOException {
+	static Path getTmpFile(URL resource) throws IOException {
 		String path   = resource.getPath();
 		String name   = path.substring(path.lastIndexOf('/') + 1);
 		String prefix = name;

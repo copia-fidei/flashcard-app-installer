@@ -15,11 +15,11 @@ import static java.nio.file.Files.readAllLines;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 // TODO localize
-public class InstallKarafFeaturesOp extends Operation {
+public class ConfigureKarafOp extends Operation {
 
 	private final Path karafLocation;
 
-	public InstallKarafFeaturesOp(KarafPageData karafPageData) {
+	public ConfigureKarafOp(KarafPageData karafPageData) {
 		super("Karaf Features", "Installiere Karaf Features");
 
 		this.karafLocation = karafPageData.getKarafInstallationDir();
@@ -33,8 +33,8 @@ public class InstallKarafFeaturesOp extends Operation {
 		text.line("Warte bis Karaf vollständig gestartet ist");
 		text.line("Füge das Jersey Feature Repository hinzu");
 		text.line("Installiere das jersey-karaf-feature");
-		text.line("Installiere das  war Feature");
-		text.line("Installiere das  http Feature");
+		text.line("Installiere das war Feature");
+		text.line("Installiere das http Feature");
 		text.line("Installiere das jndi Feature");
 		text.line("Kopiere das flashcards.jar in Karafs deploy Ordner");
 		text.line("Stoppe Karaf");
@@ -84,6 +84,7 @@ public class InstallKarafFeaturesOp extends Operation {
 			//bundle:install -s mvn:org.glassfish.jersey.ext/jersey-mvc-mustache/2.47.0
 
 			// TODO
+			karaf.execute("feature:install pax-jdbc-sqlite");
 			karaf.execute("bundle:install mvn:org.glassfish.jersey.media/jersey-media-multipart/2.47");
 			karaf.execute("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc/2.47");
 			karaf.execute("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc-mustache/2.47");

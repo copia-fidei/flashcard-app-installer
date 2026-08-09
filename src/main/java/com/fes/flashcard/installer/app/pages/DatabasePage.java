@@ -191,8 +191,6 @@ public class DatabasePage extends Page {
 		switch (previousSelectedDbImp) {
 			case H2 -> {
 				databasePageData.setSelectedH2Version((String) versionsComboBox.getSelectedItem());
-				databasePageData.setH2Admin(adminField.getText());
-				databasePageData.setH2AdminPassword(adminPasswordField.getText());
 			}
 			case PostgreSQL -> {
 				databasePageData.setSelectedPostgresVersion((String) versionsComboBox.getSelectedItem());
@@ -219,12 +217,12 @@ public class DatabasePage extends Page {
 		versionsComboBox.setSelectedItem(getSelectedVersion(dbImp));
 
 		if (dbImp == Database.H2) {
-			adminField.setText(databasePageData.getH2Admin());
-			adminPasswordField.setText(databasePageData.getH2AdminPassword());
+			adminField.setText("");
+			adminPasswordField.setText("");
 			dbNameField.setText(databasePageData.getDbName());
 			portField.setText("");
 			hostField.setText("");
-			userField.setText("");
+			userField.setText(databasePageData.getH2User());
 			userPasswordField.setText("");
 		} else {
 			adminField.setText(databasePageData.getPostgresAdmin());

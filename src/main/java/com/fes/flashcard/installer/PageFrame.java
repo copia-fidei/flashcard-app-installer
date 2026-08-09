@@ -9,7 +9,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 
 public class PageFrame extends JFrame {
@@ -31,7 +35,7 @@ public class PageFrame extends JFrame {
 		setVisible(true);
 	}
 
-	// TODO add another panel around the scollpane
+	// TODO add another panel around the scrollpane
 	private void createUIComponents() {
 		pageTitleListScrollPane = new JScrollPane();
 		pageTitleListScrollPane.getViewport().setBackground(Color.WHITE);
