@@ -78,7 +78,7 @@ public class Karaf {
 	public void stop() throws IOException, InterruptedException, ErrorCode {
 		runSuccessfully(stopProgram);
 
-		SECONDS.sleep(1); // stopping actually takes time
+		SECONDS.sleep(3); // stopping actually takes time
 	}
 
 	/// throws if the process returns a non-zero exit code

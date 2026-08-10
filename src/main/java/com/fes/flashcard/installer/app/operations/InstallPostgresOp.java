@@ -3,7 +3,7 @@ package com.fes.flashcard.installer.app.operations;
 import com.fes.flashcard.installer.TextBuilder;
 import com.fes.flashcard.installer.WriterAdapter;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
-import com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState;
+import com.fes.flashcard.installer.app.pages.PostgresState;
 import com.fes.flashcard.installer.app.pages.RootPasswordPageData;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.swing.DecisionDialog;

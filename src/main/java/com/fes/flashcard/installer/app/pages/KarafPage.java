@@ -107,7 +107,7 @@ public class KarafPage extends Page {
 
 	@Override
 	public void updateDependantValues() {
-		fullPathText.setText(String.format("Resources wird nach %s/%s installiert.", fileChooser.getSelectedFile().toString(), karafPageData.getFolderName()));
+		fullPathText.setText(String.format("Karaf wird nach %s/%s installiert.", fileChooser.getSelectedFile().toString(), karafPageData.getFolderName()));
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package com.fes.flashcard.installer.app.pages;
 import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.TestFrames;
 import com.fes.flashcard.installer.app.Database;
-import com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState;
 import com.fes.flashcard.installer.page.Page;
 import com.fes.flashcard.installer.swing.DocumentAdapter;
 
@@ -22,6 +21,7 @@ import java.awt.Insets;
 import java.awt.event.ItemListener;
 import java.io.IOException;
 
+import static com.fes.flashcard.installer.app.Database.PostgreSQL;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
@@ -64,6 +64,7 @@ public class DatabasePage extends Page {
 		return "Datenbank und Version auswählen";
 	}
 
+	// For testing
 	static void main() {
 		EventQueue.invokeLater(() -> {
 			var pageDataPool = new PageDataPool();
@@ -73,29 +74,6 @@ public class DatabasePage extends Page {
 			page.willBecomeVisible();
 			TestFrames.showComponent("Database Configuration", page.content);
 		});
-	}
-
-	// TODO implement for H2 too
-	private void findOutIsPostgresInstalled(String[] versions) {
-		for (String version : versions) {
-			try {
-				var process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", "postgresql" + "-" + version).start();
-				process.waitFor();
-
-				String status;
-				try (var reader = process.inputReader()) {
-					status = reader.readAllAsString();
-				}
-				if (status.startsWith("ii")) {
-					databasePageData.getPostgresInstallStates().put(version, PostgresState.ALREADY_INSTALLED);
-				} else {
-					databasePageData.getPostgresInstallStates().put(version, PostgresState.NOT_INSTALLED);
-				}
-			} catch (IOException | InterruptedException e) {
-				log.log(WARNING, "Failed to find out if Postgres packages are installed", e);
-			}
-
-		}
 	}
 
 	@Override
@@ -151,7 +129,7 @@ public class DatabasePage extends Page {
 
 			@Override
 			protected Void doInBackground() {
-				findOutIsPostgresInstalled(getVersions(Database.PostgreSQL));
+				findOutIsPostgresInstalled();
 				return null;
 			}
 
@@ -160,6 +138,28 @@ public class DatabasePage extends Page {
 				versionsComboBox.repaint();
 			}
 		}.execute();
+	}
+
+	private void findOutIsPostgresInstalled() {
+		for (String version : databasePageData.getPostgresVersions()) {
+			try {
+				var process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", "postgresql" + "-" + version).start();
+				process.waitFor();
+
+				String status;
+				try (var reader = process.inputReader()) {
+					status = reader.readAllAsString();
+				}
+				if (status.startsWith("ii")) {
+					databasePageData.getPostgresInstallStates().put(version, PostgresState.ALREADY_INSTALLED);
+				} else {
+					databasePageData.getPostgresInstallStates().put(version, PostgresState.NOT_INSTALLED);
+				}
+			} catch (IOException | InterruptedException e) {
+				log.log(WARNING, "Failed to find out if Postgres packages are installed", e);
+			}
+
+		}
 	}
 
 	protected void addListeners() {
@@ -241,7 +241,7 @@ public class DatabasePage extends Page {
 		String[] versions = getVersions(dbImpl);
 		versionsComboBox.setModel(new DefaultComboBoxModel<>(versions));
 
-		boolean isPostgres = dbImpl == Database.PostgreSQL;
+		boolean isPostgres = dbImpl == PostgreSQL;
 		portField.setEnabled(isPostgres);
 		hostField.setEnabled(isPostgres);
 		userField.setEnabled(isPostgres);
@@ -275,11 +275,9 @@ public class DatabasePage extends Page {
 			JLabel label   = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			String version = (String) value;
 
-			Database dbImpl = databasePageData.getDatabaseImplementation();
-
-			// TODO for H2 too
-			if (dbImpl == Database.PostgreSQL && databasePageData.getPostgresInstallStates().containsKey(version)) {
-				PostgresState isInstalled = databasePageData.getPostgresInstallStates().get(version);
+			var installStates = databasePageData.getPostgresInstallStates();
+			if (databasePageData.getDatabaseImplementation() == PostgreSQL && installStates.containsKey(version)) {
+				PostgresState isInstalled = installStates.get(version);
 				String        statusText  = isInstalled == PostgresState.ALREADY_INSTALLED || isInstalled == PostgresState.INSTALLED_BY_INSTALLER ? "(bereits installiert)" : "(nicht installiert)";
 				label.setText(version + " " + statusText);
 			}

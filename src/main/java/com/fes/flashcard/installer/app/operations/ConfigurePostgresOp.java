@@ -4,7 +4,7 @@ import com.fes.flashcard.installer.TextBuilder;
 import com.fes.flashcard.installer.app.AuthMethod;
 import com.fes.flashcard.installer.app.Postgres;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
-import com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState;
+import com.fes.flashcard.installer.app.pages.PostgresState;
 import com.fes.flashcard.installer.operation.ErrorCode;
 import com.fes.flashcard.installer.operation.Operation;
 
@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 import static com.fes.flashcard.installer.Temporary.use;
 import static com.fes.flashcard.installer.app.Resources.POSTGRES_INIT_SQL;
 import static com.fes.flashcard.installer.app.Resources.getTmpFile;
-import static com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState.INSTALLED_BY_INSTALLER;
-import static com.fes.flashcard.installer.app.pages.DatabasePageData.PostgresState.NOT_INSTALLED;
+import static com.fes.flashcard.installer.app.pages.PostgresState.INSTALLED_BY_INSTALLER;
+import static com.fes.flashcard.installer.app.pages.PostgresState.NOT_INSTALLED;
 import static java.sql.DriverManager.getConnection;
 import static java.text.MessageFormat.format;
 

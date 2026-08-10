@@ -15,8 +15,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 
+import static java.lang.Thread.currentThread;
+import static java.util.Arrays.stream;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 
+// TODO show only postgres versions that can be installed on the current Ubuntu
 public class DatabasePageData extends PageData {
 
 
@@ -42,8 +47,9 @@ public class DatabasePageData extends PageData {
 	private static final String DEFAULT_SELECTED_H2_VERSION       = "2.4";
 
 	// version options
-	private static final String[] POSTGRES_VERSIONS = {"14", "15", "16", "17", "18"};
-	private static final String[] H2_VERSIONS       = {"2.2", "2.3", "2.4"};
+	private static final String[] POSTGRES_VERSIONS_ALL       = {"10", "11", "12", "13", "14", "15", "16", "17", "18"};
+	private static final String[] POSTGRES_VERSIONS_AVAILABLE = getAvailablePostgresVersions();
+	private static final String[] H2_VERSIONS                 = {"2.2.224"};
 
 	// values
 	private       Database database                = Database.PostgreSQL;
@@ -65,6 +71,26 @@ public class DatabasePageData extends PageData {
 		super(pageDataPool);
 	}
 
+	private static String[] getAvailablePostgresVersions() {
+		return stream(POSTGRES_VERSIONS_ALL).filter(DatabasePageData::isPostgresVersionAvailable)
+		                                    .toArray(String[]::new);
+	}
+
+	private static boolean isPostgresVersionAvailable(String version) {
+		try {
+			Process process = new ProcessBuilder("apt-cache", "policy", "postgresql-" + version).start();
+			String  output;
+			try (var reader = process.inputReader()) {
+				output = reader.readAllAsString();
+			}
+			process.waitFor();
+			return output.lines().count() > 1; // If the package does not exist the output will have only one line
+		} catch (IOException | InterruptedException e) {
+			getLogger(DatabasePageData.class.getName()).log(SEVERE, "Could not determine availability of PostgreSQL " + version, e);
+			return false;
+		}
+	}
+
 	@Override
 	public void load() {
 		database = Database.valueOf(preferences.get(KEY_TYPE, Database.PostgreSQL.name()));
@@ -75,6 +101,7 @@ public class DatabasePageData extends PageData {
 		postgresPort = preferences.get(KEY_POSTGRES_PORT, DEFAULT_POSTGRES_PORT);
 		postgresUserPassword = preferences.get(KEY_POSTGRES_USER_PASSWORD, DEFAULT_POSTGRES_USER_PASSWORD);
 	}
+
 
 	@Override
 	public void save() {
@@ -119,15 +146,15 @@ public class DatabasePageData extends PageData {
 
 		if (database == Database.PostgreSQL) {
 			if (postgresPort.isBlank()) {
-				results.add(new ValidationResult("Leerer Port", "Port darf nicht leer sein", 1));
+				results.addError("Leerer Port", "Port darf nicht leer sein", 1);
 			} else {
 				try {
 					int portNum = Integer.parseInt(postgresPort);
 					if (portNum < 1 || portNum > 65535) {
-						results.add(new ValidationResult("Ungültiger Port", "Port muss zwischen 1 und 65535 liegen", 0));
+						results.addError("Ungültiger Port", "Port muss zwischen 1 und 65535 liegen", 0);
 					}
 				} catch (NumberFormatException e) {
-					results.add(new ValidationResult("Ungültiger Port", "Port muss eine gültige Zahl sein", 0));
+					results.addError("Ungültiger Port", "Port muss eine gültige Zahl sein", 0);
 				}
 			}
 			if (isPostgresInstalled()) {
@@ -151,7 +178,7 @@ public class DatabasePageData extends PageData {
 		try {
 			Optional<String> adminAuthMethodOpt = postgres.getAuthMethod(postgresAdmin, "local", "postgres");
 			if (adminAuthMethodOpt.isEmpty()) {
-				log.severe("Keine Authentifizierungsmöglichkeit gefunden");
+				log.severe("Keine Authentifizierungsmöglichkeit gefunden für user=" + postgresAdmin + " connectionType=local" + " database=postgres in PostgreSQL Datenbank Version " + selectedPostgresVersion);
 				return;
 			}
 			String adminAuthMethod = adminAuthMethodOpt.get();
@@ -172,7 +199,7 @@ public class DatabasePageData extends PageData {
 				}
 			}
 		} catch (IOException | InterruptedException e) {
-			log.log(Level.SEVERE, "Fehler beim Validieren des Administratorpassworts", e);
+			log.log(SEVERE, "Fehler beim Validieren des Administratorpassworts", e);
 		}
 	}
 
@@ -211,33 +238,32 @@ public class DatabasePageData extends PageData {
 	}
 
 	private boolean canConnectToPostgresAdminByPassword() {
-		try {
-			var pb = new ProcessBuilder("sudo", "--preserve-env=PGPASSWORD", "-u", postgresAdmin, "psql", "-c", "SELECT 1;");
-			pb.environment().put("PGPASSWORD", postgresAdminPassword);
-			var     process  = pb.start();
-			boolean finished = process.waitFor(2, SECONDS);
-			if (finished) {
-				return process.exitValue() == 0;
-			}
-		} catch (IOException | InterruptedException e) {
-			log.warning("Verbindung zu postgres fehlgeschlagen: " + e.getMessage());
-		}
-		return false;
+		return execute(new String[]{"sudo", "--preserve-env=PGPASSWORD", "-u", postgresAdmin, "psql", "-c", "SELECT 1;"}, postgresAdminPassword, "Verbindung zu " + postgresAdmin + " fehlgeschlagen");
 	}
 
 	private boolean connectUser() {
+		return execute(new String[]{"psql", "-U", postgresUser, "-h", "localhost", "-d", dataSourceName, "-c", "SELECT 1;"}, postgresUserPassword, "Verbindung zu " + postgresUser + " fehlgeschlagen");
+	}
+
+	private boolean execute(String[] command, String password, String error) {
 		try {
-			var pb = new ProcessBuilder("psql", "-U", postgresUser, "-h", "localhost", "-d", dataSourceName, "-c", "SELECT 1;");
-			pb.environment().put("PGPASSWORD", postgresUserPassword);
-			var     process  = pb.start();
-			boolean finished = process.waitFor(2, SECONDS);
-			if (finished) {
-				return process.exitValue() == 0;
+			var pb = new ProcessBuilder(command);
+			pb.environment().put("PGPASSWORD", password);
+			var process = pb.start();
+			if (!process.waitFor(2, SECONDS)) {
+				process.destroy();
+				log.warning(error + ": Zeitüberschreitung");
+				return false;
 			}
-		} catch (IOException | InterruptedException e) {
-			log.warning("Verbindung zu " + postgresUser + " fehlgeschlagen: " + e.getMessage());
+			return process.exitValue() == 0;
+		} catch (IOException e) {
+			log.warning(error + ": " + e.getMessage());
+			return false;
+		} catch (InterruptedException e) {
+			currentThread().interrupt();
+			log.warning(error + ": Vorgang wurde unterbrochen");
+			return false;
 		}
-		return false;
 	}
 
 	// Getters and Setters
@@ -314,7 +340,7 @@ public class DatabasePageData extends PageData {
 	}
 
 	public String[] getPostgresVersions() {
-		return POSTGRES_VERSIONS;
+		return POSTGRES_VERSIONS_AVAILABLE;
 	}
 
 	public String[] getH2Versions() {
@@ -325,21 +351,9 @@ public class DatabasePageData extends PageData {
 		return dataSourceName;
 	}
 
-
-	// TODO reset after apply
-	// TODO threading issues?
 	private final Map<String, PostgresState> postgresInstallStates = new HashMap<>();
 
 	public Map<String, PostgresState> getPostgresInstallStates() {
 		return postgresInstallStates;
 	}
-
-	public enum PostgresState {
-		NOT_INSTALLED,
-		/// program has been installed or reinstalled by the installer
-		INSTALLED_BY_INSTALLER,
-		/// program had been already installed before this installer started
-		ALREADY_INSTALLED
-	}
-
 }

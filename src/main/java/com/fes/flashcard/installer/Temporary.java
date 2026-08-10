@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import static java.util.logging.Logger.getLogger;
 
-// TODO better name
 public interface Temporary {
 
 	interface ThrowingConsumer<T> {

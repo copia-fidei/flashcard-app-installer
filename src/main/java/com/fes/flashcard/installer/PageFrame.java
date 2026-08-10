@@ -3,6 +3,7 @@ package com.fes.flashcard.installer;
 import com.fes.flashcard.installer.page.Page;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,19 +12,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
 
 public class PageFrame extends JFrame {
 
 	private JPanel        content;
 	private PageTitleList pageTitleList;
-	private JPanel      pageContent;
-	private ButtonBar   buttonBar;
-	private JLabel      pageDescription;
-	private JScrollPane pageTitleListScrollPane;
+	private JPanel        pageContent;
+	private ButtonBar     buttonBar;
+	private JLabel        pageDescription;
+	private JScrollPane   pageTitleListScrollPane;
 
 	public PageFrame() {
 		$$$setupUI$$$();
@@ -35,13 +36,17 @@ public class PageFrame extends JFrame {
 		setVisible(true);
 	}
 
-	// TODO add another panel around the scrollpane
 	private void createUIComponents() {
 		pageTitleListScrollPane = new JScrollPane();
 		pageTitleListScrollPane.getViewport().setBackground(Color.WHITE);
 		pageTitleListScrollPane.setBackground(Color.WHITE);
-		pageTitleListScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		pageTitleListScrollPane.setViewportBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pageTitleList = new PageTitleList();
+
+		// page title list is note yet filled, that is why we have to set dimensions
+		pageTitleListScrollPane.setPreferredSize(new Dimension(100, 0));
+		pageTitleListScrollPane.setMinimumSize(new Dimension(100, 0));
+		pageTitleListScrollPane.setMinimumSize(pageTitleListScrollPane.getPreferredSize());
 		pageTitleList.setBackground(Color.WHITE);
 	}
 
@@ -122,6 +127,9 @@ public class PageFrame extends JFrame {
 		gbc.ipadx = 50;
 		gbc.ipady = 50;
 		content.add(pageTitleListScrollPane, gbc);
+		pageTitleList.setEnabled(false);
+		final DefaultListModel defaultListModel1 = new DefaultListModel();
+		pageTitleList.setModel(defaultListModel1);
 		pageTitleList.setValueIsAdjusting(false);
 		pageTitleListScrollPane.setViewportView(pageTitleList);
 	}

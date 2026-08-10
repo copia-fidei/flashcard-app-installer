@@ -10,10 +10,11 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
-// TODO make process cancellable always
+import static java.util.logging.Logger.getLogger;
+
 public abstract class Operation extends SwingWorker<String, String> implements PropertyChangeListener {
 
-	protected final Logger log = Logger.getLogger(getClass().getName());
+	protected final Logger log = getLogger(getClass().getName());
 
 	private OperationStatus status = OperationStatus.NOT_STARTED;
 
