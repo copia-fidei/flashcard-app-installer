@@ -190,7 +190,7 @@ public class DatabasePageData extends PageData {
 				return;
 			}
 			if (adminAuthMethod.equals("peer")) {
-				validationResults.add("Kein Administratorpasswort erforderlich.", "Die Authentifizierungsmethode peer ist aktiv, welche kein Passwort erfordert. Die Korrektheit des Administratorpassworts kann daher nicht ermittelt werden. Das Administratorpasswort bleibt unverändert.", Severity.INFO);
+				validationResults.add("Kein Administratorpasswort erforderlich.", "Die Authentifizierungsmethode peer ist aktiv, welche kein Passwort erfordert. Die Korrektheit des Administratorpassworts kann daher nicht ermittelt werden. Das Administratorpasswort bleibt jedoch unverändert.", Severity.INFO);
 				return;
 			}
 			if (AuthMethod.isPasswordBased(adminAuthMethod)) {

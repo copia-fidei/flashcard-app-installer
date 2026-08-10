@@ -3,7 +3,7 @@ package com.fes.flashcard.installer.page;
 import com.fes.flashcard.installer.toast.StatusBar;
 import com.fes.flashcard.installer.toast.Toast;
 import com.fes.flashcard.installer.validation.ValidationResults;
-import com.fes.flashcard.installer.validation.ValidationResultsDialog;
+import com.fes.flashcard.installer.validation.dialog.ValidationResultsDialog;
 
 import javax.swing.JComponent;
 import javax.swing.JLayer;

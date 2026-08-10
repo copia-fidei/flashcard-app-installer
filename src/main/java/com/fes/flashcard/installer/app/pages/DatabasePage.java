@@ -243,6 +243,7 @@ public class DatabasePage extends Page {
 
 		boolean isPostgres = dbImpl == PostgreSQL;
 		portField.setEnabled(isPostgres);
+		adminPasswordField.setEnabled(isPostgres);
 		hostField.setEnabled(isPostgres);
 		userField.setEnabled(isPostgres);
 		userPasswordField.setEnabled(isPostgres);

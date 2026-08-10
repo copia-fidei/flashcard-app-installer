@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-// TODO unused, maybe remove
 public class PageDataPool {
 
     private final List<PageData> pageDataList = new ArrayList<>();
@@ -17,7 +16,6 @@ public class PageDataPool {
         pageDataList.add(pageData);
     }
 
-    // TODO make static maybe
     public <T extends PageData> Optional<T> getPageData(Class<T> pageDataClass) {
         return pageDataList.stream().filter(pageDataClass::isInstance).map(pageDataClass::cast).findFirst();
     }
