@@ -21,9 +21,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Logger.getLogger;
 
-// TODO show only postgres versions that can be installed on the current Ubuntu
 public class DatabasePageData extends PageData {
-
 
 	// Preferences keys
 	private static final String KEY_TYPE                      = "db.type";

@@ -81,7 +81,9 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 		} catch (ExecutionException e) {
 			fireOperationStatusChanged(OperationStatus.ERROR);
 
-			process(List.of(e.getLocalizedMessage()));
+			// This should prevent the exception type from being included
+			var cause = e.getCause();
+			process(List.of(cause != null ? cause.getLocalizedMessage() : e.getLocalizedMessage()));
 		}
 	}
 
@@ -143,9 +145,9 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 		try (var stdout = process.inputReader(); var stderr = process.errorReader()) {
 			stdout.transferTo(out);
 			stderr.transferTo(err);
-		} catch (Cancelled _) {
+		} catch (Cancelled e) {
 			process.destroy();
-			println("Cancelled process with id " + process.pid()); // TODO localize
+			throw Cancelled.process(process, e);
 		}
 		return new Result(out, err, process.waitFor());
 	}

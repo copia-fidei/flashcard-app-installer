@@ -22,7 +22,7 @@ public class InstallH2Operation extends Operation {
 	private final String dataSourceName;
 
 	public InstallH2Operation(KarafPageData karafPageData, DatabasePageData databasePageData) {
-		super("H2 Database", "Installiere H2 Datenbank und DataSource");
+		super("H2 Installation", "Installiere H2 Datenbank und DataSource");
 
 		this.karafPageData = karafPageData;
 		this.databasePageData = databasePageData;

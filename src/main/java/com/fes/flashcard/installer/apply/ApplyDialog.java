@@ -40,7 +40,7 @@ public class ApplyDialog extends JDialog {
 	private final JButton               startButton         = new JButton("Start");
 
 	public ApplyDialog(Frame parent, List<Operation> operations) {
-		super(parent, "Ausführung", true);
+		super(parent, "Durchführung", true);
 
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.operations = operations;

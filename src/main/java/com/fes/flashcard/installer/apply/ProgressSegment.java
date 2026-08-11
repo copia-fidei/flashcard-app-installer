@@ -6,9 +6,10 @@ import com.fes.flashcard.installer.operation.OperationStatus;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import java.awt.*;
+import java.awt.BorderLayout;
 
+import static com.fes.flashcard.installer.operation.OperationStatusPresentation.getDescription;
+import static com.fes.flashcard.installer.operation.OperationStatusPresentation.getIcon;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
@@ -16,10 +17,10 @@ import static javax.swing.SwingUtilities.windowForComponent;
 
 public class ProgressSegment extends JPanel {
 
-	private final Operation    operation;
-	private final JButton      cancelButton  = new SVGButton("icons/svgrepo/cancel-svgrepo-com.svg", 20);
-	private final JProgressBar progressBar   = new JProgressBar(0, 100);
-	private final JButton      detailsButton = new JButton("...");
+	private final Operation           operation;
+	private final JButton             cancelButton  = new SVGButton("icons/svgrepo/cancel-svgrepo-com.svg", 20);
+	private final ProgressBarWithIcon progressBar   = new ProgressBarWithIcon(0, 100);
+	private final JButton             detailsButton = new JButton("...");
 
 	public ProgressSegment(Operation operation) {
 		this.operation = operation;
@@ -64,9 +65,10 @@ public class ProgressSegment extends JPanel {
 	private void updateGUI() {
 		OperationStatus status   = operation.getStatus();
 		int             progress = operation.getProgress();
-
 		progressBar.setValue(progress);
-		progressBar.setString(status.getIcon() + " " + status.getDescription() + " (" + progress + "%)");
+		progressBar.setIcon(getIcon(status));
+		progressBar.setString(operation.getTitle() + " – " + getDescription(status) + " (" + progress + "%)");
 		cancelButton.setEnabled(status == OperationStatus.RUNNING);
 	}
+
 }

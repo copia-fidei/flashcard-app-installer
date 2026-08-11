@@ -6,6 +6,8 @@ import static javax.swing.SwingUtilities.invokeLater;
 
 public class Main {
 
+	public static final String APP_TITLE = "Flashcard Anwendung Installer";
+
 	static void main(String[] args) {
 //		var karafPageData    = new KarafPageData(null);
 //		var karafPage        = new KarafPage(karafPageData, () -> {});
@@ -18,13 +20,14 @@ public class Main {
 
 		invokeLater(() -> {
 			var pageFrame = new PageFrame();
+			pageFrame.setTitle(APP_TITLE);
 			var pagePool  = new AppPagePool(pageFrame);
 
 			pagePool.init();
 			pagePool.showFirstPage();
 			pageFrame.setLocationRelativeTo(null);
 			pageFrame.pack();
-					pageFrame.setVisible(true);
+			pageFrame.setVisible(true);
 
 //			ApplyDialog applyDialog =
 //					new ApplyDialog(pageFrame, List.of(

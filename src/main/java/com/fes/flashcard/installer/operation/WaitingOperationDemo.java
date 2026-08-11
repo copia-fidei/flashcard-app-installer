@@ -5,10 +5,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.List;
 
-import static java.awt.BorderLayout.*;
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.NORTH;
+import static java.awt.BorderLayout.SOUTH;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -35,12 +38,13 @@ class WaitingOperationDemo {
 
 				operation.addListener(this);
 				cancelButton.addActionListener(_ -> operation.cancel(true));
-				textArea.setText(operation.getStatus().getDisplayText() + "\n");
+
+				textArea.setText(OperationStatusPresentation.getDescription(operation.getStatus()) + "\n");
 			}
 
 			@Override
 			public void statusChanged(OperationStatus status) {
-				textArea.append(status.getDisplayText() + "\n");
+				textArea.append(OperationStatusPresentation.getDescription(status) + "\n");
 			}
 
 			@Override

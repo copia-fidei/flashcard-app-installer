@@ -17,7 +17,7 @@ public class CreatePostgresDataSourceOp extends Operation {
 	private final String dataSourceName;
 
 	public CreatePostgresDataSourceOp(KarafPageData karafPageData, DatabasePageData databasePageData) {
-		super("Karaf DataSource", "Erstelle Karaf JDBC DataSource");
+		super("PostgreSQL DataSource erstellen", "Erstelle Karaf JDBC DataSource");
 
 		this.karafPageData = karafPageData;
 		this.databasePageData = databasePageData;

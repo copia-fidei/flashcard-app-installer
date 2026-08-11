@@ -1,6 +1,7 @@
 package com.fes.flashcard.installer;
 
 import com.fes.flashcard.installer.app.Resources;
+import com.fes.flashcard.installer.app.pages.KarafPageData;
 
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
@@ -13,6 +14,7 @@ import static java.util.logging.Level.WARNING;
 import static java.util.logging.Logger.getLogger;
 
 /**
+ * For debugging. Only works in the IDE.
  * Lists contents of directories in a tree-like format.
  *
  * Needs the 'tar' and 'tree' commands to be installed.
@@ -60,6 +62,6 @@ public interface Tree {
 
 	static void main() throws InterruptedException, IOException, URISyntaxException {
 		printTarGzFile(Path.of(Resources.KARAF.toURI()));
-		//		printDirectory(new KarafPageData(null).getKarafInstallationDir());
+		printDirectory(new KarafPageData(null).getKarafInstallationDir());
 	}
 }

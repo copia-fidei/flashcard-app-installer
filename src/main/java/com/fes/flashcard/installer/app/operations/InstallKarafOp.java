@@ -4,7 +4,7 @@ package com.fes.flashcard.installer.app.operations;
 import com.fes.flashcard.installer.DangerousPaths;
 import com.fes.flashcard.installer.Directory;
 import com.fes.flashcard.installer.PosixConverter;
-import com.fes.flashcard.installer.TarGz;
+import com.fes.flashcard.installer.TarGzFile;
 import com.fes.flashcard.installer.TextBuilder;
 import com.fes.flashcard.installer.app.Resources;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
@@ -39,27 +39,28 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class InstallKarafOp extends Operation {
 
-	private final Path directoryToInstallKarafInto;
+	/// the directory where Karaf will be installed into
+	private final Path karafDir;
 
 	public InstallKarafOp(KarafPageData karafPageData) {
-		super("Karaf", "Installiere Apache Karaf 4.4.11");
+		super("Karaf Installation", "Installiere Apache Karaf 4.4.11");
 
-		directoryToInstallKarafInto = karafPageData.getKarafInstallationDir();
+		karafDir = karafPageData.getKarafInstallationDir();
 	}
 
 	public String getDescription() {
 		var test = new TextBuilder();
 		test.line("Installiere Apache Karaf 4.4.11");
-		test.line("Prüfe, ob in " + directoryToInstallKarafInto + " bereits eine Karaf-Installation vorhanden ist");
-		test.line("Entferne den bestehenden Inhalt von " + directoryToInstallKarafInto + ", falls vorhanden");
-		test.line("Entpacke " + KARAF_ZIP_NAME + " nach " + directoryToInstallKarafInto);
+		test.line("Prüfe, ob in " + karafDir + " bereits eine Karaf-Installation vorhanden ist");
+		test.line("Entferne den bestehenden Inhalt von " + karafDir + ", falls vorhanden");
+		test.line("Entpacke " + KARAF_ZIP_NAME + " nach " + karafDir);
 		return test.toString();
 	}
 
 	@Override
 	protected String doInBackground() throws Exception {
 		setProgress(0);
-		DangerousPaths.check(directoryToInstallKarafInto);
+		DangerousPaths.check(karafDir);
 		setProgress(1);
 		println("Prüfe ob Karaf bereits installiert ist...");
 		Installed state = isKarafInstalled();
@@ -113,7 +114,7 @@ public class InstallKarafOp extends Operation {
 					Es kann entweder eine Neuinstallation durchgeführt oder die vorhandene Installation weiterverwendet werden (empfohlen).
 					
 					Achtung: Bei einer Neuinstallation werden alle vorhandenen Daten gelöscht.
-					""".formatted(directoryToInstallKarafInto);
+					""".formatted(karafDir);
 		} else {
 			return """
 					Im Verzeichnis %s wurde eine unvollständige Karaf-Installation gefunden.
@@ -122,7 +123,7 @@ public class InstallKarafOp extends Operation {
 					Es kann entweder eine Neuinstallation durchgeführt (empfohlen) oder die vorhandene unvollständige Installation weiterverwendet werden.
 					
 					Achtung: Bei einer Neuinstallation werden alle vorhandenen Daten im Verzeichnis gelöscht.
-					""".formatted(directoryToInstallKarafInto);
+					""".formatted(karafDir);
 		}
 	}
 
@@ -130,11 +131,11 @@ public class InstallKarafOp extends Operation {
 	int karafDirFileCount    = 0;
 
 	private Installed isKarafInstalled() throws IOException {
-		if (!exists(directoryToInstallKarafInto)) {
+		if (!exists(karafDir)) {
 			return Installed.NOT;
 		}
-		Set<String> karafTarEntries  = TarGz.getEntriesWithoutTopLevelDirectory(Resources.KARAF.openStream());
-		Set<String> karafDirChildren = new Directory(directoryToInstallKarafInto).getDescendants();
+		Set<String> karafTarEntries  = new TarGzFile(Resources.KARAF).getEntriesWithoutTopLevelDirectory();
+		Set<String> karafDirChildren = new Directory(karafDir).getDescendants();
 		karafTarEntriesCount = karafTarEntries.size();
 		karafDirFileCount = karafDirChildren.size();
 
@@ -147,11 +148,11 @@ public class InstallKarafOp extends Operation {
 	}
 
 	private void installKaraf() throws IOException {
-		println("Erstelle Installationsverzeichnis: " + directoryToInstallKarafInto);
-		createDirectories(directoryToInstallKarafInto);
+		println("Erstelle Installationsverzeichnis: " + karafDir);
+		createDirectories(karafDir);
 		println("Entpacke Karaf: " + KARAF_ZIP_NAME);
-		extractTarGz(Resources.KARAF.openStream(), directoryToInstallKarafInto);
-		println("Karaf entpackt nach " + directoryToInstallKarafInto);
+		extractTarGz(Resources.KARAF.openStream(), karafDir);
+		println("Karaf entpackt nach " + karafDir);
 		println("Karaf erfolgreich installiert.");
 	}
 
@@ -159,9 +160,9 @@ public class InstallKarafOp extends Operation {
 	private void removeKaraf() throws IOException {
 		var counter = new Counter(getProgress(), 50, karafDirFileCount);
 
-		if (exists(directoryToInstallKarafInto)) {
-			println("Lösche Verzeichnis: " + directoryToInstallKarafInto);
-			walkFileTree(directoryToInstallKarafInto, new SimpleFileVisitor<>() {
+		if (exists(karafDir)) {
+			println("Lösche Verzeichnis: " + karafDir);
+			walkFileTree(karafDir, new SimpleFileVisitor<>() {
 
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

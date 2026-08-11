@@ -16,13 +16,12 @@ import static java.nio.file.Files.readAllLines;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 // TODO localize
-// TODO better log messages
 public class ConfigureKarafOp extends Operation {
 
 	private final Path karafLocation;
 
 	public ConfigureKarafOp(KarafPageData karafPageData) {
-		super("Karaf Features", "Installiere Karaf Features");
+		super("Karaf Konfiguration", "Installiere Karaf Features");
 
 		this.karafLocation = karafPageData.getKarafInstallationDir();
 	}

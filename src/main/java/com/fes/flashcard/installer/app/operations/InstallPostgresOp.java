@@ -5,6 +5,7 @@ import com.fes.flashcard.installer.WriterAdapter;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.PostgresState;
 import com.fes.flashcard.installer.app.pages.RootPasswordPageData;
+import com.fes.flashcard.installer.operation.Cancelled;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.swing.DecisionDialog;
 import com.fes.flashcard.installer.swing.DecisionDialog.Option;
@@ -25,7 +26,7 @@ public class InstallPostgresOp extends Operation {
 	private final String postgresPackageName;
 
 	public InstallPostgresOp(DatabasePageData databasePageData, RootPasswordPageData rootPasswordPageData) {
-		super("PostgreSQL", "Installiere PostgreSQL");
+		super("PostgreSQL Installation", "Installiere PostgreSQL");
 
 		this.databasePageData = databasePageData;
 		this.rootPasswordPageData = rootPasswordPageData;
@@ -148,8 +149,7 @@ public class InstallPostgresOp extends Operation {
 				public void write(char @NotNull [] cbuf, int off, int len) throws IOException {
 					if (isCancelled()) {
 						purge.destroy();
-						println("Cancelled process with id " + purge.pid()); // TODO localize
-						return;
+						throw Cancelled.process(purge);
 					}
 					var str = new String(cbuf, off, len);
 

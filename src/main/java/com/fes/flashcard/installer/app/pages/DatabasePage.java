@@ -28,7 +28,6 @@ import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
 import static java.util.logging.Level.WARNING;
 
-// TODO tooltips
 public class DatabasePage extends Page {
 
 	private final DatabasePageData databasePageData;

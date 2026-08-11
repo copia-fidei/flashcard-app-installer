@@ -27,12 +27,11 @@ public class KarafPage extends Page {
 
 	private final JTextField   parentDirField  = new JTextField(50);
 	private final JTextField   folderNameField = new JTextField(50);
-	private final JTextArea    fullPathText    = new JTextArea(2, 50); // TODO maybe text area
+	private final JTextArea    fullPathText    = new JTextArea(2, 50);
 	private final JFileChooser fileChooser     = new JFileChooser();
 
 	private final JButton selectParentDirBtn = new JButton("Durchsuchen...");
 
-	// TODO file chooser should not remembered last selected location, when clicking cancel
 	private final ActionListener  selectButtonListener = _ -> {
 		if (fileChooser.showOpenDialog(getContent()) == APPROVE_OPTION) {
 			pageChanged();

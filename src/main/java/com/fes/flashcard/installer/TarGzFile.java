@@ -8,8 +8,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -17,44 +16,24 @@ import java.util.logging.Logger;
 
 import static java.util.logging.Logger.getLogger;
 
-public interface TarGz {
+public class TarGzFile {
 
-	Logger LOG = getLogger(TarGz.class.getName());
+	private static final Logger LOG = getLogger(TarGzFile.class.getName());
+
+	private final InputStream input;
+
+	public TarGzFile(InputStream input) { this.input = input; }
+
+	public TarGzFile(URL input) throws IOException {
+		this(input.openStream());
+	}
 
 	/**
 	 * @return the entries of the tar.gz file
 	 */
-	static Set<String> getEntries(Path zipFile) throws IOException {
-		return getEntries(Files.newInputStream(zipFile));
-	}
-
-	/**
-	 * Gets all entries of the tar.gz file.
-	 * The top level directory that all entries have is removed.
-	 *
-	 * @return the entries without the top level directory
-	 */
-	static Set<String> getEntriesWithoutTopLevelDirectory(Path tarGzFile) throws IOException {
-		return getEntriesWithoutTopLevelDirectory(Files.newInputStream(tarGzFile));
-	}
-
-	static Set<String> getEntriesWithoutTopLevelDirectory(InputStream zipFile) throws IOException {
+	public Set<String> getEntries() throws IOException {
 		var entries = new HashSet<String>();
-		try (var tarGzArchive = newTarGzArchiveInputStream(zipFile)) {
-			TarArchiveEntry entry;
-			while ((entry = tarGzArchive.getNextEntry()) != null) {
-				entries.add(getEntryWithoutTopLevelDirectory(entry));
-			}
-		} catch (IOException e) {
-			LOG.log(Level.WARNING, "Failed to read tar.gz file", e);
-			throw e;
-		}
-		return entries;
-	}
-
-	static Set<String> getEntries(InputStream input) throws IOException {
-		var entries = new HashSet<String>();
-		try (var tarGzArchive = newTarGzArchiveInputStream(input)) {
+		try (var tarGzArchive = newTarGzArchiveInputStream()) {
 			TarArchiveEntry entry;
 			while ((entry = tarGzArchive.getNextEntry()) != null) {
 				entries.add(entry.getName());
@@ -66,8 +45,25 @@ public interface TarGz {
 		return entries;
 	}
 
-	private static TarArchiveInputStream newTarGzArchiveInputStream(InputStream tarGzFile) throws IOException {
-		return new TarArchiveInputStream(new GzipCompressorInputStream(new BufferedInputStream(tarGzFile)));
+	/**
+	 * Gets all entries of the tar.gz file. * The top level directory that all entries have is removed. * * @return the entries without the top level directory
+	 */
+	public Set<String> getEntriesWithoutTopLevelDirectory() throws IOException {
+		var entries = new HashSet<String>();
+		try (var tarGzArchive = newTarGzArchiveInputStream()) {
+			TarArchiveEntry entry;
+			while ((entry = tarGzArchive.getNextEntry()) != null) {
+				entries.add(getEntryWithoutTopLevelDirectory(entry));
+			}
+		} catch (IOException e) {
+			LOG.log(Level.WARNING, "Failed to read tar.gz file", e);
+			throw e;
+		}
+		return entries;
+	}
+
+	private TarArchiveInputStream newTarGzArchiveInputStream() throws IOException {
+		return new TarArchiveInputStream(new GzipCompressorInputStream(new BufferedInputStream(input)));
 	}
 
 	private static String getEntryWithoutTopLevelDirectory(TarArchiveEntry entry) {
@@ -79,7 +75,8 @@ public interface TarGz {
 		return name;
 	}
 
+
 	static void main() throws IOException {
-		getEntries(Resources.KARAF.openStream()).forEach(IO::println);
+		new TarGzFile(Resources.KARAF.openStream()).getEntries().forEach(IO::println);
 	}
 }

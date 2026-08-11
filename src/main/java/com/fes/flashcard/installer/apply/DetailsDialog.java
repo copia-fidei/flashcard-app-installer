@@ -22,6 +22,9 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.util.List;
 
+import static com.fes.flashcard.installer.operation.OperationStatusPresentation.getDescription;
+import static com.fes.flashcard.installer.operation.OperationStatusPresentation.getIcon;
+import static java.awt.Font.PLAIN;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
@@ -32,7 +35,6 @@ import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.SwingUtilities.windowForComponent;
 
-// TODO do not show exception type
 public class DetailsDialog extends JDialog {
 
 	private final Operation operation;
@@ -61,23 +63,27 @@ public class DetailsDialog extends JDialog {
 
 	private void buildGUI() {
 		setLayout(new GridBagLayout());
+
 		var descriptionLabel    = new JLabel("Beschreibung:");
 		var descriptionTextArea = new JTextArea(3, 20);
+		var descriptionScrollPane = new JScrollPane(descriptionTextArea);
+		var statusTitleLabel      = new JLabel("Status:");
+		var progressTitleLabel = new JLabel("Fortschritt:");
+		var scrollPane = new JScrollPane(progressTextArea);
+		var separator  = new JSeparator(SwingConstants.HORIZONTAL);
+		var buttonPanel = new JPanel();
+
 		descriptionTextArea.setText(operation.getDescription());
 		descriptionTextArea.setEditable(false);
 		descriptionTextArea.setWrapStyleWord(true);
 		descriptionTextArea.setLineWrap(true);
-		var descriptionScrollPane = new JScrollPane(descriptionTextArea);
-		var statusTitleLabel      = new JLabel("Status:");
-		var progressTitleLabel    = new JLabel("Fortschritt:");
+		statusLabel.setFont(statusTitleLabel.getFont().deriveFont(PLAIN));
 		progressTextArea.setEditable(false);
-		var scrollPane = new JScrollPane(progressTextArea);
-		var separator  = new JSeparator(SwingConstants.HORIZONTAL);
-
-		var buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
 		cancelButton.setToolTipText("Bricht diese Operation ab.");
 		closeButton.setToolTipText("Schließt den Dialog, bricht die Operation nicht ab.");
+
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+
 		buttonPanel.add(cancelButton);
 		buttonPanel.add(createRigidArea(new Dimension(10, 0)));
 		buttonPanel.add(closeButton);
@@ -125,8 +131,8 @@ public class DetailsDialog extends JDialog {
 
 	private void updateUI() {
 		OperationStatus status = operation.getStatus();
-		// TODO label text is too thick
-		statusLabel.setText(status.getDisplayText());
+		statusLabel.setIcon(getIcon(status));
+		statusLabel.setText(getDescription(status));
 
 		progressTextArea.setText(getText(operation.getLogs()));
 		progressTextArea.setCaretPosition(progressTextArea.getDocument().getLength());
@@ -134,6 +140,7 @@ public class DetailsDialog extends JDialog {
 		cancelButton.setEnabled(status == OperationStatus.RUNNING);
 	}
 
+	// An improvement could be to use jediterm
 	private static String getText(List<String> logs) {
 		StringBuilder result = new StringBuilder();
 		StringBuilder currentLine = new StringBuilder();
