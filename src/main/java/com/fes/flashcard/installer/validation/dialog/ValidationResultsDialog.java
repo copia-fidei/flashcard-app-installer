@@ -1,5 +1,6 @@
 package com.fes.flashcard.installer.validation.dialog;
 
+import com.fes.flashcard.installer.utilities.Nls;
 import com.fes.flashcard.installer.validation.ValidationResults;
 
 import javax.swing.Box;
@@ -22,10 +23,12 @@ import static javax.swing.BoxLayout.LINE_AXIS;
 
 public class ValidationResultsDialog extends JDialog {
 
+	private static final Nls nls = new Nls(ValidationResultsDialog.class);
+
 	private final ValidationResults validationResults;
 
 	public ValidationResultsDialog(Window parent, ValidationResults validationResults) {
-		super(parent, "Validierungsergebnisse");
+		super(parent, nls.get("ValidationResultsDialog.title"));
 		this.validationResults = validationResults;
 
 		buildGUI();
@@ -52,7 +55,7 @@ public class ValidationResultsDialog extends JDialog {
 
 		var scrollPane = new JScrollPane(table);
 
-		var closeButton = new JButton("Schließen");
+		var closeButton = new JButton(nls.get("ValidationResultsDialog.button.close"));
 		closeButton.addActionListener(_ -> dispose());
 
 		var buttonPanel = new JPanel();

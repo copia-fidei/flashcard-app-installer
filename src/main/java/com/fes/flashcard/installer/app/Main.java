@@ -1,43 +1,31 @@
 package com.fes.flashcard.installer.app;
 
-import com.fes.flashcard.installer.PageFrame;
+import com.fes.flashcard.installer.page.PageFrame;
+import com.fes.flashcard.installer.utilities.Nls;
+
+import java.util.Locale;
 
 import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Main {
 
-	public static final String APP_TITLE = "Flashcard Anwendung Installer";
+	private static final Nls nls = new Nls(Main.class);
 
+	@SuppressWarnings("unused")
 	static void main(String[] args) {
-//		var karafPageData    = new KarafPageData(null);
-//		var karafPage        = new KarafPage(karafPageData, () -> {});
-//		var databasePageData = new DatabasePageData(null);
-//		var databasePage     = new DatabasePage(databasePageData, () -> {});
-//		var javaPageData     = new JavaPageData(null);
-//		var javaPage         = new JavaPage(javaPageData, () -> {});
-//		var rootPwPageData   = new RootPasswordPageData(null);
-//		var rootPwPage       = new RootPasswordPage(rootPwPageData, () -> {});
-
+		Locale.setDefault(Locale.ENGLISH);
 		invokeLater(() -> {
-			var pageFrame = new PageFrame();
-			pageFrame.setTitle(APP_TITLE);
+			var pageFrame = new PageFrame(nls.get("Main.title.app"));
 			var pagePool  = new AppPagePool(pageFrame);
 
 			pagePool.init();
 			pagePool.showFirstPage();
+			pageFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+			pageFrame.setSize(700, 500);
 			pageFrame.setLocationRelativeTo(null);
 			pageFrame.pack();
 			pageFrame.setVisible(true);
-
-//			ApplyDialog applyDialog =
-//					new ApplyDialog(pageFrame, List.of(
-//							new InstallJavaOp(javaPageData),
-//							new InstallKarafOp(karafPageData),
-//							new InstallPostgresOp(databasePageData),
-//							new ConfigureKarafOp(karafPageData),
-//							new ConfigurePostgresOp(databasePageData)
-//						));
-//			applyDialog.setVisible(true);
 		});
 	}
 }

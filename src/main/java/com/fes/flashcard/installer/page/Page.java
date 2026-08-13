@@ -4,6 +4,7 @@ import com.fes.flashcard.installer.toast.StatusBar;
 import com.fes.flashcard.installer.toast.Toast;
 import com.fes.flashcard.installer.validation.ValidationResults;
 import com.fes.flashcard.installer.validation.dialog.ValidationResultsDialog;
+import org.jetbrains.annotations.NonNls;
 
 import javax.swing.JComponent;
 import javax.swing.JLayer;
@@ -33,6 +34,7 @@ import static java.awt.event.MouseEvent.MOUSE_CLICKED;
 import static java.util.logging.Logger.getLogger;
 import static javax.swing.SwingUtilities.windowForComponent;
 
+@NonNls
 public abstract class Page {
 
 	protected final Logger log = getLogger(getClass().getName());
@@ -124,6 +126,7 @@ public abstract class Page {
 
 	public abstract String getDescription();
 
+	/// @return the page content
 	public JComponent getContent() {
 		return statusBarLayer;
 	}
@@ -145,9 +148,12 @@ public abstract class Page {
 			}
 		}
 
-
 		@Override
 		protected void processMouseMotionEvent(MouseEvent e, JLayer<? extends JPanel> layer) {
+			if (latestValidationResults.list().isEmpty()) {
+				mouseIsInsideToast = false;
+				return;
+			}
 			Rectangle bounds          = statusBar.toast().getBounds();
 			boolean   currentlyInside = bounds.contains(e.getPoint());
 			if (currentlyInside != mouseIsInsideToast) {
@@ -162,7 +168,6 @@ public abstract class Page {
 			super.paint(g, c);
 
 			Toast toast = statusBar.toast();
-
 			if (!toast.isVisible()) {
 				return;
 			}
@@ -201,6 +206,7 @@ public abstract class Page {
 		return getTitle();
 	}
 
+	@NonNls
 	private class Validator extends SwingWorker<ValidationResults, Void> {
 
 		@Override

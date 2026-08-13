@@ -1,6 +1,7 @@
 package com.fes.flashcard.installer.app.pages;
 
 import com.fes.flashcard.installer.page.Page;
+import com.fes.flashcard.installer.utilities.Nls;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,6 +20,8 @@ import static java.awt.GridBagConstraints.NONE;
 
 public class RootPasswordPage extends Page {
 
+	private final Nls nls = new Nls(this);
+
 	private final RootPasswordPageData rootpasswordPageData;
 
 	private final JPasswordField passwordField = new JPasswordField(20);
@@ -32,25 +35,26 @@ public class RootPasswordPage extends Page {
 
 	@Override
 	public String getTitle() {
-		return "Rootpasswort";
+		return nls.get("RootPasswordPage.page.title");
 	}
 
 	@Override
 	public String getDescription() {
-		return "Das Rootpasswort des Systems";
+		return nls.get("RootPasswordPage.page.description");
 	}
 
 	@Override
 	public void build() {
-		var description = new JTextArea("Die Installation und Einrichtung der Datenbank muss als Root (sudo) durchgeführt werden.");
+		var description = new JTextArea(nls.get("RootPasswordPage.description.sudoPassword"));
 		description.setLineWrap(true);
 		description.setWrapStyleWord(true);
 		description.setEditable(false);
 		description.setOpaque(false);
-		var label = new JLabel("Passwort (sudo)");
+		description.setFocusable(false);
+		var label = new JLabel(nls.get("RootPasswordPage.label.sudoPassword"));
 
-		content.add(description, new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(label, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(description,   new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(label, 		   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
 		content.add(passwordField, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 
 		// Filler

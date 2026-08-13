@@ -1,7 +1,10 @@
 package com.fes.flashcard.installer.operation;
 
+import org.jetbrains.annotations.NonNls;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+@NonNls
 public class WaitingOperation extends Operation {
 
 	private final int secondsToWait;
@@ -16,7 +19,7 @@ public class WaitingOperation extends Operation {
 	}
 
 	public WaitingOperation(String title, int secondsToWait, boolean throwExceptionAtHalftime) {
-		super(title, "Wait for " + secondsToWait + " seconds");
+		super(title, "Wait for " + secondsToWait + " seconds"); //NON-NLS
 
 		this.secondsToWait = secondsToWait;
 		this.throwExceptionAtHalftime = throwExceptionAtHalftime;
@@ -29,7 +32,7 @@ public class WaitingOperation extends Operation {
 				return "Cancelled";
 			}
 			SECONDS.sleep(1);
-			println("Waited for " + i + " seconds");
+			println("Waited for " + i + " seconds"); //NON-NLS
 			int progress = i * 100 / secondsToWait;
 			setProgress(progress);
 			if (i > secondsToWait / 2 && throwExceptionAtHalftime) {

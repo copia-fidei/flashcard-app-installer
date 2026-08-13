@@ -1,17 +1,17 @@
 package com.fes.flashcard.installer.app.operations;
 
 
-import com.fes.flashcard.installer.DangerousPaths;
-import com.fes.flashcard.installer.Directory;
-import com.fes.flashcard.installer.PosixConverter;
-import com.fes.flashcard.installer.TarGzFile;
-import com.fes.flashcard.installer.TextBuilder;
 import com.fes.flashcard.installer.app.Resources;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
 import com.fes.flashcard.installer.operation.Counter;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.swing.DecisionDialog;
 import com.fes.flashcard.installer.swing.DecisionDialog.Option;
+import com.fes.flashcard.installer.utilities.Directory;
+import com.fes.flashcard.installer.utilities.Nls;
+import com.fes.flashcard.installer.utilities.PosixConverter;
+import com.fes.flashcard.installer.utilities.TarGzFile;
+import com.fes.flashcard.installer.utilities.TextBuilder;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -39,48 +39,50 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class InstallKarafOp extends Operation {
 
+	private final static Nls nls = new Nls(InstallKarafOp.class);
+
 	/// the directory where Karaf will be installed into
 	private final Path karafDir;
 
 	public InstallKarafOp(KarafPageData karafPageData) {
-		super("Karaf Installation", "Installiere Apache Karaf 4.4.11");
+		super(nls.get("InstallKarafOp.title"), nls.get("InstallKarafOp.description"));
 
 		karafDir = karafPageData.getKarafInstallationDir();
 	}
 
 	public String getDescription() {
 		var test = new TextBuilder();
-		test.line("Installiere Apache Karaf 4.4.11");
-		test.line("Prüfe, ob in " + karafDir + " bereits eine Karaf-Installation vorhanden ist");
-		test.line("Entferne den bestehenden Inhalt von " + karafDir + ", falls vorhanden");
-		test.line("Entpacke " + KARAF_ZIP_NAME + " nach " + karafDir);
+		test.line(nls.get("InstallKarafOp.description.installApacheKaraf"));
+		test.line(nls.get("InstallKarafOp.description.checkIfKarafAlreadyInstalled", karafDir));
+		test.line(nls.get("InstallKarafOp.description.removeExistingContent", karafDir));
+		test.line(nls.get("InstallKarafOp.description.extractKarafZip", KARAF_ZIP_NAME, karafDir));
 		return test.toString();
 	}
 
 	@Override
 	protected String doInBackground() throws Exception {
 		setProgress(0);
-		DangerousPaths.check(karafDir);
+		IllegalPaths.check(karafDir);
 		setProgress(1);
-		println("Prüfe ob Karaf bereits installiert ist...");
+		println(nls.get("InstallKarafOp.println.checkIfKarafAlreadyInstalled"));
 		Installed state = isKarafInstalled();
 		setProgress(2);
 		switch (state) {
 			case FULLY -> {
-				println("Karaf ist bereits vollständig installiert.");
+				println(nls.get("InstallKarafOp.println.karafIsAlreadyFullyInstalled"));
 				handleExistingInstallation(true);
 			}
 			case PARTIALLY -> {
-				println("Karaf ist teilweise installiert.");
+				println(nls.get("InstallKarafOp.println.karafIsPartiallyInstalled"));
 				handleExistingInstallation(false);
 			}
 			case NOT -> {
-				println("Installiere Karaf...");
+				println(nls.get("InstallKarafOp.println.extractingKaraf"));
 				installKaraf();
 			}
 		}
 		setProgress(100);
-		return "Installation durchgeführt";
+		return nls.get("InstallKarafOp.println.installationCompleted");
 	}
 
 	private void handleExistingInstallation(boolean isFullyInstalled) throws Exception {
@@ -89,41 +91,29 @@ public class InstallKarafOp extends Operation {
 		setProgress(4);
 		if (choice == Choice.REINSTALL) {
 			setProgress(5);
-			println("Entferne vorhandene Installation...");
+			println(nls.get("InstallKarafOp.println.removeExistingInstallation"));
 			removeKaraf();
-			println("Installiere Karaf neu...");
+			println(nls.get("InstallKarafOp.println.reinstallKaraf"));
 			installKaraf();
 		} else {
-			println("Vorhandene Karaf-Installation wird wiederverwendet.");
+			println(nls.get("InstallKarafOp.println.existingKarafInstallationWillBeReused"));
 		}
 		setProgress(99);
 	}
 
 	private DecisionDialog.Option showConflictDialog(boolean isFullyInstalled) throws Exception {
-		var reuseOption     = new Option(Choice.REUSE, "Karaf wiederverwenden", "Die vorhandene Installation wird verwendet");
-		var reinstallOption = new Option(Choice.REINSTALL, "Karaf neu installieren", "Die vorhandene Installation wird entfernt und neu installiert");
+		var reuseOption     = new Option(Choice.REUSE, nls.get("InstallKarafOp.dialog.optionReuse"), nls.get("InstallKarafOp.dialog.optionReuse.tooltip"));
+		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallKarafOp.dialog.optionReinstall"), nls.get("InstallKarafOp.dialog.optionReinstall.tooltip"));
 
-		return DecisionDialog.showDialog("Karaf ist " + (isFullyInstalled ? "bereits installiert" : "teilweise installiert"), getDescription(isFullyInstalled), List.of(reuseOption, reinstallOption), isFullyInstalled ? reuseOption : reinstallOption);
+		String title = isFullyInstalled ? nls.get("InstallKarafOp.dialog.alreadyInstalled.title") : nls.get("InstallKarafOp.dialog.partiallyInstalled.title");
+		return DecisionDialog.showDialog(title, getDescription(isFullyInstalled), List.of(reuseOption, reinstallOption), isFullyInstalled ? reuseOption : reinstallOption);
 	}
 
 	private String getDescription(boolean isFullyInstalled) {
 		if (isFullyInstalled) {
-			return """
-					Im Verzeichnis %s wurde eine Karaf-Installation gefunden.
-					
-					Es kann entweder eine Neuinstallation durchgeführt oder die vorhandene Installation weiterverwendet werden (empfohlen).
-					
-					Achtung: Bei einer Neuinstallation werden alle vorhandenen Daten gelöscht.
-					""".formatted(karafDir);
+			return nls.get("InstallKarafOp.dialog.descriptionFullyInstalled", karafDir);
 		} else {
-			return """
-					Im Verzeichnis %s wurde eine unvollständige Karaf-Installation gefunden.
-					Möglicherweise wurde die Installation einmal gestartet, aber nicht abgeschlossen.
-					
-					Es kann entweder eine Neuinstallation durchgeführt (empfohlen) oder die vorhandene unvollständige Installation weiterverwendet werden.
-					
-					Achtung: Bei einer Neuinstallation werden alle vorhandenen Daten im Verzeichnis gelöscht.
-					""".formatted(karafDir);
+			return nls.get("InstallKarafOp.dialog.descriptionPartiallyInstalled", karafDir);
 		}
 	}
 
@@ -148,12 +138,12 @@ public class InstallKarafOp extends Operation {
 	}
 
 	private void installKaraf() throws IOException {
-		println("Erstelle Installationsverzeichnis: " + karafDir);
+		println(nls.get("InstallKarafOp.println.createInstallationDirectory", karafDir));
 		createDirectories(karafDir);
-		println("Entpacke Karaf: " + KARAF_ZIP_NAME);
+		println(nls.get("InstallKarafOp.println.extractKaraf", KARAF_ZIP_NAME));
 		extractTarGz(Resources.KARAF.openStream(), karafDir);
-		println("Karaf entpackt nach " + karafDir);
-		println("Karaf erfolgreich installiert.");
+		println("Karaf extracted to " + karafDir);
+		println("Karaf successfully installed.");
 	}
 
 

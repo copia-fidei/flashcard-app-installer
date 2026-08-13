@@ -2,9 +2,11 @@ package com.fes.flashcard.installer;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.extras.FlatSVGIcon.ColorFilter;
+import org.jetbrains.annotations.NonNls;
 
 import java.awt.Color;
 
+@NonNls
 public final class Icons {
 
 	private Icons() {}

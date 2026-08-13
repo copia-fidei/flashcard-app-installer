@@ -1,6 +1,6 @@
 package com.fes.flashcard.installer.operation;
 
-/// the result of an operation
+/// represents the result of java.lang.Process
 public class Result {
 
 	private final CancellableWriter output;

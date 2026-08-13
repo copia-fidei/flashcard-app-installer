@@ -1,5 +1,7 @@
 package com.fes.flashcard.installer.swing;
 
+import com.fes.flashcard.installer.utilities.Nls;
+
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -27,6 +29,8 @@ import static javax.swing.BoxLayout.LINE_AXIS;
 import static javax.swing.SwingUtilities.invokeAndWait;
 
 public class DecisionDialog extends JDialog {
+
+	private final Nls nls = new Nls(this);
 
 	private final String       description;
 	private final ButtonGroup  buttonGroup = new ButtonGroup();
@@ -77,7 +81,7 @@ public class DecisionDialog extends JDialog {
 				radioButton.setSelected(true);
 			}
 		}
-		okButton.setToolTipText("Auswahl anwenden");
+		okButton.setToolTipText(nls.get("DecisionDialog.tooltip.Apply_selection"));
 
 		var buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, LINE_AXIS));

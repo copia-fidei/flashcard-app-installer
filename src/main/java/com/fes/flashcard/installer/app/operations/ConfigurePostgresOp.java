@@ -1,12 +1,14 @@
 package com.fes.flashcard.installer.app.operations;
 
-import com.fes.flashcard.installer.TextBuilder;
 import com.fes.flashcard.installer.app.AuthMethod;
 import com.fes.flashcard.installer.app.Postgres;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.PostgresState;
 import com.fes.flashcard.installer.operation.ErrorCode;
 import com.fes.flashcard.installer.operation.Operation;
+import com.fes.flashcard.installer.utilities.Nls;
+import com.fes.flashcard.installer.utilities.TextBuilder;
+import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,15 +17,17 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.function.Supplier;
 
-import static com.fes.flashcard.installer.Temporary.use;
 import static com.fes.flashcard.installer.app.Resources.POSTGRES_INIT_SQL;
 import static com.fes.flashcard.installer.app.Resources.getTmpFile;
 import static com.fes.flashcard.installer.app.pages.PostgresState.INSTALLED_BY_INSTALLER;
 import static com.fes.flashcard.installer.app.pages.PostgresState.NOT_INSTALLED;
+import static com.fes.flashcard.installer.utilities.Temporary.use;
 import static java.sql.DriverManager.getConnection;
 import static java.text.MessageFormat.format;
 
 public class ConfigurePostgresOp extends Operation {
+
+	private static final Nls nls = new Nls(ConfigurePostgresOp.class);
 
 	private final DatabasePageData databasePageData;
 
@@ -37,7 +41,7 @@ public class ConfigurePostgresOp extends Operation {
 	private final Postgres postgres;
 
 	public ConfigurePostgresOp(DatabasePageData databasePageData) {
-		super("PostgreSQL Konfiguration", "Prüfe PostgreSQL Authentifizierungsmethode");
+		super(nls.get("ConfigurePostgresOp.title"), nls.get("ConfigurePostgresOp.description"));
 
 		this.databasePageData = databasePageData;
 
@@ -52,32 +56,32 @@ public class ConfigurePostgresOp extends Operation {
 
 	public String getDescription() {
 		var text = new TextBuilder();
-		text.line("Finde die Authentifizierungsmethode für den Nutzer postgres heraus");
-		text.line("Prüfe ob Benutzer " + user + " sich verbinden kann");
-		text.line("Ermögliche eine Verbindungsmöglichkeit für den Nutzer " + user);
-		text.line("Setze PostgreSQL Port auf " + port);
-		text.line("Starte PostgreSQL neu");
-		text.line("Erstelle Benutzer " + user);
-		text.line("Setze Passwort für " + user);
-		text.line("Erstelle Datenbank " + dbName + " und Tabellen");
-		text.line("Erteile " + user + " Eigentumsrechte an Datenbank " + dbName);
-		text.line("Teste JDBC Verbindung");
+		text.line(nls.get("ConfigurePostgresOp.description.findAuthMethodForPostgres"));
+		text.line(nls.get("ConfigurePostgresOp.description.checkIfUserCanConnect", user));
+		text.line(nls.get("ConfigurePostgresOp.description.enableConnectionForUser", user));
+		text.line(nls.get("ConfigurePostgresOp.description.setPostgreSQLPort", port));
+		text.line(nls.get("ConfigurePostgresOp.description.restartPostgreSQL"));
+		text.line(nls.get("ConfigurePostgresOp.description.createUser", user));
+		text.line(nls.get("ConfigurePostgresOp.description.setPasswordForUser", user));
+		text.line(nls.get("ConfigurePostgresOp.description.createDatabaseAndTables", dbName));
+		text.line(nls.get("ConfigurePostgresOp.description.grantOwnershipOfDatabase", user, dbName));
+		text.line(nls.get("ConfigurePostgresOp.description.testJDBCConnection"));
 		return text.toString();
 	}
 
 	@Override
 	protected String doInBackground() throws Exception {
 		if (getPostgresState() == NOT_INSTALLED) {
-			throw new Exception("PostgreSQL " + postgresVersion + " ist nicht installiert");
+			throw new Exception(nls.get("ConfigurePostgresOp.println.postgresNotInstalled", postgresVersion));
 		}
 		progress(2);
-		println("Suche eine Authentifizierungsmethode für postgres");
+		println(nls.get("ConfigurePostgresOp.println.searchAuthMethodForPostgres"));
 		progress(2);
 		String authMethod = postgres.getAuthMethod(databasePageData.getPostgresAdmin(), "local", "postgres").orElseThrow(() ->
 				// Unsupported authentification methods should have been prevented in database page (next button disabled).
 				// There is a minimal risks if the user changes the database configuration while using the installer,
 				// but this is considered his own fault.
-				new Exception("pg_hba.conf enthält keine Authentifizierungsmethode für die Rolle postgres"));
+				new Exception(nls.get("ConfigurePostgresOp.println.pgHbaConfNoAuthMethod")));
 		progress(2);
 		Supplier<ProcessBuilder> loginCommand = setupLoginMethod(authMethod);
 		progress(2);
@@ -100,7 +104,7 @@ public class ConfigurePostgresOp extends Operation {
 
 		setProgress(100);
 
-		return "Konfiguration abgeschlossen";
+		return nls.get("ConfigurePostgresOp.println.configurationCompleted");
 	}
 
 	private PostgresState getPostgresState() {
@@ -109,22 +113,23 @@ public class ConfigurePostgresOp extends Operation {
 	}
 
 	private void setPort() throws IOException, InterruptedException, ErrorCode {
-		println("Setze PostgreSQL Port auf " + port);
+		println(nls.get("ConfigurePostgresOp.description.setPostgreSQLPort", port));
 		progress(2);
-		execute(new ProcessBuilder("sudo", "sed", "-Ei", "s/^([[:space:]]*port[[:space:]]*=?[[:space:]]*)[0-9]+/\\1" + port + "/", postgres.getConfigurationFile()).start()).throwIfNonZeroExit("Setzen des Ports auf " + port + " fehlgeschlagen");
+		execute(new ProcessBuilder("sudo", "sed", "-Ei", "s/^([[:space:]]*port[[:space:]]*=?[[:space:]]*)[0-9]+/\\1" + port + "/", postgres.getConfigurationFile()).start()) //NON-NLS
+				.throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.setPortFailed", port));
 	}
 
 
 	private Supplier<ProcessBuilder> setupLoginMethod(String authMethod) throws IOException, InterruptedException, ErrorCode {
 		Supplier<ProcessBuilder> processBuilder;
 		if (authMethod.equals("peer")) {
-			processBuilder = () -> new ProcessBuilder("sudo", "-u", "postgres", "psql");
+			processBuilder = () -> new ProcessBuilder("sudo", "-u", "postgres", "psql"); //NON-NLS
 			if (getPostgresState() == INSTALLED_BY_INSTALLER) {
 				setAdminPassword();
 			}
 		} else if (AuthMethod.isPasswordBased(authMethod)) {
 			processBuilder = () -> {
-				var pb = new ProcessBuilder("psql", "-U", "postgres");
+				var pb = new ProcessBuilder("psql", "-U", "postgres"); //NON-NLS
 				pb.environment().put("PGPASSWORD", adminPassword);
 				return pb;
 			};
@@ -132,7 +137,7 @@ public class ConfigurePostgresOp extends Operation {
 			// we do not expect to land here, except if the user modifies the database while using the installer
 			throw new IllegalStateException("The postgres user cannot login. Was the the database modified during installation?");
 		}
-		println("Authentifizierungsmethode eingerichtet: " + authMethod);
+		println(nls.get("ConfigurePostgresOp.println.authMethodSetup", authMethod));
 		progress(2);
 		return processBuilder;
 	}
@@ -141,20 +146,20 @@ public class ConfigurePostgresOp extends Operation {
 		if (adminPassword.isBlank()) {
 			return;
 		}
-		println("Setze das Passwort für postgres");
+		println(nls.get("ConfigurePostgresOp.println.setPasswordForPostgres"));
 		progress(2);
-		var pb = new ProcessBuilder("sudo", "-u", "postgres", "psql");
-		pb.command().add("-c");
-		pb.command().add("ALTER USER postgres WITH PASSWORD '" + adminPassword + "';");
+		var pb = new ProcessBuilder("sudo", "-u", "postgres", "psql"); //NON-NLS
+		pb.command().add("-c"); //NON-NLS
+		pb.command().add("ALTER USER postgres WITH PASSWORD '" + adminPassword + "';"); //NON-NLS
 		var process = pb.start();
-		execute(process).throwIfNonZeroExit("Setzen des Passworts fehlgeschlagen");
-		println("Admin Passwort erfolgreich gesetzt");
+		execute(process).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.setPasswordFailed"));
+		println(nls.get("ConfigurePostgresOp.println.adminPasswordSetSuccessfully"));
 		progress(2);
 	}
 
 	private void ensureUserCanConnect() throws Exception {
 		if (userCanConnect()) {
-			println("Die Rolle " + user + " kann sich bereits verbinden");
+			println(nls.get("ConfigurePostgresOp.println.roleCanAlreadyConnect", user));
 			progress(2);
 			return;
 		}
@@ -167,7 +172,7 @@ public class ConfigurePostgresOp extends Operation {
 	}
 
 	private void addToPgHbaConf() throws IOException, InterruptedException {
-		println("Ermögliche eine Verbindungsmöglichkeit für die Rolle " + user);
+		println(nls.get("ConfigurePostgresOp.println.enableConnectionForRole", user));
 		progress(2);
 
 		String entries = MessageFormat.format("""
@@ -176,121 +181,122 @@ public class ConfigurePostgresOp extends Operation {
 				""", dbName, user);
 
 		String authFile = postgres.getAuthFile();
-		println("Füge " + entries + " in " + authFile + " ein");
+		println(nls.get("ConfigurePostgresOp.println.addEntriesToAuthFile", entries, authFile));
 		progress(2);
 
-		var process = new ProcessBuilder("sudo", "tee", "--append", postgres.getAuthFile()).start();
+		var process = new ProcessBuilder("sudo", "tee", "--append", postgres.getAuthFile()).start(); //NON-NLS
 		try (var writer = process.outputWriter()) {
 			writer.write(entries);
 		}
 		process.waitFor();
-		println("Einträge erfolgreich zu pg_hba.conf hinzugefügt");
+		println(nls.get("ConfigurePostgresOp.println.entriesAddedSuccessfully"));
 		progress(2);
 	}
 
 	// the only command that takes time
 	private void restartPostgres() throws IOException, InterruptedException, ErrorCode {
-		println("Starte PostgreSQL neu");
+		println(nls.get("ConfigurePostgresOp.println.restartPostgreSQL"));
 		progress(2);
-		execute(new ProcessBuilder("sudo", "systemctl", "restart", "postgresql.service").start()).throwIfNonZeroExit("PostgreSQL Neustart fehlgeschlagen");
-		println("PostgreSQL neu gestartet");
+		execute(new ProcessBuilder("sudo", "systemctl", "restart", "postgresql.service").start()) //NON-NLS
+				.throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.restartPostgreSQLFailed"));
+		println(nls.get("ConfigurePostgresOp.println.postgreSQLRestarted"));
 		setProgress(40);
 	}
 
 	private void createUser(Supplier<ProcessBuilder> loginCommand) throws Exception {
-		println("Prüfe ob Rolle " + user + " existiert");
+		println(nls.get("ConfigurePostgresOp.println.checkIfRoleExists", user));
 		progress(2);
 
 		var checkUsersExists = loginCommand.get();
-		checkUsersExists.command().add("-tA");
-		checkUsersExists.command().add("-c");
-		checkUsersExists.command().add("SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '" + user + "');");
+		checkUsersExists.command().add("-tA"); //NON-NLS
+		checkUsersExists.command().add("-c"); //NON-NLS
+		checkUsersExists.command().add("SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '" + user + "');"); //NON-NLS
 
 		var checkResult = execute(checkUsersExists.start());
-		checkResult.throwIfNonZeroExit("Prüfen ob Rolle " + user + " existiert fehlgeschlagen");
-		if ("t".equals(checkResult.output().trim())) {
-			println("Rolle " + user + " existiert bereits");
+		checkResult.throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.checkRoleExistsFailed", user));
+		if ("t".equals(checkResult.output().trim())) { //NON-NLS
+			println(nls.get("ConfigurePostgresOp.println.roleAlreadyExists", user));
 			progress(2);
 			return;
 		}
-		println("Erstelle Rolle " + user);
+		println(nls.get("ConfigurePostgresOp.println.createRole", user));
 		progress(2);
 
 		var createUser = loginCommand.get();
-		createUser.command().add("-c");
-		createUser.command().add("CREATE USER " + user + ";");
+		createUser.command().add("-c"); //NON-NLS
+		createUser.command().add("CREATE USER " + user + ";"); //NON-NLS
 
-		execute(createUser.start()).throwIfNonZeroExit("Rolle erstellen fehlgeschlagen");
+		execute(createUser.start()).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.createRoleFailed"));
 
-		println("Rolle " + user + " erfolgreich erstellt");
+		println(nls.get("ConfigurePostgresOp.println.roleCreatedSuccessfully", user));
 		progress(2);
 	}
 
 	private void setUserPassword(Supplier<ProcessBuilder> loginCommand) throws Exception {
 		if (userPassword.isBlank()) {
-			println("Kein Passwort für " + user + " gesetzt");
+			println(nls.get("ConfigurePostgresOp.println.noPasswordSetForUser", user));
 			progress(2);
 			return;
 		}
-		println("Setze Passwort für " + user);
+		println(nls.get("ConfigurePostgresOp.println.setPasswordForUser", user));
 		progress(2);
 		var pb = loginCommand.get();
-		pb.command().add("-c");
-		pb.command().add("ALTER USER " + user + " WITH PASSWORD '" + userPassword + "';");
-		execute(pb.start()).throwIfNonZeroExit("Passwort setzen fehlgeschlagen");
+		pb.command().add("-c"); //NON-NLS
+		pb.command().add("ALTER USER " + user + " WITH PASSWORD '" + userPassword + "';"); //NON-NLS
+		execute(pb.start()).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.setPasswordFailed"));
 
-		println("Passwort für " + user + " erfolgreich gesetzt");
+		println(nls.get("ConfigurePostgresOp.println.passwordSetSuccessfully", user));
 		progress(2);
 	}
 
 	private void createDatabase(Supplier<ProcessBuilder> loginCommand) throws Exception {
-		println("Erstelle Datenbank und Tabellen");
+		println(nls.get("ConfigurePostgresOp.println.createDatabaseAndTables"));
 		progress(2);
 
 		use(getTmpFile(POSTGRES_INIT_SQL), script -> {
-			println("Führe aus:");
+			println(nls.get("ConfigurePostgresOp.println.execute"));
 			println(Files.readString(script));
 			var pb = loginCommand.get();
-			pb.command().add("-f");
+			pb.command().add("-f"); //NON-NLS
 			pb.command().add(script.toString());
-			execute(pb.start()).throwIfNonZeroExit("Datenbankerstellung fehlgeschlagen");
+			execute(pb.start()).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.createDatabaseFailed"));
 
-			println("Datenbank und Tabellen erfolgreich erstellt");
+			println(nls.get("ConfigurePostgresOp.println.databaseAndTablesCreatedSuccessfully"));
 			progress(2);
 		});
 	}
 
 	private void grantUserOwnershipOfDatabase(Supplier<ProcessBuilder> loginCommand) throws Exception {
-		println("Erteile " + user + " Eigentumsrechte an Datenbank " + dbName);
+		println(nls.get("ConfigurePostgresOp.println.grantOwnershipOfDatabase", user, dbName));
 		progress(2);
 
-		String sql = format("""
+		@NonNls String sql = format("""
 				GRANT ALL PRIVILEGES ON DATABASE {0} TO {1};
 				GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {1};
 				""", dbName, user);
 
-		println("Führe aus:");
+		println(nls.get("ConfigurePostgresOp.println.executeGrant"));
 		println(sql);
 
 		var pb = loginCommand.get();
-		pb.command().add("-d");
+		pb.command().add("-d"); //NON-NLS
 		pb.command().add(dbName);
-		pb.command().add("-c");
+		pb.command().add("-c"); //NON-NLS
 		pb.command().add(sql);
-		execute(pb.start()).throwIfNonZeroExit("Rechte vergeben fehlgeschlagen");
+		execute(pb.start()).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.grantOwnershipFailed"));
 
-		println("Eigentumsrechte erfolgreich vergeben");
+		println(nls.get("ConfigurePostgresOp.println.ownershipGrantedSuccessfully"));
 		progress(2);
 	}
 
 	private void testUserConnection() throws SQLException {
 		String host = databasePageData.getPostgresHost();
-		println("Teste JDBC Verbindung an " + user);
+		println(nls.get("ConfigurePostgresOp.println.testJDBCConnection", user));
 		progress(2);
 
-		String url = "jdbc:postgresql://" + host + ":" + port + "/" + dbName;
+		@NonNls String url = "jdbc:postgresql://" + host + ":" + port + "/" + dbName;
 		try (Connection _ = getConnection(url, user, userPassword)) {
-			println("JDBC Verbindung an " + user + " erfolgreich");
+			println(nls.get("ConfigurePostgresOp.println.jdbcConnectionSuccessful", user));
 			progress(2);
 		}
 	}

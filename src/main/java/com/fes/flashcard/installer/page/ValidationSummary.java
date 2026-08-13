@@ -19,7 +19,6 @@ record ValidationSummary(ValidationResults results) {
 		return filter(ERROR).max(comparing(ValidationResult::priority)).get().title();
 	}
 
-	// does not consider priority
 	String first(Severity severity) {
 		return filter(severity).findFirst().get().title();
 	}

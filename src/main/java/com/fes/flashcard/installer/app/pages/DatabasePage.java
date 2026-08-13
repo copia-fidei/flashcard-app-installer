@@ -1,10 +1,11 @@
 package com.fes.flashcard.installer.app.pages;
 
-import com.fes.flashcard.installer.PageDataPool;
-import com.fes.flashcard.installer.TestFrames;
 import com.fes.flashcard.installer.app.Database;
 import com.fes.flashcard.installer.page.Page;
+import com.fes.flashcard.installer.page.PageDataPool;
 import com.fes.flashcard.installer.swing.DocumentAdapter;
+import com.fes.flashcard.installer.swing.TestFrames;
+import com.fes.flashcard.installer.utilities.Nls;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -29,6 +30,8 @@ import static java.awt.GridBagConstraints.NONE;
 import static java.util.logging.Level.WARNING;
 
 public class DatabasePage extends Page {
+
+	private final Nls nls = new Nls(this);
 
 	private final DatabasePageData databasePageData;
 
@@ -55,37 +58,25 @@ public class DatabasePage extends Page {
 
 	@Override
 	public String getTitle() {
-		return "Datenbank";
+		return nls.get("DatabasePage.title");
 	}
 
 	@Override
 	public String getDescription() {
-		return "Datenbank und Version auswählen";
-	}
-
-	// For testing
-	static void main() {
-		EventQueue.invokeLater(() -> {
-			var pageDataPool = new PageDataPool();
-			var pageData     = new DatabasePageData(pageDataPool);
-			var page         = new DatabasePage(pageData, () -> {});
-			page.build();
-			page.willBecomeVisible();
-			TestFrames.showComponent("Database Configuration", page.content);
-		});
+		return nls.get("DatabasePage.description");
 	}
 
 	@Override
 	public void build() {
-		var databaseLabel      = new JLabel("Implementation");
-		var versionLabel       = new JLabel("Version");
-		var adminLabel         = new JLabel("Administrator");
-		var adminPasswordLabel = new JLabel("Administratorpasswort");
-		var portLabel          = new JLabel("Port");
-		var hostLabel          = new JLabel("Host");
-		var dbNameLabel        = new JLabel("Datenbankname");
-		var userLabel          = new JLabel("Benutzer");
-		var userPasswordLabel  = new JLabel("Benutzerpasswort");
+		var databaseLabel      = new JLabel(nls.get("DatabasePage.label.implementation"));
+		var versionLabel       = new JLabel(nls.get("DatabasePage.label.version"));
+		var adminLabel         = new JLabel(nls.get("DatabasePage.label.administrator"));
+		var adminPasswordLabel = new JLabel(nls.get("DatabasePage.label.administratorPassword"));
+		var portLabel          = new JLabel(nls.get("DatabasePage.label.port"));
+		var hostLabel          = new JLabel(nls.get("DatabasePage.label.host"));
+		var dbNameLabel        = new JLabel(nls.get("DatabasePage.label.databaseName"));
+		var userLabel          = new JLabel(nls.get("DatabasePage.label.user"));
+		var userPasswordLabel  = new JLabel(nls.get("DatabasePage.label.userPassword"));
 
 		versionsComboBox.setRenderer(new VersionListCellRenderer());
 
@@ -142,20 +133,20 @@ public class DatabasePage extends Page {
 	private void findOutIsPostgresInstalled() {
 		for (String version : databasePageData.getPostgresVersions()) {
 			try {
-				var process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", "postgresql" + "-" + version).start();
+				var process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", "postgresql" + "-" + version).start(); //$NON-NLS
 				process.waitFor();
 
 				String status;
 				try (var reader = process.inputReader()) {
 					status = reader.readAllAsString();
 				}
-				if (status.startsWith("ii")) {
+				if (status.startsWith("ii")) { //$NON-NLS
 					databasePageData.getPostgresInstallStates().put(version, PostgresState.ALREADY_INSTALLED);
 				} else {
 					databasePageData.getPostgresInstallStates().put(version, PostgresState.NOT_INSTALLED);
 				}
 			} catch (IOException | InterruptedException e) {
-				log.log(WARNING, "Failed to find out if Postgres packages are installed", e);
+				log.log(WARNING, "Failed to find out if Postgres packages are installed", e); //$NON-NLS
 			}
 
 		}
@@ -286,4 +277,15 @@ public class DatabasePage extends Page {
 		}
 	}
 
+	// For testing
+	static void main() {
+		EventQueue.invokeLater(() -> {
+			var pageDataPool = new PageDataPool();
+			var pageData     = new DatabasePageData(pageDataPool);
+			var page         = new DatabasePage(pageData, () -> {});
+			page.build();
+			page.willBecomeVisible();
+			TestFrames.showComponent("Database Configuration", page.content); //NON-NLS
+		});
+	}
 }

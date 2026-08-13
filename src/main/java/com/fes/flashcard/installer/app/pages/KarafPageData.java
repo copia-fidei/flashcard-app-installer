@@ -1,10 +1,12 @@
 package com.fes.flashcard.installer.app.pages;
 
-import com.fes.flashcard.installer.Directory;
 import com.fes.flashcard.installer.Home;
-import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.page.PageData;
+import com.fes.flashcard.installer.page.PageDataPool;
+import com.fes.flashcard.installer.utilities.Directory;
+import com.fes.flashcard.installer.utilities.Nls;
 import com.fes.flashcard.installer.validation.ValidationResults;
+import org.jetbrains.annotations.NonNls;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,14 +17,15 @@ import static java.util.Objects.requireNonNull;
 
 public class KarafPageData extends PageData {
 
+	private final Nls nls = new Nls(this);
+
 	// Preferences keys
 	private static final String KARAF_PARENT_DIR  = "karaf.parent.dir";
 	private static final String KARAF_FOLDER_NAME = "karaf.folder.name";
 
 	// Default values
-	private static final Path   DEFAULT_PARENT_DIR             = Home.PATH.resolve(".local/bin");
-	private static final String DEFAULT_FOLDER_NAME            = "apache-karaf-4.4.11";
-	private static final Path   DEFAULT_KARAF_INSTALLATION_DIR = DEFAULT_PARENT_DIR.resolve(DEFAULT_FOLDER_NAME);
+	private static final         Path   DEFAULT_PARENT_DIR             = Home.PATH.resolve(".local/bin");
+	private static final @NonNls String DEFAULT_FOLDER_NAME            = "apache-karaf-4.4.11";
 
 	// Values
 	private Path   parentDir  = DEFAULT_PARENT_DIR;
@@ -34,12 +37,12 @@ public class KarafPageData extends PageData {
 
 	// Test
 	static void main() {
-		println(DEFAULT_KARAF_INSTALLATION_DIR);
+		println(DEFAULT_PARENT_DIR.resolve(DEFAULT_FOLDER_NAME));
 	}
 
 	@Override
 	public void load() {
-		this.parentDir = Path.of(preferences.get(KARAF_PARENT_DIR, DEFAULT_PARENT_DIR.toString()));
+		this.parentDir  = Path.of(preferences.get(KARAF_PARENT_DIR, DEFAULT_PARENT_DIR.toString()));
 		this.folderName = preferences.get(KARAF_FOLDER_NAME, DEFAULT_FOLDER_NAME);
 	}
 
@@ -51,7 +54,7 @@ public class KarafPageData extends PageData {
 
 	@Override
 	public void loadDefaults() {
-		parentDir = DEFAULT_PARENT_DIR;
+		parentDir  = DEFAULT_PARENT_DIR;
 		folderName = DEFAULT_FOLDER_NAME;
 
 		preferences.remove(KARAF_PARENT_DIR);
@@ -63,25 +66,25 @@ public class KarafPageData extends PageData {
 		var results = new ValidationResults();
 
 		if (!parentDir.startsWith(Home.PATH)) {
-			results.addError("Ungültiges übergeordnetes Verzeichnis", "Das ausgewählte übergeordnete Verzeichnis muss sich in einem Pfad unter /home befinden.", 0);
+			results.addError(nls.get("KarafPageData.error.title.invalidParentDirectory"), nls.get("KarafPageData.error.description.invalidParentDirectory"), 0);
 		}
 		if (Files.isRegularFile(parentDir)) {
-			results.addError("Ungültiges übergeordnetes Verzeichnis", "Eine Datei ist ausgewählt. Nur Verzeichnisse dürfen ausgewählt werden.", 1);
+			results.addError(nls.get("KarafPageData.error.title.parentDirectoryIsFile"), nls.get("KarafPageData.error.description.parentDirectoryIsFile"), 1);
 		}
 		if (folderName.isBlank()) {
-			results.addError("Ungültiger Ordnername", "Der Ordnername darf nicht leer sein.", 0);
+			results.addError(nls.get("KarafPageData.error.title.invalidFolderName"), nls.get("KarafPageData.error.description.emptyFolderName"), 0);
 		}
 		if (folderName.contains("/") || folderName.contains("\\")) {
-			results.addError("Ungültiger Ordnername", "Der Ordnername darf keine Pfadtrenner enthalten.", 1);
+			results.addError(nls.get("KarafPageData.error.title.invalidFolderName"), nls.get("KarafPageData.error.description.separatorNotAllowedInFolderName"), 1);
 		}
 		if (folderName.equals(".") || folderName.equals("..")) {
-			results.addError("Ungültiger Ordnername", "Der Ordnername darf nicht relativ sein.", 1);
+			results.addError(nls.get("KarafPageData.error.title.invalidFolderName"), nls.get("KarafPageData.error.description.relativeFolderNameNotAllowed"), 1);
 		}
 		if (parentDir.getFileName().toString().equals(folderName)) {
-			results.add("Verdächtiger Verzeichnispfad", "Ordner und übergeordneter Ordner haben den gleichen Namen.", WARNING);
+			results.add(nls.get("KarafPageData.warning.title.suspiciousDirectoryPath"), nls.get("KarafPageData.warning.description.suspiciousDirectoryPath"), WARNING);
 		}
 		if (!new Directory(getKarafInstallationDir()).isEmpty()) {
-			results.add("Ordner ist nicht leer", "Der ausgewählte Ordner ist nicht leer. Sein Inhalt wird bei der Installation gelöscht.", WARNING);
+			results.add(nls.get("KarafPageData.warning.title.folderNotEmpty"), nls.get("KarafPageData.warning.description.folderNotEmpty"), WARNING);
 		}
 		return results;
 	}
@@ -91,8 +94,7 @@ public class KarafPageData extends PageData {
 	}
 
 	public void setParentDir(Path parentDir) {
-		requireNonNull(parentDir);
-		this.parentDir = parentDir.normalize();
+		this.parentDir = requireNonNull(parentDir).normalize();
 	}
 
 	public String getFolderName() {
@@ -100,8 +102,7 @@ public class KarafPageData extends PageData {
 	}
 
 	public void setFolderName(String folderName) {
-		requireNonNull(folderName);
-		this.folderName = folderName;
+		this.folderName = requireNonNull(folderName);
 	}
 
 

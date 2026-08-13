@@ -1,10 +1,10 @@
 package com.fes.flashcard.installer.apply;
 
-import com.fes.flashcard.installer.TestFrames;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.operation.OperationListener;
 import com.fes.flashcard.installer.operation.OperationStatus;
-import com.fes.flashcard.installer.operation.WaitingOperation;
+import com.fes.flashcard.installer.utilities.Nls;
+import org.jetbrains.annotations.NonNls;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -35,13 +35,16 @@ import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.SwingUtilities.windowForComponent;
 
+@NonNls
 public class DetailsDialog extends JDialog {
+
+	private final Nls nls = new Nls(DetailsDialog.class);
 
 	private final Operation operation;
 	private final JLabel    statusLabel      = new JLabel();
 	private final JTextArea progressTextArea = new JTextArea();
-	private final JButton   cancelButton     = new JButton("Abbrechen");
-	private final JButton   closeButton      = new JButton("Schließen");
+	private final JButton   cancelButton     = new JButton(nls.get("DetailsDialog.button.Cancel"));
+	private final JButton   closeButton      = new JButton(nls.get("DetailsDialog.button.Close"));
 
 	public DetailsDialog(Window parent, Operation operation) {
 		super(parent, operation.getTitle());
@@ -52,26 +55,17 @@ public class DetailsDialog extends JDialog {
 		updateUI();
 	}
 
-	static void main() {
-		TestFrames.showDialog("Details Dialog", frame -> {
-			var dialog = new DetailsDialog(frame, new WaitingOperation("Wait 10 seconds", 10));
-			dialog.setModal(true);
-			dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-			return dialog;
-		});
-	}
-
 	private void buildGUI() {
 		setLayout(new GridBagLayout());
 
-		var descriptionLabel    = new JLabel("Beschreibung:");
-		var descriptionTextArea = new JTextArea(3, 20);
+		var descriptionLabel      = new JLabel(nls.get("DetailsDialog.label.Description"));
+		var descriptionTextArea   = new JTextArea(3, 20);
 		var descriptionScrollPane = new JScrollPane(descriptionTextArea);
-		var statusTitleLabel      = new JLabel("Status:");
-		var progressTitleLabel = new JLabel("Fortschritt:");
-		var scrollPane = new JScrollPane(progressTextArea);
-		var separator  = new JSeparator(SwingConstants.HORIZONTAL);
-		var buttonPanel = new JPanel();
+		var statusTitleLabel      = new JLabel(nls.get("DetailsDialog.label.Status"));
+		var progressTitleLabel    = new JLabel(nls.get("DetailsDialog.label.Progress"));
+		var scrollPane            = new JScrollPane(progressTextArea);
+		var separator             = new JSeparator(SwingConstants.HORIZONTAL);
+		var buttonPanel           = new JPanel();
 
 		descriptionTextArea.setText(operation.getDescription());
 		descriptionTextArea.setEditable(false);
@@ -79,8 +73,8 @@ public class DetailsDialog extends JDialog {
 		descriptionTextArea.setLineWrap(true);
 		statusLabel.setFont(statusTitleLabel.getFont().deriveFont(PLAIN));
 		progressTextArea.setEditable(false);
-		cancelButton.setToolTipText("Bricht diese Operation ab.");
-		closeButton.setToolTipText("Schließt den Dialog, bricht die Operation nicht ab.");
+		cancelButton.setToolTipText(nls.get("DetailsDialog.tooltip.Cancel_{0}", operation.getTitle()));
+		closeButton.setToolTipText(nls.get("DetailsDialog.tooltip.Close_the_dialog"));
 
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
 
@@ -104,7 +98,7 @@ public class DetailsDialog extends JDialog {
 
 	private void addListeners() {
 		cancelButton.addActionListener(_ -> {
-			if (showConfirmDialog(windowForComponent(this), "Soll die Operation wirklich abgebrochen werden?", "Abbrechen", YES_NO_OPTION) == YES_OPTION) {
+			if (showConfirmDialog(windowForComponent(this), nls.get("DetailsDialog.description.Cancel_this_operation"), nls.get("DetailsDialog.title.Cancel_this_operation"), YES_NO_OPTION) == YES_OPTION) {
 				operation.cancel(true);
 			}
 		});

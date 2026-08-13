@@ -4,6 +4,8 @@ import com.fes.flashcard.installer.Java;
 import com.fes.flashcard.installer.operation.ErrorCode;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.operation.Result;
+import com.fes.flashcard.installer.utilities.Nls;
+import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,6 +16,8 @@ import static java.util.List.of;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class Karaf {
+
+	private static final Nls nls = new Nls(Karaf.class);
 
 	private final Operation operation;
 
@@ -32,9 +36,9 @@ public class Karaf {
 
 		// for some reason the updated JAVA_HOME variable is not at effect until a system restart,
 		// that is why we have to find out its location manually
-		operation.println("Finde Javas Installationsort heraus");
+		operation.println(nls.get("Karaf.findJavaLocation"));
 		JAVA_HOME = Java.getLocation();
-		operation.println("Java ist installiert in " + JAVA_HOME);
+		operation.println(nls.get("Karaf.javaInstalledIn", JAVA_HOME));
 
 		clientProgram = location.resolve("bin/client").toString();
 		startProgram = location.resolve("bin/start").toString();
@@ -45,24 +49,24 @@ public class Karaf {
 	public void start() throws IOException, InterruptedException, ErrorCode {
 		// Check if Karaf is already running
 		if (isRunning()) {
-			operation.println("Karaf läuft bereits.");
+			operation.println(nls.get("Karaf.alreadyRunning"));
 			return;
 		}
 		runSuccessfully(startProgram);
 
-		operation.println("Warte bis Karaf gestartet ist...");
+		operation.println(nls.get("Karaf.waitingForStart"));
 		long timeout = System.currentTimeMillis() + 30_000; // 30 seconds
 		while (System.currentTimeMillis() < timeout) {
 			if (operation.isCancelled()) {
-				throw new InterruptedException("Operation beim Warten auf den Start von Karaf abgebrochen.");
+				throw new InterruptedException(nls.get("Karaf.operationCancelled"));
 			}
 			if (isRunning()) {
-				operation.println("Karaf ist gestartet.");
+				operation.println(nls.get("Karaf.started"));
 				return;
 			}
 			SECONDS.sleep(1);
 		}
-		throw new IOException("Timeout beim Warten auf den Start von Karaf.");
+		throw new IOException(nls.get("Karaf.timeoutWaitingForStart"));
 	}
 
 	private boolean isRunning() throws IOException, InterruptedException {
@@ -78,20 +82,22 @@ public class Karaf {
 	public void stop() throws IOException, InterruptedException, ErrorCode {
 		runSuccessfully(stopProgram);
 
-		SECONDS.sleep(3); // stopping actually takes time
+		// stopping actually takes time, the 3 seconds is just arbitrary and in no way robust
+		SECONDS.sleep(3);
 	}
 
 	/// throws if the process returns a non-zero exit code
-	public void executeSuccessfully(String command) throws IOException, InterruptedException, ErrorCode {
+	public void executeSuccessfully(@NonNls String command) throws IOException, InterruptedException, ErrorCode {
 		runSuccessfully(onKaraf(command));
 	}
 
-	public Result execute(String command) throws IOException, InterruptedException, ErrorCode {
+	public Result execute(@NonNls String command) throws IOException, InterruptedException, ErrorCode {
 		return run(onKaraf(command));
 	}
 
+
 	private String[] onKaraf(String... command) {
-		List<String> args = new ArrayList<>();
+		@NonNls List<String> args = new ArrayList<>();
 		args.add(clientProgram);
 		args.add("-u");
 		args.add("karaf");
@@ -102,8 +108,7 @@ public class Karaf {
 	}
 
 	private void runSuccessfully(String... commands) throws IOException, InterruptedException, ErrorCode {
-		operation.execute(getBuilder(commands).start())
-		         .throwIfNonZeroExit("Befehl fehlgeschlagen: " + String.join(" ", commands));
+		operation.execute(getBuilder(commands).start()).throwIfNonZeroExit(nls.get("Karaf.commandFailed", String.join(" ", commands)));
 	}
 
 	private Result run(String... commands) throws IOException, InterruptedException {
@@ -111,7 +116,7 @@ public class Karaf {
 	}
 
 	private ProcessBuilder getBuilder(String... commands) {
-		var pb = new ProcessBuilder();
+		@NonNls var pb = new ProcessBuilder();
 		pb.command(commands);
 		pb.environment().put("JAVA_HOME", JAVA_HOME);
 		return pb;

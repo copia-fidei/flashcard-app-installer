@@ -1,15 +1,17 @@
 package com.fes.flashcard.installer.app.operations;
 
-import com.fes.flashcard.installer.TextBuilder;
-import com.fes.flashcard.installer.WriterAdapter;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.PostgresState;
 import com.fes.flashcard.installer.app.pages.RootPasswordPageData;
 import com.fes.flashcard.installer.operation.Cancelled;
+import com.fes.flashcard.installer.operation.ErrorCode;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.swing.DecisionDialog;
 import com.fes.flashcard.installer.swing.DecisionDialog.Option;
+import com.fes.flashcard.installer.utilities.Nls;
+import com.fes.flashcard.installer.utilities.WriterAdapter;
 import com.pty4j.PtyProcessBuilder;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -19,14 +21,16 @@ import java.util.regex.Pattern;
 
 public class InstallPostgresOp extends Operation {
 
-	private final DatabasePageData databasePageData;
+	private final static Nls nls = new Nls(InstallPostgresOp.class);
+
+	private final DatabasePageData     databasePageData;
 	private final RootPasswordPageData rootPasswordPageData;
 
-	private final String postgresVersion;
-	private final String postgresPackageName;
+	private final         String postgresVersion;
+	private final @NonNls String postgresPackageName;
 
 	public InstallPostgresOp(DatabasePageData databasePageData, RootPasswordPageData rootPasswordPageData) {
-		super("PostgreSQL Installation", "Installiere PostgreSQL");
+		super(nls.get("InstallPostgresOp.title"), nls.get("InstallPostgresOp.description"));
 
 		this.databasePageData = databasePageData;
 		this.rootPasswordPageData = rootPasswordPageData;
@@ -36,42 +40,37 @@ public class InstallPostgresOp extends Operation {
 	}
 
 	public String getDescription() {
-		var text = new TextBuilder();
-		text.line("Prüfe, ob PostgreSQL " + postgresVersion + " bereits installiert ist");
-		text.line("Falls bereits installiert: Frage Benutzer, ob neu installiert oder wiederverwendet werden soll");
-		text.line("Bei Neuinstallation: Entferne vorhandene PostgreSQL Konfiguration");
-		text.line("Installiere PostgreSQL " + postgresVersion + " über apt");
-		return text.toString();
+		return nls.get("InstallPostgresOp.description");
 	}
 
 	@Override
 	protected String doInBackground() throws Exception {
 		setProgress(0);
-		println("Prüfe ob PostgreSQL bereits installiert ist...");
+		println(nls.get("InstallPostgresOp.println.checkIfPostgresInstalled"));
 		setProgress(2);
 		switch (isPostgresInstalled()) {
 			case FULLY -> {
-				println("PostgreSQL ist bereits installiert.");
+				println(nls.get("InstallPostgresOp.println.postgresIsAlreadyInstalled"));
 				databasePageData.getPostgresInstallStates().put(postgresVersion, PostgresState.ALREADY_INSTALLED);
 				handleExistingPostgres();
 			}
 			case NOT -> {
-				println("Installiere PostgreSQL...");
+				println(nls.get("InstallPostgresOp.println.installPostgres"));
 				installPostgres();
 			}
 		}
 		setProgress(100);
-		return "Installation durchgeführt";
+		return nls.get("InstallPostgresOp.println.installationCompleted");
 	}
 
 	private Installed isPostgresInstalled() throws IOException, InterruptedException {
-		var process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", postgresPackageName).start();
+		var process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", postgresPackageName).start(); //$NON-NLS
 		process.waitFor();
 		String status;
 		try (var reader = process.inputReader()) {
 			status = reader.readAllAsString();
 		}
-		return status.startsWith("ii") ? Installed.FULLY : Installed.NOT;
+		return status.startsWith("ii") ? Installed.FULLY : Installed.NOT; //$NON-NLS
 	}
 
 	private void handleExistingPostgres() throws Exception {
@@ -80,39 +79,33 @@ public class InstallPostgresOp extends Operation {
 		setProgress(4);
 		if (choice == Choice.REINSTALL) {
 			setProgress(5);
-			println("Installiere PostgreSQL neu...");
+			println("Reinstall PostgreSQL...");
 			purgePostgres();
 			if (isCancelled()) {
 				return;
 			}
 			installPostgres();
 		} else {
-			println("Vorhandene PostgreSQL-Installation wird wiederverwendet.");
+			println("Existing PostgreSQL installation will be reused.");
 		}
 		setProgress(99);
 	}
 
 	private DecisionDialog.Option showConflictDialog() throws Exception {
-		var reuseOption     = new Option(Choice.REUSE, "PostgreSQL wiederverwenden", "Die vorhandene Installation wird verwendet");
-		var reinstallOption = new Option(Choice.REINSTALL, "PostgreSQL neu installieren", "Die vorhandene Installation wird entfernt und neu installiert");
+		var reuseOption     = new Option(Choice.REUSE, nls.get("InstallPostgresOp.dialog.optionReuse"), nls.get("InstallPostgresOp.dialog.optionReuse.tooltip"));
+		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallPostgresOp.dialog.optionReinstall"), nls.get("InstallPostgresOp.dialog.optionReinstall.tooltip"));
 
-		return DecisionDialog.showDialog("PostgreSQL ist bereits installiert", getDlgDescription(), List.of(reuseOption, reinstallOption), reuseOption);
+		return DecisionDialog.showDialog(nls.get("InstallPostgresOp.dialog.alreadyInstalled.title"), getDlgDescription(), List.of(reuseOption, reinstallOption), reuseOption);
 	}
 
 	private String getDlgDescription() {
-		return """
-				%s ist bereits auf dem System installiert.
-				
-				Es kann entweder eine Neuinstallation durchgeführt oder die vorhandene Installation weiterverwendet werden (empfohlen).
-				
-				Achtung: Bei einer Neuinstallation wird die vorhandene PostgreSQL Konfiguration entfernt. Das Datenbank-Cluster hingegen bleibt intakt.
-				""".formatted(postgresPackageName);
+		return nls.get("description.operation.installPostgres.postgresIsAlreadyInstalled", postgresPackageName);
 	}
 
 	private void installPostgres() throws IOException, InterruptedException {
 		println("Installiere PostgreSQL " + postgresVersion);
 		setProgress(20);
-		List<String> command = List.of("sudo", "apt", "install", postgresPackageName);
+		List<String> command = List.of("sudo", "apt", "install", postgresPackageName); //$NON-NLS
 		println("Führe aus: " + String.join(" ", command));
 		setProgress(30);
 		var process = new ProcessBuilder(command).start();
@@ -131,12 +124,12 @@ public class InstallPostgresOp extends Operation {
 
 	private static final Pattern YES_NO_PROMPT = Pattern.compile("\\[\\D+/(\\D+)]");
 
-	private void purgePostgres() throws IOException, InterruptedException {
+	private void purgePostgres() throws IOException, InterruptedException, ErrorCode {
 		setProgress(10);
 		println("Entferne PostgreSQL Installation...");
 		setProgress(15);
 
-		var purgeB = new PtyProcessBuilder(new String[] {"sudo", "-S", "DEBIAN_FRONTEND=readline", "apt", "purge", "-y", postgresPackageName});
+		var purgeB = new PtyProcessBuilder(new String[] {"sudo", "-S", "DEBIAN_FRONTEND=readline", "apt", "purge", "-y", postgresPackageName}); //NON-NLS
 		purgeB.setRedirectErrorStream(true);
 		var purge = purgeB.start();
 		setProgress(20);
@@ -153,7 +146,7 @@ public class InstallPostgresOp extends Operation {
 					}
 					var str = new String(cbuf, off, len);
 
-					if (str.toLowerCase().contains("[sudo]"))	{
+					if (str.toLowerCase().contains("[sudo]")) { // NON-NLS
 						writer.write(rootPasswordPageData.getRootPassword());
 						writer.write(System.lineSeparator());
 						writer.flush();
@@ -170,11 +163,10 @@ public class InstallPostgresOp extends Operation {
 				}
 			});
 		}
-
-		int purgeExitCode = purge.waitFor();
+		int exitCode = purge.waitFor();
 		setProgress(40);
-		if (purgeExitCode != 0) {
-			throw new IOException("apt purge fehlgeschlagen mit Exit-Code " + purgeExitCode);
+		if (exitCode != 0) {
+			throw new ErrorCode(exitCode, "apt purge " + postgresPackageName + " fehlgeschlagen");
 		}
 		setProgress(60);
 		println("PostgreSQL erfolgreich entfernt.");

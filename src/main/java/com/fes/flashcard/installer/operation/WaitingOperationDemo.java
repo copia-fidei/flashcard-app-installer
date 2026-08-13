@@ -1,5 +1,7 @@
 package com.fes.flashcard.installer.operation;
 
+import org.jetbrains.annotations.NonNls;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,17 +20,18 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 /**
  * A demo to try out {@link WaitingOperation}
  */
+@NonNls
 class WaitingOperationDemo {
 
 	static void main() {
 		class TestFrame extends JFrame implements OperationListener {
 
-			final JLabel    progress     = new JLabel("Progress: 0");
+			final JLabel    progress     = new JLabel("Progress: 0"); //NON-NLS
 			final JTextArea textArea     = new JTextArea();
-			final JButton   cancelButton = new JButton("Cancel");
+			final JButton   cancelButton = new JButton("Cancel"); //NON-NLS
 
 			TestFrame(Operation operation) {
-				setTitle("Waiting Operation Demo");
+				setTitle("Waiting Operation Demo"); //NON-NLS
 				setDefaultCloseOperation(EXIT_ON_CLOSE);
 				setLayout(new BorderLayout());
 
@@ -50,7 +53,7 @@ class WaitingOperationDemo {
 			@Override
 			public void progressChanged(int progress) {
 				this.progress.setText("Progress: " + progress);
-			}
+			} //NON-NLS
 
 			@Override
 			public void intermediateResults(List<String> intermediateResults) {

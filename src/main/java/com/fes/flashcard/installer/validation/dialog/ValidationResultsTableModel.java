@@ -1,5 +1,6 @@
 package com.fes.flashcard.installer.validation.dialog;
 
+import com.fes.flashcard.installer.utilities.Nls;
 import com.fes.flashcard.installer.validation.ValidationResult;
 import com.fes.flashcard.installer.validation.ValidationResults;
 
@@ -8,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ValidationResultsTableModel extends AbstractTableModel {
+
+	private final Nls nls = new Nls(this);
 
 	private final List<ValidationResult> sortedResults = new ArrayList<>();
 
@@ -29,8 +32,8 @@ class ValidationResultsTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int column) {
 		return switch (column) {
-			case 0 -> "Level";
-			case 1 -> "Beschreibung";
+			case 0 -> nls.get("ValidationResultsTableModel.column.Description");
+			case 1 -> nls.get("ValidationResultsTableModel.column.Level");
 			default -> "";
 		};
 	}
@@ -38,10 +41,10 @@ class ValidationResultsTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (rowIndex < sortedResults.size()) {
-			ValidationResult result = sortedResults.get(rowIndex);
+			var validationResult = sortedResults.get(rowIndex);
 			return switch (columnIndex) {
-				case 0 -> result.severity().getDisplayName();
-				case 1 -> result.description();
+				case 0 -> validationResult.severity().label();
+				case 1 -> validationResult.description();
 				default -> "";
 			};
 		}

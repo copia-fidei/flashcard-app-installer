@@ -1,17 +1,21 @@
 package com.fes.flashcard.installer.app.pages;
 
 import com.fes.flashcard.installer.page.Page;
+import com.fes.flashcard.installer.utilities.Nls;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
 
 public class JavaPage extends Page {
+
+	private final Nls nls = new Nls(this);
 
 	private final JavaPageData javaPageData;
 
@@ -26,7 +30,7 @@ public class JavaPage extends Page {
 
 	@Override
 	public void build() {
-		var javaPackageLabel = new JLabel("Paketname");
+		var javaPackageLabel = new JLabel(nls.get("JavaPage.label.packageName"));
 
 		javaPackageField.setEditable(false);
 
@@ -57,11 +61,11 @@ public class JavaPage extends Page {
 
 	@Override
 	public String getTitle() {
-		return "Java";
+		return nls.get("JavaPage.title");
 	}
 
 	@Override
 	public String getDescription() {
-		return "Installiertes Java";
+		return nls.get("JavaPage.description");
 	}
 }

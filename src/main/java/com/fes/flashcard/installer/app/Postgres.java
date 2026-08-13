@@ -1,9 +1,10 @@
 package com.fes.flashcard.installer.app;
 
+import org.jetbrains.annotations.NonNls;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +12,7 @@ import java.util.Optional;
 import static java.nio.file.Files.exists;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-// TODO localize exception messages
+@NonNls
 public class Postgres {
 
 	private final String version;
@@ -21,23 +22,24 @@ public class Postgres {
 	}
 
 	public String getAuthFile() throws FileNotFoundException {
-		var authFile = Path.of("/etc/postgresql", version, "main", "pg_hba.conf");
-		if (!exists(authFile)) {
-			throw new FileNotFoundException("pg_hba.conf not found at " + authFile);
-		}
-		return authFile.toString();
+		return find("/etc", "postgresql", version, "main", "pg_hba.conf");
 	}
 
 	public String getConfigurationFile() throws FileNotFoundException {
-		var confPath = Path.of("/etc/postgresql", version, "main", "postgresql.conf");
-		if (!Files.exists(confPath)) {
-			throw new FileNotFoundException("postgresql.conf not found at " + confPath);
+		return find("/etc", "postgresql", version, "main", "postgresql.conf");
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	private static String find(String first, String... more) throws FileNotFoundException {
+		Path path = Path.of(first, more);
+		if (!exists(path)) {
+			throw new FileNotFoundException("Datei nicht gefunden: " + path);
 		}
-		return confPath.toString();
+		return path.toString();
 	}
 
 	public Optional<String> getAuthMethod(String user, String connectionType, String database) throws IOException, InterruptedException {
-		var process = new ProcessBuilder("sudo", "grep", "-E", "all|" + user, getAuthFile()).start();
+		var process = new ProcessBuilder("sudo", "grep", "-E", "all|" + user, getAuthFile()).start(); //NON-NLS
 		var output = new StringWriter();
 		try (var stdout = process.inputReader()) {
 			stdout.transferTo(output);
@@ -46,11 +48,11 @@ public class Postgres {
 		List<String> lines = output.toString().lines()
 			.filter(line -> !line.isBlank())
 			.filter(line -> !line.trim().startsWith("#"))
-			.filter(line -> !line.contains("replication"))
+			.filter(line -> !line.contains("replication"))  //NON-NLS
 			.toList();
 
 		for (String line : lines) {
-			String[] parts = line.split("\\s+");
+			String[] parts = line.split("\\s+"); //NON-NLS
 			if (parts.length >= 4) {
 				String foundConnectionType = parts[0];
 				String foundDatabase       = parts[1];
@@ -58,8 +60,8 @@ public class Postgres {
 				String foundAuthMethod     = parts[parts.length - 1];
 
 				if (connectionType.equals(foundConnectionType)
-				&& (foundUser.equals(user) || foundUser.equals("all"))
-				&& (foundDatabase.equals(database) || foundDatabase.equals("all"))) {
+				&& (foundUser.equals(user) || foundUser.equals("all")) //NON-NLS
+				&& (foundDatabase.equals(database) || foundDatabase.equals("all"))) { //NON-NLS
 					return Optional.of(foundAuthMethod);
 				}
 			}

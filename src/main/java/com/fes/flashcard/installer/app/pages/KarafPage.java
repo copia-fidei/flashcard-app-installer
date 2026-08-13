@@ -2,6 +2,8 @@ package com.fes.flashcard.installer.app.pages;
 
 import com.fes.flashcard.installer.page.Page;
 import com.fes.flashcard.installer.swing.DocumentAdapter;
+import com.fes.flashcard.installer.utilities.Nls;
+import org.jetbrains.annotations.NonNls;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -23,6 +25,8 @@ import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
 
 public class KarafPage extends Page {
 
+	private final Nls nls = new Nls(this);
+
 	private final KarafPageData karafPageData;
 
 	private final JTextField   parentDirField  = new JTextField(50);
@@ -30,7 +34,7 @@ public class KarafPage extends Page {
 	private final JTextArea    fullPathText    = new JTextArea(2, 50);
 	private final JFileChooser fileChooser     = new JFileChooser();
 
-	private final JButton selectParentDirBtn = new JButton("Durchsuchen...");
+	private final JButton selectParentDirBtn = new JButton(nls.get("KarafPage.button.browse"));
 
 	private final ActionListener  selectButtonListener = _ -> {
 		if (fileChooser.showOpenDialog(getContent()) == APPROVE_OPTION) {
@@ -47,8 +51,8 @@ public class KarafPage extends Page {
 
 	@Override
 	public void build() {
-		var parentDirLabel  = new JLabel("Übergeordnetes Verzeichnis");
-		var folderNameLabel = new JLabel("Ordnername");
+		var parentDirLabel  = new JLabel(nls.get("KarafPage.label.parentDirectory"));
+		var folderNameLabel = new JLabel(nls.get("KarafPage.label.folderName"));
 
 
 		fullPathText.setEditable(false);
@@ -62,12 +66,12 @@ public class KarafPage extends Page {
 		parentDirField.setEditable(false);
 		parentDirField.setFocusable(false);
 
-		content.add(parentDirLabel, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(parentDirField, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		content.add(parentDirLabel, 	new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 0, 10), 0, 0));
+		content.add(parentDirField, 	new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		content.add(selectParentDirBtn, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, NONE, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(folderNameLabel, new GridBagConstraints(0, 2, 2, 1, 1.0, 0.0, LINE_START, NONE, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(folderNameField, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(fullPathText, new GridBagConstraints(0, 4, 1, 1, 1.0, 0.0, FIRST_LINE_START, BOTH, new Insets(10, 10, 0, 10), 0, 0));
+		content.add(folderNameLabel, 	new GridBagConstraints(0, 2, 2, 1, 1.0, 0.0, LINE_START, NONE, new Insets(10, 10, 0, 10), 0, 0));
+		content.add(folderNameField, 	new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		content.add(fullPathText, 		new GridBagConstraints(0, 4, 1, 1, 1.0, 0.0, FIRST_LINE_START, BOTH, new Insets(10, 10, 0, 10), 0, 0));
 
 		content.add(new JPanel(), new GridBagConstraints(0, 5, 1, 1, 1.0, 1.0, FIRST_LINE_START, BOTH, new Insets(10, 10, 0, 10), 0, 0));
 	}
@@ -106,16 +110,16 @@ public class KarafPage extends Page {
 
 	@Override
 	public void updateDependantValues() {
-		fullPathText.setText(String.format("Karaf wird nach %s/%s installiert.", fileChooser.getSelectedFile().toString(), karafPageData.getFolderName()));
+		fullPathText.setText(nls.get("KarafPage.description.installationPath", fileChooser.getSelectedFile().toString(), karafPageData.getFolderName()));
 	}
 
 	@Override
-	public String getTitle() {
+	public @NonNls String getTitle() {
 		return "Karaf";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Karaf Installationsort";
+		return nls.get("KarafPage.description");
 	}
 }

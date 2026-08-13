@@ -1,11 +1,13 @@
 package com.fes.flashcard.installer.app.pages;
 
-import com.fes.flashcard.installer.PageDataPool;
 import com.fes.flashcard.installer.page.PageData;
+import com.fes.flashcard.installer.page.PageDataPool;
 import com.fes.flashcard.installer.validation.ValidationResults;
+import org.jetbrains.annotations.NonNls;
 
 import java.util.List;
 
+@NonNls
 public class JavaPageData extends PageData {
 
 	// Values

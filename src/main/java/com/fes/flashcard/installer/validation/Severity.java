@@ -1,19 +1,23 @@
 package com.fes.flashcard.installer.validation;
 
+import com.fes.flashcard.installer.utilities.Nls;
+
 public enum Severity {
 
 	// ordinal order is used for sorting
-	INFO("Info"),
-	WARNING("Warnung"),
-	ERROR("Fehler");
+	INFO("Severity.info"),
+	WARNING("Severity.warning"),
+	ERROR("Severity.error");
 
-	private final String displayName;
+	private final Nls nls = new Nls(this);
 
-	Severity(String displayName) {
-		this.displayName = displayName;
+	private final String label;
+
+	Severity(String key) {
+		this.label = nls.get(key);
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public String label() {
+		return label;
 	}
 }

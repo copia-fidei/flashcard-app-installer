@@ -1,5 +1,7 @@
 package com.fes.flashcard.installer.toast;
 
+import org.jetbrains.annotations.NonNls;
+
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,6 +18,7 @@ import static javax.swing.Box.createHorizontalStrut;
 import static javax.swing.BoxLayout.LINE_AXIS;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
+@NonNls
 interface StatusBarDemo {
 
 	static void main() {
@@ -28,9 +31,9 @@ interface StatusBarDemo {
 			var panel         = new JPanel(new GridBagLayout());
 			var buttons       = new JPanel();
 
-			errorButton.addActionListener(_ -> statusBar.displayError("Something went wrong."));
+			errorButton.addActionListener(_   -> statusBar.displayError("Something went wrong."));
 			warningButton.addActionListener(_ -> statusBar.displayWarning("This is a warning."));
-			infoButton.addActionListener(_ -> statusBar.displayInfo("Everything is working correctly."));
+			infoButton.addActionListener(_ 	 -> statusBar.displayInfo("Everything is working correctly."));
 
 			buttons.setLayout(new BoxLayout(buttons, LINE_AXIS));
 			buttons.add(errorButton);

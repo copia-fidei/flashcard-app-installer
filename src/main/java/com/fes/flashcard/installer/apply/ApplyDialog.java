@@ -2,6 +2,7 @@ package com.fes.flashcard.installer.apply;
 
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.operation.OperationStatus;
+import com.fes.flashcard.installer.utilities.Nls;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -33,15 +34,16 @@ import static javax.swing.SwingConstants.HORIZONTAL;
 
 public class ApplyDialog extends JDialog {
 
-	private final List<Operation>       operations;
-	private final JTextArea             descriptionTextArea = new JTextArea(4, 20);
-	private final JButton               cancelButton        = new JButton("Abbrechen");
-	private final JButton               closeButton         = new JButton("Schließen");
-	private final JButton               startButton         = new JButton("Start");
+	private final static Nls nls = new Nls(ApplyDialog.class);
+
+	private final List<Operation> operations;
+	private final JTextArea       descriptionTextArea = new JTextArea(4, 20);
+	private final JButton         cancelButton        = new JButton(nls.get("ApplyDialog.button.Cancel"));
+	private final JButton         closeButton         = new JButton(nls.get("ApplyDialog.button.Close"));
+	private final JButton         startButton         = new JButton(nls.get("ApplyDialog.button.Start"));
 
 	public ApplyDialog(Frame parent, List<Operation> operations) {
-		super(parent, "Durchführung", true);
-
+		super(parent, nls.get("ApplyDialog.title"), true);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.operations = operations;
 
@@ -84,9 +86,9 @@ public class ApplyDialog extends JDialog {
 
 		var buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, LINE_AXIS));
-		cancelButton.setToolTipText("Bricht alle Operationen ab.");
-		closeButton.setToolTipText("Schließt den Dialog.");
-		startButton.setToolTipText("Führt alle Operationen aus.");
+		cancelButton.setToolTipText(nls.get("ApplyDialog.tooltip.Cancel_all_operations"));
+		closeButton.setToolTipText(nls.get("ApplyDialog.tooltip.Closes_the_dialog"));
+		startButton.setToolTipText(nls.get("ApplyDialog.tooltip.Start_all_operations"));
 		buttonPanel.add(cancelButton);
 		buttonPanel.add(createRigidArea(new Dimension(10, 0)));
 		buttonPanel.add(closeButton);
@@ -111,7 +113,7 @@ public class ApplyDialog extends JDialog {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
 				if (isProcessing()) {
-					showMessageDialog(ApplyDialog.this, "Die Installation ist noch im Gange. Der Dialog kann nicht geschlossen werden.", "Warnung", WARNING_MESSAGE);
+					showMessageDialog(ApplyDialog.this, nls.get("ApplyDialog.description.The_installation_is_still_in_progress"), nls.get("ApplyDialog.title.Warning"), WARNING_MESSAGE);
 				} else {
 					dispose();
 				}
@@ -119,7 +121,7 @@ public class ApplyDialog extends JDialog {
 		});
 
 		cancelButton.addActionListener(_ -> {
-			if (showConfirmDialog(this, "Sollen alle Operationen wirklich abgebrochen werden?", "Abbrechen", YES_NO_OPTION) == YES_OPTION) {
+			if (showConfirmDialog(this, nls.get("ApplyDialog.description.Should_all_operations_really_be_cancelled?"), nls.get("ApplyDialog.title.Should_all_operations_really_be_cancelled?"), YES_NO_OPTION) == YES_OPTION) {
 				cancel();
 			}
 		});

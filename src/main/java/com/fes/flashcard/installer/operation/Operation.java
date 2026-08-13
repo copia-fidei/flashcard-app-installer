@@ -121,10 +121,7 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 	}
 
 	protected void progress() {
-		int newProgress = getProgress() + 1;
-		if (newProgress <= 100) {
-			setProgress(newProgress);
-		}
+		progress(1);
 	}
 
 	protected void progress(int by) {

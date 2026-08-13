@@ -3,6 +3,7 @@ package com.fes.flashcard.installer.apply;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.operation.OperationAdapter;
 import com.fes.flashcard.installer.operation.OperationStatus;
+import com.fes.flashcard.installer.utilities.Nls;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -17,6 +18,7 @@ import static javax.swing.SwingUtilities.windowForComponent;
 
 public class ProgressSegment extends JPanel {
 
+	private final Nls nls = new Nls(this);
 	private final Operation           operation;
 	private final JButton             cancelButton  = new SVGButton("icons/svgrepo/cancel-svgrepo-com.svg", 20);
 	private final ProgressBarWithIcon progressBar   = new ProgressBarWithIcon(0, 100);
@@ -32,7 +34,7 @@ public class ProgressSegment extends JPanel {
 
 	private void buildGUI() {
 		setLayout(new BorderLayout(5, 0));
-		cancelButton.setToolTipText(operation.getDescription() + " abbrechen");
+		cancelButton.setToolTipText(nls.get("ProgressSegment.tooltip.Cancel_{0}", operation.getTitle()));
 
 		progressBar.setStringPainted(true);
 
@@ -43,7 +45,7 @@ public class ProgressSegment extends JPanel {
 
 	private void addListeners() {
 		cancelButton.addActionListener(_ -> {
-			if (showConfirmDialog(windowForComponent(this), "Soll die Operation wirklich abgebrochen werden?", "Abbrechen", YES_NO_OPTION) == YES_OPTION) {
+			if (showConfirmDialog(windowForComponent(this), nls.get("ProgressSegment.description.Should_this_operation_really_be_cancelled?"), nls.get("ProgressSegment.title.Should_this_operations_really_be_cancelled?"), YES_NO_OPTION) == YES_OPTION) {
 				operation.cancel(true);
 			}
 		});
