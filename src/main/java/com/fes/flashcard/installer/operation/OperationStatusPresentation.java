@@ -21,11 +21,11 @@ public class OperationStatusPresentation {
 
 	public static String getDescription(OperationStatus status) {
 		return switch (status) {
-			case NOT_STARTED  	   -> nls.get("OperationStatusPresentation.notStarted");
-			case RUNNING 		   -> nls.get("OperationStatusPresentation.running");
-			case ERROR 			   -> nls.get("OperationStatusPresentation.error");
-			case CANCELLED_BY_USER -> nls.get("OperationStatusPresentation.cancelledByUser");
-			case COMPLETED 		   -> nls.get("OperationStatusPresentation.completed");
+			case NOT_STARTED  	   -> nls.get("OperationStatusPresentation.Not_started");
+			case RUNNING 		   -> nls.get("OperationStatusPresentation.Running");
+			case ERROR 			   -> nls.get("OperationStatusPresentation.Failed");
+			case CANCELLED_BY_USER -> nls.get("OperationStatusPresentation.Cancelled_by_user");
+			case COMPLETED 		   -> nls.get("OperationStatusPresentation.Completed");
 		};
 	}
 }

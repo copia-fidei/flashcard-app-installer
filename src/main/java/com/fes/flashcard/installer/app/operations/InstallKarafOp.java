@@ -52,10 +52,10 @@ public class InstallKarafOp extends Operation {
 
 	public String getDescription() {
 		var test = new TextBuilder();
-		test.line(nls.get("InstallKarafOp.description.installApacheKaraf"));
-		test.line(nls.get("InstallKarafOp.description.checkIfKarafAlreadyInstalled", karafDir));
-		test.line(nls.get("InstallKarafOp.description.removeExistingContent", karafDir));
-		test.line(nls.get("InstallKarafOp.description.extractKarafZip", KARAF_ZIP_NAME, karafDir));
+		test.line(nls.get("InstallKarafOp.description.Install_Apache_Karaf"));
+		test.line(nls.get("InstallKarafOp.description.Check_if_Karaf_is_already_installed_in_{0}", karafDir));
+		test.line(nls.get("InstallKarafOp.description.Remove_existing_content_from_{0}", karafDir));
+		test.line(nls.get("InstallKarafOp.description.Extract_Karaf_{0}_to_{1}", KARAF_ZIP_NAME, karafDir));
 		return test.toString();
 	}
 
@@ -64,25 +64,25 @@ public class InstallKarafOp extends Operation {
 		setProgress(0);
 		IllegalPaths.check(karafDir);
 		setProgress(1);
-		println(nls.get("InstallKarafOp.println.checkIfKarafAlreadyInstalled"));
+		println(nls.get("InstallKarafOp.println.Check_if_Karaf_is_already_installed"));
 		Installed state = isKarafInstalled();
 		setProgress(2);
 		switch (state) {
 			case FULLY -> {
-				println(nls.get("InstallKarafOp.println.karafIsAlreadyFullyInstalled"));
+				println(nls.get("InstallKarafOp.println.Karaf_is_already_fully_installed"));
 				handleExistingInstallation(true);
 			}
 			case PARTIALLY -> {
-				println(nls.get("InstallKarafOp.println.karafIsPartiallyInstalled"));
+				println(nls.get("InstallKarafOp.println.Karaf_is_partially_installed"));
 				handleExistingInstallation(false);
 			}
 			case NOT -> {
-				println(nls.get("InstallKarafOp.println.extractingKaraf"));
+				println(nls.get("InstallKarafOp.println.Extracting_Karaf"));
 				installKaraf();
 			}
 		}
 		setProgress(100);
-		return nls.get("InstallKarafOp.println.installationCompleted");
+		return nls.get("InstallKarafOp.println.Installation_completed");
 	}
 
 	private void handleExistingInstallation(boolean isFullyInstalled) throws Exception {
@@ -91,29 +91,29 @@ public class InstallKarafOp extends Operation {
 		setProgress(4);
 		if (choice == Choice.REINSTALL) {
 			setProgress(5);
-			println(nls.get("InstallKarafOp.println.removeExistingInstallation"));
+			println(nls.get("InstallKarafOp.println.Remove_existing_installation"));
 			removeKaraf();
-			println(nls.get("InstallKarafOp.println.reinstallKaraf"));
+			println(nls.get("InstallKarafOp.println.Reinstall_Karaf"));
 			installKaraf();
 		} else {
-			println(nls.get("InstallKarafOp.println.existingKarafInstallationWillBeReused"));
+			println(nls.get("InstallKarafOp.println.Existing_Karaf_installation_will_be_reused"));
 		}
 		setProgress(99);
 	}
 
 	private DecisionDialog.Option showConflictDialog(boolean isFullyInstalled) throws Exception {
-		var reuseOption     = new Option(Choice.REUSE, nls.get("InstallKarafOp.dialog.optionReuse"), nls.get("InstallKarafOp.dialog.optionReuse.tooltip"));
-		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallKarafOp.dialog.optionReinstall"), nls.get("InstallKarafOp.dialog.optionReinstall.tooltip"));
+		var reuseOption     = new Option(Choice.REUSE, nls.get("InstallKarafOp.button.Reuse_Karaf"), nls.get("InstallKarafOp.tooltip.The_existing_installation_will_be_used"));
+		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallKarafOp.button.Reinstall_Karaf"), nls.get("InstallKarafOp.tooltip.The_existing_installation_will_be_removed_and_reinstalled"));
 
-		String title = isFullyInstalled ? nls.get("InstallKarafOp.dialog.alreadyInstalled.title") : nls.get("InstallKarafOp.dialog.partiallyInstalled.title");
+		String title = isFullyInstalled ? nls.get("InstallKarafOp.title.Karaf_is_already_installed") : nls.get("InstallKarafOp.title.Karaf_is_partially_installed");
 		return DecisionDialog.showDialog(title, getDescription(isFullyInstalled), List.of(reuseOption, reinstallOption), isFullyInstalled ? reuseOption : reinstallOption);
 	}
 
 	private String getDescription(boolean isFullyInstalled) {
 		if (isFullyInstalled) {
-			return nls.get("InstallKarafOp.dialog.descriptionFullyInstalled", karafDir);
+			return nls.get("InstallKarafOp.description.A_Karaf_installation_was_found_in_directory_{0}", karafDir);
 		} else {
-			return nls.get("InstallKarafOp.dialog.descriptionPartiallyInstalled", karafDir);
+			return nls.get("InstallKarafOp.description.An_incomplete_Karaf_installation_was_found_in_directory_{0}", karafDir);
 		}
 	}
 
@@ -138,12 +138,12 @@ public class InstallKarafOp extends Operation {
 	}
 
 	private void installKaraf() throws IOException {
-		println(nls.get("InstallKarafOp.println.createInstallationDirectory", karafDir));
+		println(nls.get("InstallKarafOp.println.Create_installation_directory_{0}", karafDir));
 		createDirectories(karafDir);
-		println(nls.get("InstallKarafOp.println.extractKaraf", KARAF_ZIP_NAME));
+		println(nls.get("InstallKarafOp.println.Extract_Karaf_{0}", KARAF_ZIP_NAME));
 		extractTarGz(Resources.KARAF.openStream(), karafDir);
-		println("Karaf extracted to " + karafDir);
-		println("Karaf successfully installed.");
+		println(nls.get("InstallKarafOp.println.Karaf_extracted_to_{0}", karafDir));
+		println(nls.get("InstallKarafOp.println.Karaf_successfully_installed"));
 	}
 
 
@@ -151,7 +151,7 @@ public class InstallKarafOp extends Operation {
 		var counter = new Counter(getProgress(), 50, karafDirFileCount);
 
 		if (exists(karafDir)) {
-			println("Lösche Verzeichnis: " + karafDir);
+			println(nls.get("InstallKarafOp.println.Delete_directory_{0}", karafDir));
 			walkFileTree(karafDir, new SimpleFileVisitor<>() {
 
 				@Override
@@ -159,7 +159,7 @@ public class InstallKarafOp extends Operation {
 					if (isCancelled()) {
 						return FileVisitResult.TERMINATE;
 					}
-					println("Datei " + file + " wird gelöscht");
+					println(nls.get("InstallKarafOp.println.File_{0}_is_being_deleted", file));
 					delete(file);
 					setProgress(counter.up());
 					return CONTINUE;
@@ -171,7 +171,7 @@ public class InstallKarafOp extends Operation {
 						return FileVisitResult.TERMINATE;
 					}
 					if (exc == null) {
-						println("Verzeichnis " + dir + " wird gelöscht");
+						println(nls.get("InstallKarafOp.println.Directory_{0}_is_being_deleted", dir));
 						delete(dir);
 						setProgress(counter.up());
 						return CONTINUE;
@@ -210,7 +210,7 @@ public class InstallKarafOp extends Operation {
 					setPosixFilePermissions(outputPath, PosixConverter.posixPermissionsFromDecimal(entry.getMode()));
 				}
 				setProgress(counter.up());
-				println("Entpackt: " + name);
+				println(nls.get("InstallKarafOp.println.Extracted_{0}", name));
 			}
 		}
 	}
@@ -219,6 +219,3 @@ public class InstallKarafOp extends Operation {
 		NOT, PARTIALLY, FULLY
 	}
 }
-
-
-

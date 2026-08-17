@@ -36,9 +36,9 @@ public class Karaf {
 
 		// for some reason the updated JAVA_HOME variable is not at effect until a system restart,
 		// that is why we have to find out its location manually
-		operation.println(nls.get("Karaf.findJavaLocation"));
+		operation.println(nls.get("Karaf.Find_Javas_install_path"));
 		JAVA_HOME = Java.getLocation();
-		operation.println(nls.get("Karaf.javaInstalledIn", JAVA_HOME));
+		operation.println(nls.get("Karaf.Java_is_installed_in_{0}", JAVA_HOME));
 
 		clientProgram = location.resolve("bin/client").toString();
 		startProgram = location.resolve("bin/start").toString();
@@ -49,24 +49,24 @@ public class Karaf {
 	public void start() throws IOException, InterruptedException, ErrorCode {
 		// Check if Karaf is already running
 		if (isRunning()) {
-			operation.println(nls.get("Karaf.alreadyRunning"));
+			operation.println(nls.get("Karaf.Karaf_is_already_running"));
 			return;
 		}
 		runSuccessfully(startProgram);
 
-		operation.println(nls.get("Karaf.waitingForStart"));
+		operation.println(nls.get("Karaf.Waiting_for_Karaf_to_start"));
 		long timeout = System.currentTimeMillis() + 30_000; // 30 seconds
 		while (System.currentTimeMillis() < timeout) {
 			if (operation.isCancelled()) {
-				throw new InterruptedException(nls.get("Karaf.operationCancelled"));
+				throw new InterruptedException(nls.get("Karaf.Operation_cancelled_while_waiting_for_Karaf_to_start"));
 			}
 			if (isRunning()) {
-				operation.println(nls.get("Karaf.started"));
+				operation.println(nls.get("Karaf.Karaf_is_started"));
 				return;
 			}
 			SECONDS.sleep(1);
 		}
-		throw new IOException(nls.get("Karaf.timeoutWaitingForStart"));
+		throw new IOException(nls.get("Karaf.Timeout_while_waiting_for_Karaf_to_start"));
 	}
 
 	private boolean isRunning() throws IOException, InterruptedException {
@@ -108,7 +108,7 @@ public class Karaf {
 	}
 
 	private void runSuccessfully(String... commands) throws IOException, InterruptedException, ErrorCode {
-		operation.execute(getBuilder(commands).start()).throwIfNonZeroExit(nls.get("Karaf.commandFailed", String.join(" ", commands)));
+		operation.execute(getBuilder(commands).start()).throwIfNonZeroExit(nls.get("Karaf.Command_failed_{0}", String.join(" ", commands)));
 	}
 
 	private Result run(String... commands) throws IOException, InterruptedException {

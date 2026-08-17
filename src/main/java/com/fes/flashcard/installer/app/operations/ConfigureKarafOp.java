@@ -31,10 +31,10 @@ public class ConfigureKarafOp extends Operation {
 
 	public String getDescription() {
 		var text = new TextBuilder();
-		text.line(nls.get("ConfigureKarafOp.description.installKarafFeatures"));
-		text.line(nls.get("ConfigureKarafOp.description.activatePasswordPrompt"));
-		text.line(nls.get("ConfigureKarafOp.description.startKarafIn", karafLocation));
-		text.line(nls.get("ConfigureKarafOp.description.execute"));
+		text.line(nls.get("ConfigureKarafOp.description.Install_Karaf_Features"));
+		text.line(nls.get("ConfigureKarafOp.description.Activate_password_prompt"));
+		text.line(nls.get("ConfigureKarafOp.description.Start_Karaf_in_{0}", karafLocation));
+		text.line(nls.get("ConfigureKarafOp.description.Execute"));
 		text.line("feature:repo-add mvn:no.priv.bang.karaf/jersey/LATEST/xml/features"); //NON-NLS
 		text.line("feature:install jersey-karaf-feature"); //NON-NLS
 		text.line("feature:install war"); //NON-NLS
@@ -48,8 +48,8 @@ public class ConfigureKarafOp extends Operation {
 		text.line("bundle:install wrap:mvn:com.github.spullara.mustache.java/compiler/0.9.14"); //NON-NLS
 		text.line("bundle:install mvn:org.jvnet.mimepull/mimepull/1.9.15"); //NON-NLS
 		text.line("feature:install jdbc"); //NON-NLS
-		text.line("Kopiere das flashcards.jar in Karafs deploy Ordner");
-		text.line("Stoppe Karaf");
+		text.line(nls.get("ConfigureKarafOp.println.Copy_Flashcards_JAR_to_Karaf_deploy_folder"));
+		text.line(nls.get("ConfigureKarafOp.println.Stop_Karaf"));
 		return text.toString();
 	}
 
@@ -58,13 +58,13 @@ public class ConfigureKarafOp extends Operation {
 		setProgress(1);
 
 		progress(3);
-		println(nls.get("ConfigureKarafOp.println.activatePasswordLoginForKarafUser"));
+		println(nls.get("ConfigureKarafOp.println.Activate_password_login_for_Karaf_user"));
 		activatePasswordLogin();
 		progress(3);
 
 		var karaf = new Karaf(karafLocation, this);
 		try {
-			println(nls.get("ConfigureKarafOp.println.startKaraf"));
+			println(nls.get("ConfigureKarafOp.println.Start_Karaf"));
 			progress(3);
 			karaf.start();
 			progress(3);
@@ -83,17 +83,17 @@ public class ConfigureKarafOp extends Operation {
 			execute(karaf, "bundle:install mvn:org.jvnet.mimepull/mimepull/1.9.15");
 			execute(karaf, "feature:install jdbc");
 
-			println(nls.get("ConfigureKarafOp.println.copyFlashcardsJarToKarafDeployFolder"));
+			println(nls.get("ConfigureKarafOp.println.Copy_Flashcards_JAR_to_Karaf_deploy_folder"));
 			progress(3);
 			deployBundle();
 			progress(3);
 		} finally {
-			println(nls.get("ConfigureKarafOp.println.stopKaraf"));
+			println(nls.get("ConfigureKarafOp.println.Stop_Karaf"));
 			karaf.stop();
 		}
 		setProgress(100);
 
-		return nls.get("ConfigureKarafOp.println.installationCompleted");
+		return nls.get("ConfigureKarafOp.println.Installation_completed");
 	}
 
 	private void execute(Karaf karaf, @NonNls String line) throws IOException, InterruptedException, ErrorCode {

@@ -5,6 +5,7 @@ import com.fes.flashcard.installer.app.pages.JavaPageData;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.utilities.Nls;
 
+// TODO remove some NLS keys
 public class InstallJavaOp extends Operation {
 
 	private final static Nls nls = new Nls(InstallJavaOp.class);

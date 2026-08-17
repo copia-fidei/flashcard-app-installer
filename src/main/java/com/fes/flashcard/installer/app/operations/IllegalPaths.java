@@ -14,10 +14,10 @@ interface IllegalPaths {
 
 	static void check(Path path) throws Exception {
 		if (!path.isAbsolute()) {
-			throw new Exception(nls.get("IllegalPaths.exception.pathMustBeAbsolute", path.toAbsolutePath()));
+			throw new Exception(nls.get("IllegalPaths.exception.Path_must_be_absolute_{0}", path.toAbsolutePath()));
 		}
 		if (path.equals(Home.PATH) || path.equals(Home.PATH.getParent())) {
-			throw new Exception(nls.get("IllegalPaths.exception.pathIsNotAllowed", path));
+			throw new Exception(nls.get("IllegalPaths.exception.Path_is_not_allowed_{0}", path));
 		}
 	}
 
