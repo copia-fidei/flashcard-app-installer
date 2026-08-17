@@ -69,7 +69,7 @@ public class Karaf {
 		throw new IOException(nls.get("Karaf.Timeout_while_waiting_for_Karaf_to_start"));
 	}
 
-	private boolean isRunning() throws IOException, InterruptedException {
+	private boolean isRunning() throws InterruptedException {
 		try {
 			var process = getBuilder(onKaraf("version")).start();
 			return process.waitFor() == 0;
@@ -82,8 +82,8 @@ public class Karaf {
 	public void stop() throws IOException, InterruptedException, ErrorCode {
 		runSuccessfully(stopProgram);
 
-		// stopping actually takes time, the 3 seconds is just arbitrary and in no way robust
-		SECONDS.sleep(3);
+		// stopping actually takes time, the 4 seconds are just arbitrary and in no way robust
+		SECONDS.sleep(4);
 	}
 
 	/// throws if the process returns a non-zero exit code

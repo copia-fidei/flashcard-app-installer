@@ -34,7 +34,7 @@ public class KarafPage extends Page {
 	private final JTextArea    fullPathText    = new JTextArea(2, 50);
 	private final JFileChooser fileChooser     = new JFileChooser();
 
-	private final JButton selectParentDirBtn = new JButton(nls.get("KarafPage.button.browse"));
+	private final JButton selectParentDirBtn = new JButton(nls.get("KarafPage.button.Browse"));
 
 	private final ActionListener  selectButtonListener = _ -> {
 		if (fileChooser.showOpenDialog(getContent()) == APPROVE_OPTION) {
@@ -51,8 +51,8 @@ public class KarafPage extends Page {
 
 	@Override
 	public void build() {
-		var parentDirLabel  = new JLabel(nls.get("KarafPage.label.parentDirectory"));
-		var folderNameLabel = new JLabel(nls.get("KarafPage.label.folderName"));
+		var parentDirLabel  = new JLabel(nls.get("KarafPage.label.Parent_Directory"));
+		var folderNameLabel = new JLabel(nls.get("KarafPage.label.Folder_Name"));
 
 
 		fullPathText.setEditable(false);
@@ -110,7 +110,7 @@ public class KarafPage extends Page {
 
 	@Override
 	public void updateDependantValues() {
-		fullPathText.setText(nls.get("KarafPage.description.installationPath", fileChooser.getSelectedFile().toString(), karafPageData.getFolderName()));
+		fullPathText.setText(nls.get("KarafPage.description.Karaf_will_be_installed_to_{0}_{1}", fileChooser.getSelectedFile().toString(), karafPageData.getFolderName()));
 	}
 
 	@Override
@@ -120,6 +120,6 @@ public class KarafPage extends Page {
 
 	@Override
 	public String getDescription() {
-		return nls.get("KarafPage.description");
+		return nls.get("KarafPage.description.Karaf_Installation_Location");
 	}
 }

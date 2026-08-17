@@ -35,23 +35,23 @@ public class RootPasswordPage extends Page {
 
 	@Override
 	public String getTitle() {
-		return nls.get("RootPasswordPage.page.title");
+		return nls.get("RootPasswordPage.page.title.Root_password");
 	}
 
 	@Override
 	public String getDescription() {
-		return nls.get("RootPasswordPage.page.description");
+		return nls.get("RootPasswordPage.page.description.Root_password");
 	}
 
 	@Override
 	public void build() {
-		var description = new JTextArea(nls.get("RootPasswordPage.description.sudoPassword"));
+		var description = new JTextArea(nls.get("RootPasswordPage.description.The_installation_and_configuration_of_the_database_must_be_done_as_Root_sudo"));
 		description.setLineWrap(true);
 		description.setWrapStyleWord(true);
 		description.setEditable(false);
 		description.setOpaque(false);
 		description.setFocusable(false);
-		var label = new JLabel(nls.get("RootPasswordPage.label.sudoPassword"));
+		var label = new JLabel(nls.get("RootPasswordPage.label.Sudo_password"));
 
 		content.add(description,   new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 		content.add(label, 		   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));

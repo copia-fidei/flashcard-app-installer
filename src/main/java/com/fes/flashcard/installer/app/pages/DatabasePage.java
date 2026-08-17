@@ -58,25 +58,25 @@ public class DatabasePage extends Page {
 
 	@Override
 	public String getTitle() {
-		return nls.get("DatabasePage.title");
+		return nls.get("DatabasePage.title.Database");
 	}
 
 	@Override
 	public String getDescription() {
-		return nls.get("DatabasePage.description");
+		return nls.get("DatabasePage.description.Select_database_and_version");
 	}
 
 	@Override
 	public void build() {
-		var databaseLabel      = new JLabel(nls.get("DatabasePage.label.implementation"));
-		var versionLabel       = new JLabel(nls.get("DatabasePage.label.version"));
-		var adminLabel         = new JLabel(nls.get("DatabasePage.label.administrator"));
-		var adminPasswordLabel = new JLabel(nls.get("DatabasePage.label.administratorPassword"));
-		var portLabel          = new JLabel(nls.get("DatabasePage.label.port"));
-		var hostLabel          = new JLabel(nls.get("DatabasePage.label.host"));
-		var dbNameLabel        = new JLabel(nls.get("DatabasePage.label.databaseName"));
-		var userLabel          = new JLabel(nls.get("DatabasePage.label.user"));
-		var userPasswordLabel  = new JLabel(nls.get("DatabasePage.label.userPassword"));
+		var databaseLabel      = new JLabel(nls.get("DatabasePage.label.Implementation"));
+		var versionLabel       = new JLabel(nls.get("DatabasePage.label.Version"));
+		var adminLabel         = new JLabel(nls.get("DatabasePage.label.Administrator"));
+		var adminPasswordLabel = new JLabel(nls.get("DatabasePage.label.Administrator_Password"));
+		var portLabel          = new JLabel(nls.get("DatabasePage.label.Port"));
+		var hostLabel          = new JLabel(nls.get("DatabasePage.label.Host"));
+		var dbNameLabel        = new JLabel(nls.get("DatabasePage.label.Database_Name"));
+		var userLabel          = new JLabel(nls.get("DatabasePage.label.User"));
+		var userPasswordLabel  = new JLabel(nls.get("DatabasePage.label.User_Password"));
 
 		versionsComboBox.setRenderer(new VersionListCellRenderer());
 

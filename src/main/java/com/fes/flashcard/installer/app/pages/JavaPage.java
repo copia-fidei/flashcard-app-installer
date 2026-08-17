@@ -30,7 +30,7 @@ public class JavaPage extends Page {
 
 	@Override
 	public void build() {
-		var javaPackageLabel = new JLabel(nls.get("JavaPage.label.packageName"));
+		var javaPackageLabel = new JLabel(nls.get("JavaPage.label.Package_Name"));
 
 		javaPackageField.setEditable(false);
 
@@ -61,11 +61,11 @@ public class JavaPage extends Page {
 
 	@Override
 	public String getTitle() {
-		return nls.get("JavaPage.title");
+		return nls.get("JavaPage.title.Java");
 	}
 
 	@Override
 	public String getDescription() {
-		return nls.get("JavaPage.description");
+		return nls.get("JavaPage.description.Installed_Java");
 	}
 }

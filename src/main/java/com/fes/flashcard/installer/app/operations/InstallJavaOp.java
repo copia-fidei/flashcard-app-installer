@@ -5,6 +5,8 @@ import com.fes.flashcard.installer.app.pages.JavaPageData;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.utilities.Nls;
 
+import static java.lang.System.lineSeparator;
+
 // TODO remove some NLS keys
 public class InstallJavaOp extends Operation {
 
@@ -20,26 +22,23 @@ public class InstallJavaOp extends Operation {
 
 	@Override
 	public String getDescription() {
-		return nls.get("InstallJavaOp.description.installOpenJDK21") + "\n" +
-		       nls.get("InstallJavaOp.description.sudoAptInstall", debianPackage);
+		return "sudo apt install " + debianPackage + lineSeparator(); //NON-NLS
 	}
 
 	@Override
 	protected String doInBackground() throws Exception {
-		println(nls.get("InstallJavaOp.println.installOpenJDK21"));
 		setProgress(10);
-		println(nls.get("InstallJavaOp.println.execute"));
-		println(nls.get("InstallJavaOp.println.sudoAptInstall", debianPackage));
+		println("sudo apt install " + debianPackage); //NON-NLS
 		setProgress(20);
 		execute(new ProcessBuilder("sudo", "apt", "install", debianPackage).start()) //NON-NLS
-				.throwIfNonZeroExit(nls.get("InstallJavaOp.println.javaInstallationFailed"));
+				.throwIfNonZeroExit(nls.get("InstallJavaOp.println.Java_installation_failed"));
 		setProgress(30);
-		println(nls.get("InstallJavaOp.println.determineJavaInstallationPath"));
+		println(nls.get("InstallJavaOp.println.Find_out_where_Java_is_installed"));
 		setProgress(40);
 		String JAVA_HOME = Java.getLocation();
-		println(nls.get("InstallJavaOp.println.javaInstallationPath", JAVA_HOME));
+		println(nls.get("InstallJavaOp.println.Java_located_at_{0}", JAVA_HOME));
 		setProgress(50);
-		println(nls.get("InstallJavaOp.println.updateEtcEnvironmentWithJavaHome"));
+		println(nls.get("InstallJavaOp.println.Update_JAVA_HOME_in_/etc/environment"));
 		setProgress(60);
 		var replace_JAVA_HOME = new ProcessBuilder("sudo", "sed", "-i", "s|^JAVA_HOME=\"[^\"]*\"|JAVA_HOME=\"" + JAVA_HOME + "\"|", "/etc/environment").start(); //NON-NLS
 		replace_JAVA_HOME.waitFor();
@@ -53,6 +52,6 @@ public class InstallJavaOp extends Operation {
 		// For some reason, the new JAVA_HOME environment variable is only at effect when the system is restarted
 		// A user could override JAVA_HOME through other means, but there is no way to prevent every possible scenario.
 		setProgress(100);
-		return nls.get("InstallJavaOp.println.installationCompleted");
+		return nls.get("InstallJavaOp.println.Installation_completed");
 	}
 }

@@ -34,12 +34,12 @@ public class InstallH2Operation extends Operation {
 	}
 
 	public String getDescription() {
-		return nls.get("InstallH2Operation.description.installKarafJDBCFeature") + "\n" +
-		       nls.get("InstallH2Operation.description.installPaxJDBCH2DriverForVersion", h2Version) + "\n" +
-		       nls.get("InstallH2Operation.description.createH2Database") + "\n" +
-		       nls.get("InstallH2Operation.description.createDataSourceForH2") + "\n" +
-		       nls.get("InstallH2Operation.description.createDatabaseTables") + "\n" +
-		       nls.get("InstallH2Operation.description.testDataSource");
+
+		return nls.get("InstallH2Operation.description.Install_H2_in_Karaf") +
+				"feature:install pax-jdbc-h2" + "\n" + //NON-NLS
+		       nls.get("InstallH2Operation.description.Create_DataSource") + "\n" +
+		       nls.get("InstallH2Operation.description.Create_database_tables") + "\n" +
+		       nls.get("InstallH2Operation.description.Test_DataSource");
 	}
 
 	@Override
@@ -50,50 +50,47 @@ public class InstallH2Operation extends Operation {
 			karaf.start();
 			setProgress(20);
 
-			println(nls.get("InstallH2Operation.println.installPaxJDBCH2Feature"));
+			println("feature:install pax-jdbc-h2"); //NON-NLS
 			setProgress(50);
 			karaf.execute("feature:install pax-jdbc-h2");
-			println(nls.get("InstallH2Operation.println.paxJDBCH2DriverInstalled"));
 			setProgress(60);
 
-			println(nls.get("InstallH2Operation.println.createDataSource"));
+			println(nls.get("InstallH2Operation.description.Create_DataSource"));
 			setProgress(70);
 			createDataSource(karaf);
 			setProgress(80);
 
-			println(nls.get("InstallH2Operation.println.createDatabaseTables"));
+			println(nls.get("InstallH2Operation.println.Create_database_tables"));
 			setProgress(85);
 			createTables(karaf);
 			setProgress(90);
 
-			println(nls.get("InstallH2Operation.println.testDataSource"));
+			println(nls.get("InstallH2Operation.println.Test_DataSource_(SELECT_version())"));
 			setProgress(95);
 			karaf.execute("jdbc:query " + dataSourceName + " SELECT VERSION();");
-			println(nls.get("InstallH2Operation.println.dataSourceTestSuccessful"));
 		} finally {
 			println(nls.get("InstallH2Operation.println.stopKaraf"));
 			karaf.stop();
 		}
 		setProgress(100);
 
-		return nls.get("InstallH2Operation.println.h2DatabaseAndDataSourceCreatedSuccessfully");
+		return nls.get("InstallH2Operation.println.H2_successfully_installed");
 	}
 
 	private void createDataSource(Karaf karaf) throws IOException, InterruptedException, ErrorCode {
-		println(nls.get("InstallH2Operation.println.deleteDataSource", dataSourceName));
+		println(nls.get("InstallH2Operation.println.Delete_old_DataSource_{0}", dataSourceName));
 		karaf.execute("jdbc:ds-delete " + dataSourceName);
 		String url = "\"jdbc:h2:${karaf.data}/database/h2/" + databasePageData.getDbName() + ";MODE=PostgreSQL\""; //NON-NLS
 		karaf.execute("jdbc:ds-create " + "-dc org.h2.Driver " + "-url " + url + " " + "-u " + databasePageData.getH2User() + " " + dataSourceName);
-		println(nls.get("InstallH2Operation.println.dataSourceCreated", dataSourceName));
+		println(nls.get("InstallH2Operation.println.DataSource_created_{0}", dataSourceName));
 	}
 
 	// H2 database will be created on first connection
 	private void createTables(Karaf karaf) throws Exception {
 		use(getTmpFile(H2_INIT_SQL), file -> {
-			println(nls.get("InstallH2Operation.println.databaseTablesBeingCreated"));
-			println(nls.get("InstallH2Operation.println.scriptBeingExecuted", file));
+			println(nls.get("InstallH2Operation.println.Execute_script_{0}", file));
 			karaf.executeSuccessfully("jdbc:execute " + dataSourceName + " RUNSCRIPT FROM '" + file + "'");
-			println(nls.get("InstallH2Operation.println.databaseTablesCreated"));
+			println(nls.get("InstallH2Operation.println.Tables_created"));
 		});
 	}
 }

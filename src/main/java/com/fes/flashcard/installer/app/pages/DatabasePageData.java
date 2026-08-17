@@ -147,15 +147,15 @@ public class DatabasePageData extends PageData {
 
 		if (database == Database.PostgreSQL) {
 			if (postgresPort.isBlank()) {
-				results.addError(nls.get("DatabasePageData.error.title.emptyPort"), nls.get("DatabasePageData.error.description.emptyPort"), 1);
+				results.addError(nls.get("DatabasePageData.error.title.Empty_Port"), nls.get("DatabasePageData.error.description.Port_must_not_be_empty"), 1);
 			} else {
 				try {
 					int portNum = Integer.parseInt(postgresPort);
 					if (portNum < 1 || portNum > 65535) {
-						results.addError(nls.get("DatabasePageData.error.title.invalidPort"), nls.get("DatabasePageData.error.description.portShouldBeBetween1And65535"), 0);
+						results.addError(nls.get("DatabasePageData.error.title.Invalid_Port"), nls.get("DatabasePageData.error.description.Port_should_be_between_1_and_65535"), 0);
 					}
 				} catch (NumberFormatException e) {
-					results.addError(nls.get("DatabasePageData.error.title.invalidPort"), nls.get("DatabasePageData.error.description.portShouldBeANumber"), 0);
+					results.addError(nls.get("DatabasePageData.error.title.Invalid_Port"), nls.get("DatabasePageData.error.description.Port_must_be_a_number"), 0);
 				}
 			}
 			if (isPostgresInstalled()) {
@@ -184,29 +184,29 @@ public class DatabasePageData extends PageData {
 			}
 			String adminAuthMethod = adminAuthMethodOpt.get();
 			if (adminAuthMethod.equals("reject")) { //$NON-NLS
-				log.log(Level.INFO, "Authentification Method is 'reject'. " + postgresAdmin + " cannot log in");
+				log.log(Level.INFO, "Authentification Method is 'reject'. Role " + postgresAdmin + " cannot log in");
 			}
 			if (!AuthMethod.isSupportedForAdmin(adminAuthMethod)) {
-				validationResults.addError(nls.get("DatabasePageData.error.title.unableToLogin.admin"), nls.get("DatabasePageData.error.description.unableToLogin.admin"), 1);
+				validationResults.addError(nls.get("DatabasePageData.error.title.Unable_to_login_administrator"), nls.get("DatabasePageData.error.description.The_installer_supports_only_the_following_authentication_methods_for_the_postgres_administrator_role"), 1);
 				return;
 			}
 			if (adminAuthMethod.equals("peer")) { //$NON-NLS
-				validationResults.add(nls.get("DatabasePageData.info.title.unableToVerifyAdminPassword"), nls.get("DatabasePageData.info.description.unableToVerifyAdminPassword"), Severity.INFO);
+				validationResults.add(nls.get("DatabasePageData.info.title.Password_correctness_cannot_be_determined"), nls.get("DatabasePageData.info.description.The_authentication_method_peer_is_active"), Severity.INFO);
 				return;
 			}
 			if (AuthMethod.isPasswordBased(adminAuthMethod)) {
 				if (!canConnectToPostgresAdminByPassword()) {
-					validationResults.add(nls.get("DatabasePageData.error.title.wrongAdminPassword"), nls.get("DatabasePageData.error.description.wrongAdminPassword"), Severity.ERROR);
+					validationResults.add(nls.get("DatabasePageData.error.title.Wrong_admin_password"), nls.get("DatabasePageData.error.description.The_admin_password_is_wrong"), Severity.ERROR);
 				}
 			}
 		} catch (IOException | InterruptedException e) {
-			log.log(SEVERE, "Fehler beim Validieren des Administratorpassworts", e);
+			log.log(SEVERE, "Error during validation of the admin password.", e);
 		}
 	}
 
 	private void validateUserPassword(ValidationResults validationResults) {
 		if (postgresUserPassword.isBlank()) {
-			validationResults.add(nls.get("DatabasePageData.error.title.emptyUserPassword"), nls.get("DatabasePageData.error.description.emptyUserPassword"), Severity.ERROR);
+			validationResults.add(nls.get("DatabasePageData.error.title.Empty_user_password"), nls.get("DatabasePageData.error.description.A_user_password_is_required"), Severity.ERROR);
 		}
 		try {
 			Optional<String> userAuthMethodOpt = postgres.getAuthMethod(postgresUser, "host", dataSourceName);
@@ -220,16 +220,16 @@ public class DatabasePageData extends PageData {
 			}
 			if (AuthMethod.isPasswordBased(userAuthMethod)) {
 				if (!connectUser()) {
-					validationResults.add(nls.get("DatabasePageData.warning.title.wrongUserPassword"), nls.get("DatabasePageData.warning.description.wrongUserPassword", postgresUserPassword), Severity.WARNING);
+					validationResults.add(nls.get("DatabasePageData.warning.title.Wrong_user_password"), nls.get("DatabasePageData.warning.description.The_specified_user_password_does_not_match_the_password_of_the_existing_database", postgresUserPassword), Severity.WARNING);
 				}
 			}
 		} catch (IOException | InterruptedException e) {
-			log.log(Level.WARNING, "Passwort Validierung unterbrochen", e);
+			log.log(Level.WARNING, "Error during validation of user " + postgresUser, e);
 		}
 	}
 
 	private ValidationResult unableToConnect() {
-		return new ValidationResult(nls.get("DatabasePageData.warning.title.unableToConnect"), nls.get("DatabasePageData.warning.description.unableToConnect", postgresUser), Severity.WARNING);
+		return new ValidationResult(nls.get("DatabasePageData.warning.title.Unable_to_connect"), nls.get("DatabasePageData.warning.description.Only_connections_with_the_connection_type_host_and_one_of_the_authentication_methods_trust_md5_or_scram_sha_256_are_supported_for_the_user_{0}", postgresUser), Severity.WARNING);
 	}
 
 	private boolean canConnectToPostgresAdminByPassword() {
