@@ -17,8 +17,7 @@ public abstract class PagePool {
 
 	protected final Logger log = getLogger(getClass().getName());
 
-	protected final List<Page>                pages      = new ArrayList<>();
-	protected final List<Supplier<Operation>> operations = new ArrayList<>();
+	protected final List<Page>   pages = new ArrayList<>();
 	protected final PageFrame    pageFrame;
 	protected final PageDataPool pageDataPool;
 	protected final ButtonBar    buttonBar;
@@ -32,7 +31,7 @@ public abstract class PagePool {
 	}
 
 	public void init() {
-		initOverride();
+		addPages();
 		for (Page page : pages) {
 			page.build();
 		}
@@ -41,21 +40,24 @@ public abstract class PagePool {
 		buttonBar.getNextButton().addActionListener(_ -> forward());
 		buttonBar.getBackButton().addActionListener(_ -> back());
 		buttonBar.getDefaultsButton().addActionListener(_ -> currentPage.restoreDefaults());
-		buttonBar.getApplyButton().addActionListener(_ -> new ApplyDialog(pageFrame, getOperations()).setVisible(true));
+		buttonBar.getApplyButton().addActionListener(_ -> new ApplyDialog(pageFrame, operations()).setVisible(true));
 	}
 
-	private List<Operation> getOperations() {
-		return operations.stream().map(Supplier::get).toList();
+
+	private List<Operation> operations() {
+		return getOperations().stream().map(Supplier::get).toList();
 	}
 
 	private String[] getPageTitles() {
 		return pages.stream().map(Page::getTitle).toArray(String[]::new);
 	}
 
-	/**
-	 * Create and add the pages and operations.
-	 */
-	protected abstract void initOverride();
+	/// Create PageData and Page objects and add them.
+	protected abstract void addPages();
+
+	/// Provide operations.
+	protected abstract List<Supplier<Operation>> getOperations();
+
 
 	public void forward() {
 		int currentIndex = pages.indexOf(currentPage);
