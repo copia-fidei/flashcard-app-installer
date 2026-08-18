@@ -55,7 +55,6 @@ public class InstallPostgresOp extends Operation {
 				handleExistingPostgres();
 			}
 			case NOT -> {
-				println(nls.get("InstallPostgresOp.println.installPostgres"));
 				installPostgres();
 			}
 		}

@@ -71,12 +71,12 @@ public class DatabasePage extends Page {
 		var databaseLabel      = new JLabel(nls.get("DatabasePage.label.Implementation"));
 		var versionLabel       = new JLabel(nls.get("DatabasePage.label.Version"));
 		var adminLabel         = new JLabel(nls.get("DatabasePage.label.Administrator"));
-		var adminPasswordLabel = new JLabel(nls.get("DatabasePage.label.Administrator_Password"));
+		var adminPasswordLabel = new JLabel(nls.get("DatabasePage.label.Administrator_password"));
 		var portLabel          = new JLabel(nls.get("DatabasePage.label.Port"));
 		var hostLabel          = new JLabel(nls.get("DatabasePage.label.Host"));
-		var dbNameLabel        = new JLabel(nls.get("DatabasePage.label.Database_Name"));
+		var dbNameLabel        = new JLabel(nls.get("DatabasePage.label.Database_name"));
 		var userLabel          = new JLabel(nls.get("DatabasePage.label.User"));
-		var userPasswordLabel  = new JLabel(nls.get("DatabasePage.label.User_Password"));
+		var userPasswordLabel  = new JLabel(nls.get("DatabasePage.label.User_password"));
 
 		versionsComboBox.setRenderer(new VersionListCellRenderer());
 

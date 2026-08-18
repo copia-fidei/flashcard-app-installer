@@ -83,7 +83,7 @@ public class Karaf {
 		runSuccessfully(stopProgram);
 
 		// stopping actually takes time, the 4 seconds are just arbitrary and in no way robust
-		SECONDS.sleep(4);
+		SECONDS.sleep(5);
 	}
 
 	/// throws if the process returns a non-zero exit code

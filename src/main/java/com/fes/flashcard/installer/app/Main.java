@@ -10,11 +10,15 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Main {
 
+	static {
+//		Locale.setDefault(Locale.ENGLISH);
+		Locale.setDefault(Locale.GERMAN);
+	}
+
 	private static final Nls nls = new Nls(Main.class);
 
 	@SuppressWarnings("unused")
 	static void main(String[] args) {
-		Locale.setDefault(Locale.ENGLISH);
 		invokeLater(() -> {
 			var pageFrame = new PageFrame(nls.get("Main.title.app"));
 			var pagePool  = new AppPagePool(pageFrame);

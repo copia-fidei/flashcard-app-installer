@@ -66,22 +66,22 @@ public class KarafPageData extends PageData {
 		var results = new ValidationResults();
 
 		if (!parentDir.startsWith(Home.PATH)) {
-			results.addError(nls.get("KarafPageData.error.title.Invalid_Parent_Directory"), nls.get("KarafPageData.error.description.The_selected_parent_directory_must_be_under_home"), 0);
+			results.addError(nls.get("KarafPageData.error.title.Invalid_parent_directory"), nls.get("KarafPageData.error.description.The_selected_parent_directory_must_be_under_home"), 0);
 		}
 		if (Files.isRegularFile(parentDir)) {
-			results.addError(nls.get("KarafPageData.error.title.Invalid_Parent_Directory"), nls.get("KarafPageData.error.description.A_file_is_selected_Only_directories_can_be_selected"), 1);
+			results.addError(nls.get("KarafPageData.error.title.Invalid_parent_directory"), nls.get("KarafPageData.error.description.A_file_is_selected_Only_directories_can_be_selected"), 1);
 		}
 		if (folderName.isBlank()) {
-			results.addError(nls.get("KarafPageData.error.title.Invalid_Folder_Name"), nls.get("KarafPageData.error.description.The_folder_name_must_not_be_empty"), 0);
+			results.addError(nls.get("KarafPageData.error.title.Invalid_folder_name"), nls.get("KarafPageData.error.description.The_folder_name_must_not_be_empty"), 0);
 		}
 		if (folderName.contains("/") || folderName.contains("\\")) {
-			results.addError(nls.get("KarafPageData.error.title.Invalid_Folder_Name"), nls.get("KarafPageData.error.description.The_folder_name_must_not_contain_path_separators"), 1);
+			results.addError(nls.get("KarafPageData.error.title.Invalid_folder_name"), nls.get("KarafPageData.error.description.The_folder_name_must_not_contain_path_separators"), 1);
 		}
 		if (folderName.equals(".") || folderName.equals("..")) {
-			results.addError(nls.get("KarafPageData.error.title.Invalid_Folder_Name"), nls.get("KarafPageData.error.description.The_folder_name_must_not_be_relative"), 1);
+			results.addError(nls.get("KarafPageData.error.title.Invalid_folder_name"), nls.get("KarafPageData.error.description.The_folder_name_must_not_be_relative"), 1);
 		}
 		if (parentDir.getFileName().toString().equals(folderName)) {
-			results.add(nls.get("KarafPageData.warning.title.Suspicious_Directory_Path"), nls.get("KarafPageData.warning.description.Folder_and_parent_folder_have_the_same_name"), WARNING);
+			results.add(nls.get("KarafPageData.warning.title.Suspicious_directory_path"), nls.get("KarafPageData.warning.description.Folder_and_parent_folder_have_the_same_name"), WARNING);
 		}
 		if (!new Directory(getKarafInstallationDir()).isEmpty()) {
 			results.add(nls.get("KarafPageData.warning.title.Folder_is_not_empty"), nls.get("KarafPageData.warning.description.The_selected_folder_is_not_empty_Its_contents_will_be_deleted_during_installation"), WARNING);

@@ -2,6 +2,7 @@ package com.fes.flashcard.installer.app.pages;
 
 import com.fes.flashcard.installer.app.AuthMethod;
 import com.fes.flashcard.installer.app.Database;
+import com.fes.flashcard.installer.app.PgHba;
 import com.fes.flashcard.installer.app.Postgres;
 import com.fes.flashcard.installer.page.PageData;
 import com.fes.flashcard.installer.page.PageDataPool;
@@ -147,15 +148,15 @@ public class DatabasePageData extends PageData {
 
 		if (database == Database.PostgreSQL) {
 			if (postgresPort.isBlank()) {
-				results.addError(nls.get("DatabasePageData.error.title.Empty_Port"), nls.get("DatabasePageData.error.description.Port_must_not_be_empty"), 1);
+				results.addError(nls.get("DatabasePageData.error.title.Empty_port"), nls.get("DatabasePageData.error.description.Port_must_not_be_empty"), 1);
 			} else {
 				try {
 					int portNum = Integer.parseInt(postgresPort);
 					if (portNum < 1 || portNum > 65535) {
-						results.addError(nls.get("DatabasePageData.error.title.Invalid_Port"), nls.get("DatabasePageData.error.description.Port_should_be_between_1_and_65535"), 0);
+						results.addError(nls.get("DatabasePageData.error.title.Invalid_port"), nls.get("DatabasePageData.error.description.Port_should_be_between_1_and_65535"), 0);
 					}
 				} catch (NumberFormatException e) {
-					results.addError(nls.get("DatabasePageData.error.title.Invalid_Port"), nls.get("DatabasePageData.error.description.Port_must_be_a_number"), 0);
+					results.addError(nls.get("DatabasePageData.error.title.Invalid_port"), nls.get("DatabasePageData.error.description.Port_must_be_a_number"), 0);
 				}
 			}
 			if (isPostgresInstalled()) {
@@ -187,7 +188,7 @@ public class DatabasePageData extends PageData {
 				log.log(Level.INFO, "Authentification Method is 'reject'. Role " + postgresAdmin + " cannot log in");
 			}
 			if (!AuthMethod.isSupportedForAdmin(adminAuthMethod)) {
-				validationResults.addError(nls.get("DatabasePageData.error.title.Unable_to_login_administrator"), nls.get("DatabasePageData.error.description.The_installer_supports_only_the_following_authentication_methods_for_the_postgres_administrator_role"), 1);
+				validationResults.addError(nls.get("DatabasePageData.error.title.Unable_to_login_administrator"), nls.get("DatabasePageData.error.description.The_installer_supports_only_the_following_authentication_methods_for_the_administrator_role_postgres"), 1);
 				return;
 			}
 			if (adminAuthMethod.equals("peer")) { //$NON-NLS
@@ -229,7 +230,12 @@ public class DatabasePageData extends PageData {
 	}
 
 	private ValidationResult unableToConnect() {
-		return new ValidationResult(nls.get("DatabasePageData.warning.title.Unable_to_connect"), nls.get("DatabasePageData.warning.description.Only_connections_with_the_connection_type_host_and_one_of_the_authentication_methods_trust_md5_or_scram_sha_256_are_supported_for_the_user_{0}", postgresUser), Severity.WARNING);
+		return new ValidationResult(
+				nls.get("DatabasePageData.warning.title.Unable_to_connect"),
+				nls.get("DatabasePageData.warning.description.Only_connections_with_the_connection_type_host_and_one_of_the_authentication_methods_trust_md5_or_scram_sha_256_are_supported_for_the_user_{0}",
+						postgresUser,
+						PgHba.getEntries(dbName, postgresUser)),
+				Severity.WARNING);
 	}
 
 	private boolean canConnectToPostgresAdminByPassword() {

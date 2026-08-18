@@ -120,6 +120,6 @@ public class KarafPage extends Page {
 
 	@Override
 	public String getDescription() {
-		return nls.get("KarafPage.description.Karaf_Installation_Location");
+		return nls.get("KarafPage.description.Karafs_install_Location");
 	}
 }

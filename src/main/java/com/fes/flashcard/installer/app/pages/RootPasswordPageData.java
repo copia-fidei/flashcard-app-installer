@@ -51,7 +51,7 @@ public class RootPasswordPageData extends PageData {
 				writer.newLine();
 			}
 			if (process.waitFor() != 0) {
-				validationResults.add(nls.get("RootPasswordPageData.error.title.Incorrect_Password"), nls.get("RootPasswordPageData.error.description.The_password_for_the_root_user_is_incorrect"), Severity.ERROR);
+				validationResults.add(nls.get("RootPasswordPageData.error.title.Incorrect_password"), nls.get("RootPasswordPageData.error.description.The_password_for_the_root_user_is_incorrect"), Severity.ERROR);
 			}
 		} catch (IOException e) {
 			log.log(WARNING, "Failed to validate root password", e);

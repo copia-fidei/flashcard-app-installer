@@ -31,8 +31,7 @@ public class CreatePostgresDataSourceOp extends Operation {
 
 	public String getDescription() {
 		var text = new TextBuilder();
-		text.line(nls.get("CreatePostgresDataSourceOp.description.Install_Karaf_JDBC_Feature"));
-		text.line(nls.get("CreatePostgresDataSourceOp.description.Install_Pax_JDBC_PostgreSQL_Driver"));
+		text.line("feature:install pax-jdbc-postgresql");
 		text.line(nls.get("CreatePostgresDataSourceOp.description.Create_DataSource_for_PostgreSQL_database"));
 		text.line(nls.get("CreatePostgresDataSourceOp.description.Test_DataSource"));
 		return text.toString();
@@ -44,14 +43,9 @@ public class CreatePostgresDataSourceOp extends Operation {
         try {
 			setProgress(1);
 			karaf.start();
-			setProgress(0);
-			println(nls.get("CreatePostgresDataSourceOp.println.Install_Karaf_JDBC_Feature"));
-			karaf.executeSuccessfully("feature:install jdbc");
-			setProgress(20);
-			println(nls.get("CreatePostgresDataSourceOp.println.JDBC_feature_installed_successfully"));
 			setProgress(30);
-			println(nls.get("CreatePostgresDataSourceOp.println.Install_Pax_JDBC_PostgreSQL_Driver"));
-			karaf.executeSuccessfully("feature:install pax-jdbc-postgresql");
+			println("feature:install pax-jdbc-postgresql");
+			karaf.execute("feature:install pax-jdbc-postgresql");
 			setProgress(50);
 			println(nls.get("CreatePostgresDataSourceOp.println.Pax_JDBC_PostgreSQL_Driver_installed_successfully"));
 			setProgress(60);

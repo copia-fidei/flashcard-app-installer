@@ -55,7 +55,7 @@ public class InstallKarafOp extends Operation {
 		test.line(nls.get("InstallKarafOp.description.Install_Apache_Karaf"));
 		test.line(nls.get("InstallKarafOp.description.Check_if_Karaf_is_already_installed_in_{0}", karafDir));
 		test.line(nls.get("InstallKarafOp.description.Remove_existing_content_from_{0}", karafDir));
-		test.line(nls.get("InstallKarafOp.description.Extract_Karaf_{0}_to_{1}", KARAF_ZIP_NAME, karafDir));
+		test.line(nls.get("InstallKarafOp.description.Extract_{0}_to_{1}", KARAF_ZIP_NAME, karafDir));
 		return test.toString();
 	}
 

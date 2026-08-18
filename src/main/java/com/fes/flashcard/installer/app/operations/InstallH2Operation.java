@@ -6,6 +6,7 @@ import com.fes.flashcard.installer.app.pages.KarafPageData;
 import com.fes.flashcard.installer.operation.ErrorCode;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.utilities.Nls;
+import com.fes.flashcard.installer.utilities.TextBuilder;
 
 import java.io.IOException;
 
@@ -34,12 +35,13 @@ public class InstallH2Operation extends Operation {
 	}
 
 	public String getDescription() {
-
-		return nls.get("InstallH2Operation.description.Install_H2_in_Karaf") +
-				"feature:install pax-jdbc-h2" + "\n" + //NON-NLS
-		       nls.get("InstallH2Operation.description.Create_DataSource") + "\n" +
-		       nls.get("InstallH2Operation.description.Create_database_tables") + "\n" +
-		       nls.get("InstallH2Operation.description.Test_DataSource");
+		var text = new TextBuilder();
+		text.line(nls.get("InstallH2Operation.description.Install_H2_in_Karaf"));
+		text.line("feature:install pax-jdbc-h2"); //NON-NLS
+		text.line(nls.get("InstallH2Operation.description.Create_DataSource"));
+		text.line(nls.get("InstallH2Operation.description.Create_database_tables"));
+		text.line(nls.get("InstallH2Operation.description.Test_DataSource"));
+		return text.toString();
 	}
 
 	@Override
@@ -69,7 +71,7 @@ public class InstallH2Operation extends Operation {
 			setProgress(95);
 			karaf.execute("jdbc:query " + dataSourceName + " SELECT VERSION();");
 		} finally {
-			println(nls.get("InstallH2Operation.println.stopKaraf"));
+			println(nls.get("InstallH2Operation.println.Stop_Karaf"));
 			karaf.stop();
 		}
 		setProgress(100);

@@ -1,6 +1,7 @@
 package com.fes.flashcard.installer.app.operations;
 
 import com.fes.flashcard.installer.app.AuthMethod;
+import com.fes.flashcard.installer.app.PgHba;
 import com.fes.flashcard.installer.app.Postgres;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.PostgresState;
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.function.Supplier;
 
 import static com.fes.flashcard.installer.app.Resources.POSTGRES_INIT_SQL;
@@ -175,11 +175,7 @@ public class ConfigurePostgresOp extends Operation {
 		println(nls.get("ConfigurePostgresOp.println.Enable_connection_for_role_{0}", user));
 		progress(2);
 
-		// TODO put into a nother class
-		@NonNls String entries = MessageFormat.format("""
-				host    {0}     {1}      127.0.0.1/32            scram-sha-256
-				host    {0}     {1}      ::1/128                 scram-sha-256
-				""", dbName, user);
+		String entries = PgHba.getEntries(dbName, user);
 
 		String authFile = postgres.getAuthFile();
 		println(nls.get("ConfigurePostgresOp.println.Add_entries_to_auth_file_{0}_{1}", entries, authFile));
@@ -268,7 +264,7 @@ public class ConfigurePostgresOp extends Operation {
 	}
 
 	private void grantUserOwnershipOfDatabase(Supplier<ProcessBuilder> loginCommand) throws Exception {
-		println(nls.get("ConfigurePostgresOp.println.Grant_ownership_of_database_{0}_{1}", user, dbName));
+		println(nls.get("ConfigurePostgresOp.println.Grant_ownership_of_database_{0}_to_{1}", dbName, user));
 		progress(2);
 
 		@NonNls String sql = format("""
@@ -276,7 +272,7 @@ public class ConfigurePostgresOp extends Operation {
 				GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {1};
 				""", dbName, user);
 
-		println(nls.get("ConfigurePostgresOp.println.execute_grant"));
+		println(nls.get("ConfigurePostgresOp.println.Execute"));
 		println(sql);
 
 		var pb = loginCommand.get();

@@ -30,7 +30,7 @@ public class JavaPage extends Page {
 
 	@Override
 	public void build() {
-		var javaPackageLabel = new JLabel(nls.get("JavaPage.label.Package_Name"));
+		var javaPackageLabel = new JLabel(nls.get("JavaPage.label.Package_name"));
 
 		javaPackageField.setEditable(false);
 
