@@ -7,7 +7,7 @@ import com.fes.flashcard.installer.operation.Cancelled;
 import com.fes.flashcard.installer.operation.ErrorCode;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.swing.DecisionDialog;
-import com.fes.flashcard.installer.swing.DecisionDialog.Option;
+import com.fes.flashcard.installer.swing.Option;
 import com.fes.flashcard.installer.utilities.Nls;
 import com.fes.flashcard.installer.utilities.WriterAdapter;
 import com.pty4j.PtyProcessBuilder;
@@ -90,7 +90,7 @@ public class InstallPostgresOp extends Operation {
 		setProgress(99);
 	}
 
-	private DecisionDialog.Option showConflictDialog() throws Exception {
+	private Option showConflictDialog() throws Exception {
 		var reuseOption     = new Option(Choice.REUSE, nls.get("InstallPostgresOp.button.Reuse_PostgreSQL"), nls.get("InstallPostgresOp.tooltip.The_existing_installation_will_be_used"));
 		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallPostgresOp.button.Reinstall_PostgreSQL"), nls.get("InstallPostgresOp.tooltip.The_existing_installation_will_be_removed_and_reinstalled"));
 
@@ -106,16 +106,14 @@ public class InstallPostgresOp extends Operation {
 		setProgress(20);
 		List<String> command = List.of("sudo", "apt", "install", postgresPackageName); //$NON-NLS
 		println(nls.get("InstallPostgresOp.println.Execute_{0}", String.join(" ", command)));
-		setProgress(30);
-		var process = new ProcessBuilder(command).start();
 		setProgress(40);
-		int exitCode = execute(process).exitCode();
-		setProgress(50);
+		int exitCode = execute(new ProcessBuilder(command).start()).exitCode();
+		setProgress(60);
 		if (exitCode != 0) {
 			println(nls.get("InstallPostgresOp.println.Error_installing_PostgreSQL"));
 			return;
 		}
-		setProgress(90);
+		setProgress(80);
 		println(nls.get("InstallPostgresOp.println.PostgreSQL_installed_successfully"));
 
 		databasePageData.getPostgresInstallStates().put(postgresVersion, PostgresState.INSTALLED_BY_INSTALLER);

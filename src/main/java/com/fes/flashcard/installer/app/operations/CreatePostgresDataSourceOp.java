@@ -10,7 +10,6 @@ import com.fes.flashcard.installer.utilities.TextBuilder;
 
 import java.io.IOException;
 
-// TODO remove some NLS keys
 public class CreatePostgresDataSourceOp extends Operation {
 
 	private static final Nls nls = new Nls(CreatePostgresDataSourceOp.class);
@@ -31,7 +30,7 @@ public class CreatePostgresDataSourceOp extends Operation {
 
 	public String getDescription() {
 		var text = new TextBuilder();
-		text.line("feature:install pax-jdbc-postgresql");
+		text.line("feature:install pax-jdbc-postgresql"); //$NON-NLS
 		text.line(nls.get("CreatePostgresDataSourceOp.description.Create_DataSource_for_PostgreSQL_database"));
 		text.line(nls.get("CreatePostgresDataSourceOp.description.Test_DataSource"));
 		return text.toString();
@@ -44,7 +43,7 @@ public class CreatePostgresDataSourceOp extends Operation {
 			setProgress(1);
 			karaf.start();
 			setProgress(30);
-			println("feature:install pax-jdbc-postgresql");
+			println("feature:install pax-jdbc-postgresql"); //$NON-NLS
 			karaf.execute("feature:install pax-jdbc-postgresql");
 			setProgress(50);
 			println(nls.get("CreatePostgresDataSourceOp.println.Pax_JDBC_PostgreSQL_Driver_installed_successfully"));

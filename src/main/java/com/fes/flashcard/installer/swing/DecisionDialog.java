@@ -22,7 +22,6 @@ import java.util.List;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.FIRST_LINE_START;
 import static java.awt.GridBagConstraints.LINE_END;
-import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
 import static java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager;
 import static javax.swing.BoxLayout.LINE_AXIS;
@@ -87,11 +86,12 @@ public class DecisionDialog extends JDialog {
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, LINE_AXIS));
 		buttonPanel.add(okButton);
 
-		add(descriptionTextArea, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.1, LINE_START, BOTH, new Insets(10, 10, 0, 10), 0, 0));
+		add(descriptionTextArea, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0, FIRST_LINE_START, BOTH, new Insets(10, 10, 10, 10), 0, 0));
 		for (var buttons = buttonGroup.getElements(); buttons.hasMoreElements(); ) {
 			var button = buttons.nextElement();
 			add(button, new GridBagConstraints(0, -1, 1, 1, 0.0, 0.0, FIRST_LINE_START, NONE, new Insets(10, 10, 0, 10), 0, 0));
 		}
+		add(new JPanel(), new GridBagConstraints(0, -1, 1, 1, 1.0, 1.0, FIRST_LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
 		add(buttonPanel, new GridBagConstraints(0, -1, 1, 1, 0.0, 0.0, LINE_END, NONE, new Insets(10, 10, 10, 10), 0, 0));
 
 		pack();
@@ -121,7 +121,4 @@ public class DecisionDialog extends JDialog {
 			}
 		});
 	}
-
-	public record Option(Object id, String description, String tooltip) {}
-
 }

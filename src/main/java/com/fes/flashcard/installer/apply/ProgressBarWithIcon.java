@@ -12,6 +12,10 @@ class ProgressBarWithIcon extends JProgressBar {
 		super(min, max);
 	}
 
+	ProgressBarWithIcon() {
+		super(0, 100);
+	}
+
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);

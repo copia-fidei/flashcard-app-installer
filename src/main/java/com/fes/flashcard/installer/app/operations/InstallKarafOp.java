@@ -6,7 +6,7 @@ import com.fes.flashcard.installer.app.pages.KarafPageData;
 import com.fes.flashcard.installer.operation.Counter;
 import com.fes.flashcard.installer.operation.Operation;
 import com.fes.flashcard.installer.swing.DecisionDialog;
-import com.fes.flashcard.installer.swing.DecisionDialog.Option;
+import com.fes.flashcard.installer.swing.Option;
 import com.fes.flashcard.installer.utilities.Directory;
 import com.fes.flashcard.installer.utilities.Nls;
 import com.fes.flashcard.installer.utilities.PosixConverter;
@@ -36,6 +36,7 @@ import static java.nio.file.Files.exists;
 import static java.nio.file.Files.setPosixFilePermissions;
 import static java.nio.file.Files.walkFileTree;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class InstallKarafOp extends Operation {
 
@@ -81,6 +82,7 @@ public class InstallKarafOp extends Operation {
 				installKaraf();
 			}
 		}
+		SECONDS.sleep(1);
 		setProgress(100);
 		return nls.get("InstallKarafOp.println.Installation_completed");
 	}
@@ -101,7 +103,7 @@ public class InstallKarafOp extends Operation {
 		setProgress(99);
 	}
 
-	private DecisionDialog.Option showConflictDialog(boolean isFullyInstalled) throws Exception {
+	private Option showConflictDialog(boolean isFullyInstalled) throws Exception {
 		var reuseOption     = new Option(Choice.REUSE, nls.get("InstallKarafOp.button.Reuse_Karaf"), nls.get("InstallKarafOp.tooltip.The_existing_installation_will_be_used"));
 		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallKarafOp.button.Reinstall_Karaf"), nls.get("InstallKarafOp.tooltip.The_existing_installation_will_be_removed_and_reinstalled"));
 

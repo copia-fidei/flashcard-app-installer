@@ -7,11 +7,11 @@ import java.util.Set;
 public interface PosixConverter {
 
 	static Set<PosixFilePermission> posixPermissionsFromDecimal(int decimal) {
-		return PosixFilePermissions.fromString(posixStringFromOctal(decimal));
+		return PosixFilePermissions.fromString(posixStringFromDecimal(decimal));
 	}
 
-	static String posixStringFromOctal(int octal) {
-		return posixStringFromOctal(Integer.toOctalString(octal));
+	static String posixStringFromDecimal(int decimal) {
+		return posixStringFromOctal(Integer.toOctalString(decimal));
 	}
 
 	static String posixStringFromOctal(String octal) {

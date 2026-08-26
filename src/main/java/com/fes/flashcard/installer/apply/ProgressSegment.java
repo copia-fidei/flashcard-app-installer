@@ -21,7 +21,7 @@ public class ProgressSegment extends JPanel {
 	private final Nls nls = new Nls(this);
 	private final Operation           operation;
 	private final JButton             cancelButton  = new SVGButton("icons/svgrepo/cancel-svgrepo-com.svg", 20);
-	private final ProgressBarWithIcon progressBar   = new ProgressBarWithIcon(0, 100);
+	private final ProgressBarWithIcon progressBar   = new ProgressBarWithIcon();
 	private final JButton             detailsButton = new JButton("...");
 
 	public ProgressSegment(Operation operation) {

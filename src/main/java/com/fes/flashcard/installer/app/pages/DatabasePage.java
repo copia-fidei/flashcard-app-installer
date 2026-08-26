@@ -85,35 +85,26 @@ public class DatabasePage extends Page {
 		hostField.setEditable(false);
 		userField.setEditable(false);
 
-		content.add(databaseLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(databaseLabel, 			  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
 		content.add(dbImplementationComboBox, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-
-		content.add(versionLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(versionsComboBox, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-
-		content.add(adminLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(adminField, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-
-		content.add(adminPasswordLabel, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(adminPasswordField, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-
-		content.add(hostLabel, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(hostField, new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-
-		content.add(portLabel, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(portField, new GridBagConstraints(1, 5, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-
-		content.add(dbNameLabel, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(dbNameField, new GridBagConstraints(1, 6, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-
-		content.add(userLabel, new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(userField, new GridBagConstraints(1, 7, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-
-		content.add(userPasswordLabel, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(userPasswordField, new GridBagConstraints(1, 8, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-
+		content.add(versionLabel, 			  new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
+		content.add(versionsComboBox, 		  new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(adminLabel, 			  new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
+		content.add(adminField, 			  new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(adminPasswordLabel, 	  new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
+		content.add(adminPasswordField, 	  new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(hostLabel,				  new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
+		content.add(hostField,				  new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(portLabel,				  new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
+		content.add(portField,				  new GridBagConstraints(1, 5, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(dbNameLabel, 			  new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
+		content.add(dbNameField, 			  new GridBagConstraints(1, 6, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(userLabel, 				  new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
+		content.add(userField, 				  new GridBagConstraints(1, 7, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(userPasswordLabel, 		  new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
+		content.add(userPasswordField, 		  new GridBagConstraints(1, 8, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 		// Filler
-		content.add(new JPanel(), new GridBagConstraints(0, 9, 2, 1, 1.0, 1.0, LINE_START, BOTH, new Insets(10, 10, 10, 10), 0, 0));
+		content.add(new JPanel(), 			  new GridBagConstraints(0, 9, 2, 1, 1.0, 1.0, LINE_START, BOTH, 		new Insets(10, 10, 10, 10), 0, 0));
 
 		new SwingWorker<Void, Void>() {
 
@@ -148,7 +139,6 @@ public class DatabasePage extends Page {
 			} catch (IOException | InterruptedException e) {
 				log.log(WARNING, "Failed to find out if Postgres packages are installed", e); //$NON-NLS
 			}
-
 		}
 	}
 
@@ -268,11 +258,14 @@ public class DatabasePage extends Page {
 
 			var installStates = databasePageData.getPostgresInstallStates();
 			if (databasePageData.getDatabaseImplementation() == PostgreSQL && installStates.containsKey(version)) {
-				PostgresState isInstalled = installStates.get(version);
-				String        statusText  = isInstalled == PostgresState.ALREADY_INSTALLED || isInstalled == PostgresState.INSTALLED_BY_INSTALLER ? "(bereits installiert)" : "(nicht installiert)";
-				label.setText(version + " " + statusText);
+				String status;
+				if (installStates.get(version).isInstalled()) {
+					status = nls.get("DatabasePage.label.{0}_(already_installed)", version);
+				} else {
+					status = nls.get("DatabasePage.label.{0}_(not_installed)", version);
+				}
+				label.setText(status);
 			}
-
 			return label;
 		}
 	}

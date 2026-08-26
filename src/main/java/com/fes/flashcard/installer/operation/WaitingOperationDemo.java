@@ -52,8 +52,8 @@ class WaitingOperationDemo {
 
 			@Override
 			public void progressChanged(int progress) {
-				this.progress.setText("Progress: " + progress);
-			} //NON-NLS
+				this.progress.setText("Progress: " + progress); //NON-NLS
+			}
 
 			@Override
 			public void intermediateResults(List<String> intermediateResults) {

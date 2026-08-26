@@ -148,4 +148,8 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 		}
 		return new Result(out, err, process.waitFor());
 	}
+
+	public Result execute(ProcessBuilder pb) throws IOException, InterruptedException {
+		return execute(pb.start());
+	}
 }

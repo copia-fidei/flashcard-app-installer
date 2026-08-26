@@ -115,7 +115,7 @@ public class ConfigurePostgresOp extends Operation {
 	private void setPort() throws IOException, InterruptedException, ErrorCode {
 		println(nls.get("ConfigurePostgresOp.description.Set_PostgreSQL_port_to_{0}", port));
 		progress(2);
-		execute(new ProcessBuilder("sudo", "sed", "-Ei", "s/^([[:space:]]*port[[:space:]]*=?[[:space:]]*)[0-9]+/\\1" + port + "/", postgres.getConfigurationFile()).start()) //NON-NLS
+		execute(new ProcessBuilder("sudo", "sed", "-Ei", "s/^([[:space:]]*port[[:space:]]*=?[[:space:]]*)[0-9]+/\\1" + port + "/", postgres.getConfigurationFile())) //NON-NLS
 				.throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Set_port_failed_for_{0}", port));
 	}
 
@@ -125,7 +125,7 @@ public class ConfigurePostgresOp extends Operation {
 		if (authMethod.equals("peer")) { //NON-NLS
 			processBuilder = () -> new ProcessBuilder("sudo", "-u", "postgres", "psql"); //NON-NLS
 			if (getPostgresState() == INSTALLED_BY_INSTALLER) {
-				setAdminPassword();
+				setAdminPassword(processBuilder);
 			}
 		} else if (AuthMethod.isPasswordBased(authMethod)) {
 			processBuilder = () -> {
@@ -142,17 +142,16 @@ public class ConfigurePostgresOp extends Operation {
 		return processBuilder;
 	}
 
-	private void setAdminPassword() throws IOException, InterruptedException, ErrorCode {
+	private void setAdminPassword(Supplier<ProcessBuilder> loginCommand) throws IOException, InterruptedException, ErrorCode {
 		if (adminPassword.isBlank()) {
 			return;
 		}
 		println(nls.get("ConfigurePostgresOp.println.Set_password_for_Postgres"));
 		progress(2);
-		var pb = new ProcessBuilder("sudo", "-u", "postgres", "psql"); //NON-NLS
+		var pb = loginCommand.get();
 		pb.command().add("-c"); //NON-NLS
 		pb.command().add("ALTER USER postgres WITH PASSWORD '" + adminPassword + "';"); //NON-NLS
-		var process = pb.start();
-		execute(process).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Set_password_failed"));
+		execute(pb).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Set_password_failed"));
 		println(nls.get("ConfigurePostgresOp.println.Admin_password_set_successfully"));
 		progress(2);
 	}
@@ -194,7 +193,7 @@ public class ConfigurePostgresOp extends Operation {
 	private void restartPostgres() throws IOException, InterruptedException, ErrorCode {
 		println(nls.get("ConfigurePostgresOp.println.Restart_PostgreSQL"));
 		progress(2);
-		execute(new ProcessBuilder("sudo", "systemctl", "restart", "postgresql.service").start()) //NON-NLS
+		execute(new ProcessBuilder("sudo", "systemctl", "restart", "postgresql.service")) //NON-NLS
 				.throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Restart_PostgreSQL_failed"));
 		println(nls.get("ConfigurePostgresOp.println.PostgreSQL_restarted"));
 		setProgress(40);
@@ -209,7 +208,7 @@ public class ConfigurePostgresOp extends Operation {
 		checkUsersExists.command().add("-c"); //NON-NLS
 		checkUsersExists.command().add("SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '" + user + "');"); //NON-NLS
 
-		var checkResult = execute(checkUsersExists.start());
+		var checkResult = execute(checkUsersExists);
 		checkResult.throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Check_role_exists_failed_for_{0}", user));
 		if ("t".equals(checkResult.output().trim())) { //NON-NLS
 			println(nls.get("ConfigurePostgresOp.println.Role_{0}_already_exists", user));
@@ -223,7 +222,7 @@ public class ConfigurePostgresOp extends Operation {
 		createUser.command().add("-c"); //NON-NLS
 		createUser.command().add("CREATE USER " + user + ";"); //NON-NLS
 
-		execute(createUser.start()).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Create_role_failed"));
+		execute(createUser).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Create_role_failed"));
 
 		println(nls.get("ConfigurePostgresOp.println.Role_{0}_created_successfully", user));
 		progress(2);
@@ -240,7 +239,7 @@ public class ConfigurePostgresOp extends Operation {
 		var pb = loginCommand.get();
 		pb.command().add("-c"); //NON-NLS
 		pb.command().add("ALTER USER " + user + " WITH PASSWORD '" + userPassword + "';"); //NON-NLS
-		execute(pb.start()).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Set_password_failed"));
+		execute(pb).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Set_password_failed"));
 
 		println(nls.get("ConfigurePostgresOp.println.Password_set_successfully_for_{0}", user));
 		progress(2);
@@ -256,7 +255,7 @@ public class ConfigurePostgresOp extends Operation {
 			var pb = loginCommand.get();
 			pb.command().add("-f"); //NON-NLS
 			pb.command().add(script.toString());
-			execute(pb.start()).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Create_database_failed"));
+			execute(pb).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Create_database_failed"));
 
 			println(nls.get("ConfigurePostgresOp.println.Database_and_tables_created_successfully"));
 			progress(2);
@@ -280,7 +279,7 @@ public class ConfigurePostgresOp extends Operation {
 		pb.command().add(dbName);
 		pb.command().add("-c"); //NON-NLS
 		pb.command().add(sql);
-		execute(pb.start()).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Grant_ownership_failed"));
+		execute(pb).throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Grant_ownership_failed"));
 
 		println(nls.get("ConfigurePostgresOp.println.Ownership_granted_successfully"));
 		progress(2);

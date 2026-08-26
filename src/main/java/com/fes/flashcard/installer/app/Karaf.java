@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NonNls;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 
 import static java.util.List.of;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -37,22 +36,20 @@ public class Karaf {
 		// for some reason the updated JAVA_HOME variable is not at effect until a system restart,
 		// that is why we have to find out its location manually
 		operation.println(nls.get("Karaf.Find_Javas_install_path"));
-		JAVA_HOME = Java.getLocation();
+		JAVA_HOME = Java.getCurrentHome();
 		operation.println(nls.get("Karaf.Java_is_installed_in_{0}", JAVA_HOME));
 
 		clientProgram = location.resolve("bin/client").toString();
-		startProgram = location.resolve("bin/start").toString();
-		stopProgram = location.resolve("bin/stop").toString();
-
+		startProgram  = location.resolve("bin/start").toString();
+		stopProgram   = location.resolve("bin/stop").toString();
 	}
 
 	public void start() throws IOException, InterruptedException, ErrorCode {
-		// Check if Karaf is already running
 		if (isRunning()) {
 			operation.println(nls.get("Karaf.Karaf_is_already_running"));
 			return;
 		}
-		runSuccessfully(startProgram);
+		__executeSuccessfully(startProgram);
 
 		operation.println(nls.get("Karaf.Waiting_for_Karaf_to_start"));
 		long timeout = System.currentTimeMillis() + 30_000; // 30 seconds
@@ -71,48 +68,40 @@ public class Karaf {
 
 	private boolean isRunning() throws InterruptedException {
 		try {
-			var process = getBuilder(onKaraf("version")).start();
-			return process.waitFor() == 0;
-		} catch (IOException _) {
+			return operation.execute(getBuilder(new KarafCommand("version").arguments())).exitCode() == 0;
+		} catch (IOException e) {
+
 			// Karaf isn't accepting connections yet.
 			return false;
 		}
 	}
 
 	public void stop() throws IOException, InterruptedException, ErrorCode {
-		runSuccessfully(stopProgram);
+		__executeSuccessfully(stopProgram);
 
-		// stopping actually takes time, the 4 seconds are just arbitrary and in no way robust
+		// stopping actually takes time, the 5 seconds are just arbitrary and in no way robust
 		SECONDS.sleep(5);
 	}
 
 	/// throws if the process returns a non-zero exit code
 	public void executeSuccessfully(@NonNls String command) throws IOException, InterruptedException, ErrorCode {
-		runSuccessfully(onKaraf(command));
+		_executeSuccessfully(new KarafCommand(command));
 	}
 
 	public Result execute(@NonNls String command) throws IOException, InterruptedException, ErrorCode {
-		return run(onKaraf(command));
+		return _execute(new KarafCommand(command));
 	}
 
-
-	private String[] onKaraf(String... command) {
-		@NonNls List<String> args = new ArrayList<>();
-		args.add(clientProgram);
-		args.add("-u");
-		args.add("karaf");
-		args.add("-p");
-		args.add("karaf");
-		args.addAll(of(command));
-		return args.toArray(String[]::new);
+	private void _executeSuccessfully(KarafCommand command) throws IOException, InterruptedException, ErrorCode {
+		__executeSuccessfully(command.arguments());
 	}
 
-	private void runSuccessfully(String... commands) throws IOException, InterruptedException, ErrorCode {
-		operation.execute(getBuilder(commands).start()).throwIfNonZeroExit(nls.get("Karaf.Command_failed_{0}", String.join(" ", commands)));
+	private void __executeSuccessfully(String... args) throws IOException, InterruptedException, ErrorCode {
+		operation.execute(getBuilder(args)).throwIfNonZeroExit(nls.get("Karaf.Command_failed_{0}", String.join(" ", args)));
 	}
 
-	private Result run(String... commands) throws IOException, InterruptedException {
-		return operation.execute(getBuilder(commands).start());
+	private Result _execute(KarafCommand command) throws IOException, InterruptedException {
+		return operation.execute(getBuilder(command.arguments()));
 	}
 
 	private ProcessBuilder getBuilder(String... commands) {
@@ -120,5 +109,30 @@ public class Karaf {
 		pb.command(commands);
 		pb.environment().put("JAVA_HOME", JAVA_HOME);
 		return pb;
+	}
+
+	/// A command executed on Karaf, with user and password.
+	@NonNls
+	private class KarafCommand {
+
+		public static final String USER     = "karaf";
+		public static final String PASSWORD = "karaf";
+
+		private final String[] command;
+
+		private KarafCommand(String... command) {
+			this.command = command;
+		}
+
+		private String[] arguments() {
+			@NonNls var args = new ArrayList<String>();
+			args.add(clientProgram);
+			args.add("-u");
+			args.add(USER);
+			args.add("-p");
+			args.add(PASSWORD);
+			args.addAll(of(command));
+			return args.toArray(String[]::new);
+		}
 	}
 }

@@ -7,36 +7,42 @@ import org.jetbrains.annotations.NonNls;
 import java.awt.Color;
 
 @NonNls
-public final class Icons {
+public interface Icons {
 
-	private Icons() {}
+	String HOURGLASS_ICON_PATH = "icons/svgrepo/hourglass-done-svgrepo-com.svg";
+	String COGWHEEL_ICON_PATH  = "icons/svgrepo/cogwheel-configuration-gear-svgrepo-com.svg";
+	String ERROR_ICON_PATH     = "icons/svgrepo/error-svgrepo-com.svg";
+	String CANCEL_ICON_PATH    = "icons/svgrepo/cancel-svgrepo-com.svg";
+	String CHECK_ICON_PATH     = "icons/svgrepo/check-circle-svgrepo-com.svg";
+	String WARNING_ICON_PATH   = "icons/svgrepo/warning-filled-svgrepo-com.svg";
+	String INFO_ICON_PATH      = "icons/svgrepo/info-svgrepo-com.svg";
 
-	public static FlatSVGIcon hourglass(int size) {
-		return new FlatSVGIcon("icons/svgrepo/hourglass-done-svgrepo-com.svg", size, size);
+	static FlatSVGIcon hourglass(int size) {
+		return new FlatSVGIcon(HOURGLASS_ICON_PATH, size, size);
 	}
 
-	public static FlatSVGIcon cogwheel(int size) {
-		return newIcon("icons/svgrepo/cogwheel-configuration-gear-svgrepo-com.svg", Color.GRAY, size);
+	static FlatSVGIcon cogwheel(int size) {
+		return newIcon(COGWHEEL_ICON_PATH, Color.GRAY, size);
 	}
 
-	public static FlatSVGIcon error(int size) {
-		return newIcon("icons/svgrepo/error-svgrepo-com.svg", Colors.ERROR, size);
+	static FlatSVGIcon error(int size) {
+		return newIcon(ERROR_ICON_PATH, Colors.ERROR, size);
 	}
 
-	public static FlatSVGIcon cancel(int size) {
-		return newIcon("icons/svgrepo/cancel-svgrepo-com.svg", Color.RED, size);
+	static FlatSVGIcon cancel(int size) {
+		return newIcon(CANCEL_ICON_PATH, Color.RED, size);
 	}
 
-	public static FlatSVGIcon check(int size) {
-		return newIcon("icons/svgrepo/check-circle-svgrepo-com.svg", Colors.INFO, size);
+	static FlatSVGIcon check(int size) {
+		return newIcon(CHECK_ICON_PATH, Colors.INFO, size);
 	}
 
-	public static FlatSVGIcon warning(int size) {
-		return newIcon("icons/svgrepo/warning-filled-svgrepo-com.svg", Colors.WARNING, size);
+	static FlatSVGIcon warning(int size) {
+		return newIcon(WARNING_ICON_PATH, Colors.WARNING, size);
 	}
 
-	public static FlatSVGIcon info(int size) {
-		return newIcon("icons/svgrepo/info-svgrepo-com.svg", Colors.INFO, size);
+	static FlatSVGIcon info(int size) {
+		return newIcon(INFO_ICON_PATH, Colors.INFO, size);
 	}
 
 	private static FlatSVGIcon newIcon(String location, Color color, int size) {
