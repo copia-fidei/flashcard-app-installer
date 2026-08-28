@@ -18,6 +18,8 @@
         <module.name>com.fes.flashcard.installer</module.name>
         <main.class>com.fes.flashcard.installer.app.Main</main.class>
         <app.main>Flashcard App Installer</app.main>
+        <package.name>flashcard-app-installer</package.name>
+        <package.name.language>english</package.name.language>
     </properties>
 
     <dependencies>
@@ -200,6 +202,9 @@
                 <configuration>
                     <name>${app.main}</name>
                     <appVersion>${project.version}</appVersion>
+                    <linuxPackageName>${package.name}+${package.name.language}</linuxPackageName>
+                    <icon>src/main/resources/icons/installer-app-logo.png</icon>
+                    <linuxShortcut>true</linuxShortcut>
                     <modulePaths>
                         <path>${module.path}</path>
                     </modulePaths>
@@ -209,4 +214,47 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>english</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <properties>
+                <package.name.language>english</package.name.language>
+            </properties>
+
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <excludes>
+                            <exclude>**/messages_de.properties</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+
+        <profile>
+            <id>german</id>
+
+            <properties>
+                <package.name.language>german</package.name.language>
+            </properties>
+
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <excludes>
+                            <exclude>**/messages.properties</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+    </profiles>
 </project>
