@@ -60,7 +60,7 @@ Use the -P option for a different language:
 ## Maven POM explanation
 This application is a fully modular Java project. The build steps to achieve this are:
 
-1. Build the application JAR and moving it into /modules
+1. Build the application JAR and move it into /modules
 2. Copy all dependencies into /modules.
 3. Add module-info to all non-modular JARs, using the ModiTect Maven plugin.
 Non-modular JARs aka automatic modules can be determined with this Bash-script:

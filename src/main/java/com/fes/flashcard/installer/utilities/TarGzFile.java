@@ -80,7 +80,7 @@ public class TarGzFile {
 		return name;
 	}
 
-
+	// For testing
 	static void main() throws IOException {
 		new TarGzFile(Resources.KARAF.openStream()).getEntries().forEach(IO::println);
 	}
