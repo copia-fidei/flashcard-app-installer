@@ -106,9 +106,7 @@ public abstract class Operation extends SwingWorker<String, String> implements P
 				}
 				// other statuses are fired in done()
 			}
-			case "progress" -> {
-				notifyProgressChanged();
-			}
+			case "progress" -> notifyProgressChanged();
 		}
 	}
 

@@ -3,16 +3,15 @@ package com.fes.flashcard.installer.app;
 import com.fes.flashcard.installer.page.PageFrame;
 import com.fes.flashcard.installer.utilities.Nls;
 
-import java.util.Locale;
-
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Main {
 
 	static {
+		// system locale will be used, use below to override
 //		Locale.setDefault(Locale.ENGLISH);
-		Locale.setDefault(Locale.GERMAN);
+//		Locale.setDefault(Locale.GERMAN);
 	}
 
 	private static final Nls nls = new Nls(Main.class);

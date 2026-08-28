@@ -54,9 +54,7 @@ public class InstallPostgresOp extends Operation {
 				databasePageData.getPostgresInstallStates().put(postgresVersion, PostgresState.ALREADY_INSTALLED);
 				handleExistingPostgres();
 			}
-			case NOT -> {
-				installPostgres();
-			}
+			case NOT -> installPostgres();
 		}
 		setProgress(100);
 		return nls.get("InstallPostgresOp.println.Installation_completed");

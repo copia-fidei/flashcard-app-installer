@@ -11,7 +11,7 @@ import static javax.swing.Box.createHorizontalGlue;
 import static javax.swing.Box.createHorizontalStrut;
 import static javax.swing.BoxLayout.LINE_AXIS;
 
-class ButtonBar extends JPanel {
+public class ButtonBar extends JPanel {
 
 	private static final Nls nls = new Nls(ButtonBar.class);
 

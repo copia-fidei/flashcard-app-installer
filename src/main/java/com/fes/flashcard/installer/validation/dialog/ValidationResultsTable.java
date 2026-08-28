@@ -13,7 +13,6 @@ class ValidationResultsTable extends JTable {
 
 	@Override
 	public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-
 		Component component = super.prepareRenderer(renderer, row, column);
 
 		if (component instanceof JTextArea textArea) {

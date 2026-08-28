@@ -111,9 +111,7 @@ public class DecisionDialog extends JDialog {
 	}
 
 	private void addListeners() {
-		okButton.addActionListener(_ -> {
-			dispose();
-		});
+		okButton.addActionListener(_ -> dispose());
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

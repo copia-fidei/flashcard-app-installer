@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NonNls;
 /// see https://www.postgresql.org/docs/current/auth-methods.html
 /// not all authentication methods are supported by this installer
 @NonNls
+@SuppressWarnings("JavadocLinkAsPlainText")
 public interface AuthMethod {
 
 	static boolean isSupportedForAdmin(String authMethod) {

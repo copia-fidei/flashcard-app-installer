@@ -1,11 +1,13 @@
 package com.fes.flashcard.installer.swing;
 
+import org.jetbrains.annotations.NonNls;
+
 import java.util.List;
 
 public class DecisionDialogDemo {
 
 	static void main() {
-		var options = List.of(
+		@NonNls var options = List.of(
 				new Option(
 						"install",
 						"Install the application",
@@ -23,11 +25,11 @@ public class DecisionDialogDemo {
 				)
 		);
 		TestFrames.showDialog(
-				"DecisionDialog Demo",
+				"DecisionDialog Demo", //NON-NLS
 				parent -> new DecisionDialog(
 						parent,
-						"Choose an action",
-						"Please select what you would like to do:",
+						"Choose an action", //NON-NLS
+						"Please select what you would like to do:", //NON-NLS
 						options,
 						options.getFirst()
 				)

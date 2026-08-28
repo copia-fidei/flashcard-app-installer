@@ -1,5 +1,7 @@
 package com.fes.flashcard.installer.utilities;
 
+import org.jetbrains.annotations.NonNls;
+
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Set;
@@ -20,12 +22,12 @@ public interface PosixConverter {
 		if (octal.length() > 3) {
 			octal = octal.substring(octal.length() - 3);
 		}
-		var sb = new StringBuilder();
+		@NonNls var sb = new StringBuilder();
 		for (char character : octal.toCharArray()) {
 			int num = Character.digit(character, 8);
-			sb.append((num & 4) == 0 ? '-' : 'r'); //$NON-NLS
-			sb.append((num & 2) == 0 ? '-' : 'w'); //$NON-NLS
-			sb.append((num & 1) == 0 ? '-' : 'x'); //$NON-NLS
+			sb.append((num & 4) == 0 ? '-' : 'r');
+			sb.append((num & 2) == 0 ? '-' : 'w');
+			sb.append((num & 1) == 0 ? '-' : 'x');
 		}
 		return sb.toString();
 	}

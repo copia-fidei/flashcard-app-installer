@@ -7,7 +7,7 @@ import java.awt.Component;
 
 import static javax.swing.BorderFactory.createMatteBorder;
 
-class PageTitleList extends JList<String> {
+public class PageTitleList extends JList<String> {
 
 	public PageTitleList() {
 		super();

@@ -48,7 +48,10 @@ public class TarGzFile {
 	}
 
 	/**
-	 * Gets all entries of the tar.gz file. * The top level directory that all entries have is removed. * * @return the entries without the top level directory
+	 * Gets all entries of the tar.gz file.
+	 * The top level directory that all entries have is removed.
+	 *
+	 * @return the entries without the top level directory
 	 */
 	public Set<String> getEntriesWithoutTopLevelDirectory() throws IOException {
 		var entries = new HashSet<String>();

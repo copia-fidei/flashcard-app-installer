@@ -21,19 +21,20 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 @NonNls
 interface StatusBarDemo {
 
+
 	static void main() {
 		invokeLater(() -> {
-			var frame         = new JFrame("Toast");
+			var frame         = new JFrame("Toast"); //NON-NLS
 			var statusBar     = new StatusBar();
-			var errorButton   = new JButton("Error");
-			var warningButton = new JButton("Warning");
-			var infoButton    = new JButton("Info");
+			var errorButton   = new JButton("Error"); //NON-NLS
+			var warningButton = new JButton("Warning"); //NON-NLS
+			var infoButton    = new JButton("Info"); //NON-NLS
 			var panel         = new JPanel(new GridBagLayout());
 			var buttons       = new JPanel();
 
-			errorButton.addActionListener(_   -> statusBar.displayError("Something went wrong."));
-			warningButton.addActionListener(_ -> statusBar.displayWarning("This is a warning."));
-			infoButton.addActionListener(_ 	 -> statusBar.displayInfo("Everything is working correctly."));
+			errorButton.addActionListener(_   -> statusBar.displayError("Something went wrong.")); //NON-NLS
+			warningButton.addActionListener(_ -> statusBar.displayWarning("This is a warning.")); //NON-NLS
+			infoButton.addActionListener(_ 	 -> statusBar.displayInfo("Everything is working correctly.")); //NON-NLS
 
 			buttons.setLayout(new BoxLayout(buttons, LINE_AXIS));
 			buttons.add(errorButton);
@@ -45,7 +46,7 @@ interface StatusBarDemo {
 			panel.add(statusBar.toast(), new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, CENTER, BOTH, new Insets(10, 10, 10, 10), 0, 0));
 			panel.add(buttons, 			 new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, CENTER, NONE, new Insets(10, 10, 10, 10), 0, 0));
 
-			statusBar.displayInfo("Click one off the buttons.");
+			statusBar.displayInfo("Click one off the buttons."); //NON-NLS
 
 			frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 			frame.setContentPane(panel);

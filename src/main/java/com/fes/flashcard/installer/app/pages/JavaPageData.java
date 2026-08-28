@@ -14,9 +14,7 @@ public class JavaPageData extends PageData {
 	public static final int TARGET_JAVA_VERSION = 21;
 
 	// Values
-//	private static final String JAVA_PACKAGE_NAME = "openjdk-" + TARGET_JAVA_VERSION + "-jdk";
-
-	private static final String JAVA_PACKAGE_NAME = "openjdk-21-jdk";
+	private static final String JAVA_PACKAGE_NAME = "openjdk-" + TARGET_JAVA_VERSION + "-jdk";
 
 	public JavaPageData(PageDataPool pageDataPool) {
 		super(pageDataPool);
