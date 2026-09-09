@@ -17,10 +17,11 @@ module com.fes.flashcard.installer {
 	requires com.epau.utilities.nls;
 
 	opens com.epau.app.flashcard.app.installer.app to com.epau.utilities.nls;
-	opens com.epau.app.flashcard.app.installer.app.operations to com.epau.utilities.nls;
-	opens com.epau.app.flashcard.app.installer.app.pages to com.epau.utilities.nls;
+	opens com.epau.app.flashcard.app.installer.operations to com.epau.utilities.nls;
+	opens com.epau.app.flashcard.app.installer.pages to com.epau.utilities.nls;
 
 	opens icons.svgrepo;
+	opens com.epau.app.flashcard.app.installer to com.epau.utilities.nls;
 
 
 }

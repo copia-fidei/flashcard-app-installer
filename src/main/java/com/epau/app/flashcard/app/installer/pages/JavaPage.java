@@ -1,4 +1,4 @@
-package com.epau.app.flashcard.app.installer.app.pages;
+package com.epau.app.flashcard.app.installer.pages;
 
 import com.epau.installer.page.Page;
 import com.epau.utilities.nls.Nls;

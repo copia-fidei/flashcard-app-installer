@@ -1,4 +1,4 @@
-package com.epau.app.flashcard.app.installer.app;
+package com.epau.app.flashcard.app.installer;
 
 import com.epau.installer.Java;
 import com.epau.utilities.nls.Nls;
@@ -29,19 +29,18 @@ public class Karaf {
 	private final String startProgram;
 	private final String stopProgram;
 
-
-	public Karaf(Path location, Operation operation) throws IOException, InterruptedException {
+	public Karaf(Path toKaraf, Operation operation) throws IOException, InterruptedException {
 		this.operation = operation;
 
 		// for some reason the updated JAVA_HOME variable is not at effect until a system restart,
-		// that is why we have to find out its location manually
+		// that is why we have to find out its toKaraf manually
 		operation.println(nls.get("Karaf.Find_Javas_install_path"));
 		JAVA_HOME = Java.getCurrentHome();
 		operation.println(nls.get("Karaf.Java_is_installed_in_{0}", JAVA_HOME));
 
-		clientProgram = location.resolve("bin/client").toString();
-		startProgram  = location.resolve("bin/start").toString();
-		stopProgram   = location.resolve("bin/stop").toString();
+		clientProgram = toKaraf.resolve("bin/client").toString();
+		startProgram  = toKaraf.resolve("bin/start").toString();
+		stopProgram   = toKaraf.resolve("bin/stop").toString();
 	}
 
 	public void start() throws IOException, InterruptedException, ErrorCode {

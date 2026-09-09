@@ -1,10 +1,10 @@
-package com.epau.app.flashcard.app.installer.app.operations;
+package com.epau.app.flashcard.app.installer.operations;
 
-import com.epau.app.flashcard.app.installer.app.AuthMethod;
-import com.epau.app.flashcard.app.installer.app.PgHba;
-import com.epau.app.flashcard.app.installer.app.Postgres;
-import com.epau.app.flashcard.app.installer.app.pages.DatabasePageData;
-import com.epau.app.flashcard.app.installer.app.pages.PostgresState;
+import com.epau.app.flashcard.app.installer.AuthMethod;
+import com.epau.app.flashcard.app.installer.PgHba;
+import com.epau.app.flashcard.app.installer.Postgres;
+import com.epau.app.flashcard.app.installer.pages.DatabasePageData;
+import com.epau.app.flashcard.app.installer.pages.PostgresState;
 import com.epau.installer.utilities.TextBuilder;
 import com.epau.utilities.nls.Nls;
 import com.epau.utilities.swing.operation.ErrorCode;
@@ -17,10 +17,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Supplier;
 
-import static com.epau.app.flashcard.app.installer.app.Resources.POSTGRES_INIT_SQL;
-import static com.epau.app.flashcard.app.installer.app.Resources.getTmpFile;
-import static com.epau.app.flashcard.app.installer.app.pages.PostgresState.INSTALLED_BY_INSTALLER;
-import static com.epau.app.flashcard.app.installer.app.pages.PostgresState.NOT_INSTALLED;
+import static com.epau.app.flashcard.app.installer.Resources.POSTGRES_INIT_SQL;
+import static com.epau.app.flashcard.app.installer.Resources.getTmpFile;
+import static com.epau.app.flashcard.app.installer.pages.PostgresState.INSTALLED_BY_INSTALLER;
+import static com.epau.app.flashcard.app.installer.pages.PostgresState.NOT_INSTALLED;
 import static com.epau.installer.utilities.Temporary.use;
 import static java.sql.DriverManager.getConnection;
 import static java.text.MessageFormat.format;

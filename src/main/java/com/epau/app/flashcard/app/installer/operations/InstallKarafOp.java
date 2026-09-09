@@ -1,8 +1,8 @@
-package com.epau.app.flashcard.app.installer.app.operations;
+package com.epau.app.flashcard.app.installer.operations;
 
 
-import com.epau.app.flashcard.app.installer.app.Resources;
-import com.epau.app.flashcard.app.installer.app.pages.KarafPageData;
+import com.epau.app.flashcard.app.installer.Resources;
+import com.epau.app.flashcard.app.installer.pages.KarafPageData;
 import com.epau.installer.swing.DecisionDialog;
 import com.epau.installer.swing.Option;
 import com.epau.installer.utilities.Directory;
@@ -26,7 +26,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Set;
 
-import static com.epau.app.flashcard.app.installer.app.Resources.KARAF_ZIP_NAME;
+import static com.epau.app.flashcard.app.installer.Resources.KARAF_ZIP_NAME;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.createDirectories;

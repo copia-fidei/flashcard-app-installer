@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <module.path>${project.build.directory}/modules</module.path>
         <module.name>com.fes.flashcard.installer</module.name>
-        <main.class>com.epau.app.flashcard.app.installer.app.Main</main.class>
+        <main.class>com.epau.app.flashcard.app.installer.Main</main.class>
         <app.main>Flashcard App Installer</app.main>
         <package.name>flashcard-app-installer</package.name>
         <package.name.language>english</package.name.language>

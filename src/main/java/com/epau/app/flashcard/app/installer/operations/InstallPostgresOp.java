@@ -1,8 +1,8 @@
-package com.epau.app.flashcard.app.installer.app.operations;
+package com.epau.app.flashcard.app.installer.operations;
 
-import com.epau.app.flashcard.app.installer.app.pages.DatabasePageData;
-import com.epau.app.flashcard.app.installer.app.pages.PostgresState;
-import com.epau.app.flashcard.app.installer.app.pages.RootPasswordPageData;
+import com.epau.app.flashcard.app.installer.pages.DatabasePageData;
+import com.epau.app.flashcard.app.installer.pages.PostgresState;
+import com.epau.app.flashcard.app.installer.pages.RootPasswordPageData;
 import com.epau.installer.swing.DecisionDialog;
 import com.epau.installer.swing.Option;
 import com.epau.installer.utilities.WriterAdapter;

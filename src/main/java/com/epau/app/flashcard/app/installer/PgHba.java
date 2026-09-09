@@ -1,4 +1,4 @@
-package com.epau.app.flashcard.app.installer.app;
+package com.epau.app.flashcard.app.installer;
 
 import org.jetbrains.annotations.NonNls;
 

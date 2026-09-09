@@ -1,4 +1,4 @@
-package com.epau.app.flashcard.app.installer.app.pages;
+package com.epau.app.flashcard.app.installer.pages;
 
 public enum PostgresState {
 	NOT_INSTALLED,

@@ -1,4 +1,4 @@
-package com.epau.app.flashcard.app.installer.app.operations;
+package com.epau.app.flashcard.app.installer.operations;
 
 import com.epau.app.flashcard.app.installer.Home;
 import com.epau.utilities.nls.Nls;

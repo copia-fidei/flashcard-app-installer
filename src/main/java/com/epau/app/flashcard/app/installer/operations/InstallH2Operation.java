@@ -1,8 +1,8 @@
-package com.epau.app.flashcard.app.installer.app.operations;
+package com.epau.app.flashcard.app.installer.operations;
 
-import com.epau.app.flashcard.app.installer.app.Karaf;
-import com.epau.app.flashcard.app.installer.app.pages.DatabasePageData;
-import com.epau.app.flashcard.app.installer.app.pages.KarafPageData;
+import com.epau.app.flashcard.app.installer.Karaf;
+import com.epau.app.flashcard.app.installer.pages.DatabasePageData;
+import com.epau.app.flashcard.app.installer.pages.KarafPageData;
 import com.epau.installer.utilities.TextBuilder;
 import com.epau.utilities.nls.Nls;
 import com.epau.utilities.swing.operation.ErrorCode;
@@ -10,8 +10,8 @@ import com.epau.utilities.swing.operation.Operation;
 
 import java.io.IOException;
 
-import static com.epau.app.flashcard.app.installer.app.Resources.H2_INIT_SQL;
-import static com.epau.app.flashcard.app.installer.app.Resources.getTmpFile;
+import static com.epau.app.flashcard.app.installer.Resources.H2_INIT_SQL;
+import static com.epau.app.flashcard.app.installer.Resources.getTmpFile;
 import static com.epau.installer.utilities.Temporary.use;
 
 public class InstallH2Operation extends Operation {

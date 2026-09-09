@@ -1,9 +1,9 @@
-package com.epau.app.flashcard.app.installer.app.pages;
+package com.epau.app.flashcard.app.installer.pages;
 
-import com.epau.app.flashcard.app.installer.app.AuthMethod;
-import com.epau.app.flashcard.app.installer.app.Database;
-import com.epau.app.flashcard.app.installer.app.PgHba;
-import com.epau.app.flashcard.app.installer.app.Postgres;
+import com.epau.app.flashcard.app.installer.AuthMethod;
+import com.epau.app.flashcard.app.installer.Database;
+import com.epau.app.flashcard.app.installer.PgHba;
+import com.epau.app.flashcard.app.installer.Postgres;
 import com.epau.installer.page.PageData;
 import com.epau.installer.page.PageDataPool;
 import com.epau.installer.validation.Severity;

@@ -1,6 +1,6 @@
-package com.epau.app.flashcard.app.installer.app.pages;
+package com.epau.app.flashcard.app.installer.pages;
 
-import com.epau.app.flashcard.app.installer.app.Database;
+import com.epau.app.flashcard.app.installer.Database;
 import com.epau.installer.page.Page;
 import com.epau.installer.page.PageDataPool;
 import com.epau.installer.swing.DocumentAdapter;
@@ -22,7 +22,7 @@ import java.awt.Insets;
 import java.awt.event.ItemListener;
 import java.io.IOException;
 
-import static com.epau.app.flashcard.app.installer.app.Database.PostgreSQL;
+import static com.epau.app.flashcard.app.installer.Database.PostgreSQL;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;

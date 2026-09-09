@@ -1,1 +1,0 @@
-package com.epau.app.flashcard.app.installer;
