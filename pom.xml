@@ -24,6 +24,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.epau</groupId>
+            <artifactId>installer</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.epau.utilities.swing</groupId>
+            <artifactId>swing-operation</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
             <version>${flatlaf.version}</version>

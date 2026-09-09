@@ -1,10 +1,10 @@
 package com.fes.flashcard.installer.app;
 
-import com.fes.flashcard.installer.Java;
-import com.fes.flashcard.installer.operation.ErrorCode;
-import com.fes.flashcard.installer.operation.Operation;
-import com.fes.flashcard.installer.operation.Result;
-import com.fes.flashcard.installer.utilities.Nls;
+import com.epau.installer.Java;
+import com.epau.utilities.nls.Nls;
+import com.epau.utilities.swing.operation.ErrorCode;
+import com.epau.utilities.swing.operation.Operation;
+import com.epau.utilities.swing.operation.Result;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;

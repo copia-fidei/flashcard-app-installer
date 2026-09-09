@@ -1,11 +1,11 @@
 package com.fes.flashcard.installer.app.operations;
 
+import com.epau.installer.utilities.TextBuilder;
+import com.epau.utilities.nls.Nls;
+import com.epau.utilities.swing.operation.ErrorCode;
+import com.epau.utilities.swing.operation.Operation;
 import com.fes.flashcard.installer.app.Karaf;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
-import com.fes.flashcard.installer.operation.ErrorCode;
-import com.fes.flashcard.installer.operation.Operation;
-import com.fes.flashcard.installer.utilities.Nls;
-import com.fes.flashcard.installer.utilities.TextBuilder;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;

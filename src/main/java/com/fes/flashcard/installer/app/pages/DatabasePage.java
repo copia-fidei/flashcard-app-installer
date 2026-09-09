@@ -1,11 +1,11 @@
 package com.fes.flashcard.installer.app.pages;
 
+import com.epau.installer.page.Page;
+import com.epau.installer.page.PageDataPool;
+import com.epau.installer.swing.DocumentAdapter;
+import com.epau.installer.swing.TestFrames;
+import com.epau.utilities.nls.Nls;
 import com.fes.flashcard.installer.app.Database;
-import com.fes.flashcard.installer.page.Page;
-import com.fes.flashcard.installer.page.PageDataPool;
-import com.fes.flashcard.installer.swing.DocumentAdapter;
-import com.fes.flashcard.installer.swing.TestFrames;
-import com.fes.flashcard.installer.utilities.Nls;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;

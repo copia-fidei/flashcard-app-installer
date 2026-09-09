@@ -1,14 +1,14 @@
 package com.fes.flashcard.installer.app.operations;
 
+import com.epau.installer.utilities.TextBuilder;
+import com.epau.utilities.nls.Nls;
+import com.epau.utilities.swing.operation.ErrorCode;
+import com.epau.utilities.swing.operation.Operation;
 import com.fes.flashcard.installer.app.AuthMethod;
 import com.fes.flashcard.installer.app.PgHba;
 import com.fes.flashcard.installer.app.Postgres;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.PostgresState;
-import com.fes.flashcard.installer.operation.ErrorCode;
-import com.fes.flashcard.installer.operation.Operation;
-import com.fes.flashcard.installer.utilities.Nls;
-import com.fes.flashcard.installer.utilities.TextBuilder;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;
@@ -17,11 +17,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Supplier;
 
+import static com.epau.installer.utilities.Temporary.use;
 import static com.fes.flashcard.installer.app.Resources.POSTGRES_INIT_SQL;
 import static com.fes.flashcard.installer.app.Resources.getTmpFile;
 import static com.fes.flashcard.installer.app.pages.PostgresState.INSTALLED_BY_INSTALLER;
 import static com.fes.flashcard.installer.app.pages.PostgresState.NOT_INSTALLED;
-import static com.fes.flashcard.installer.utilities.Temporary.use;
 import static java.sql.DriverManager.getConnection;
 import static java.text.MessageFormat.format;
 

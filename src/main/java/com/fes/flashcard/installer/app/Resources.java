@@ -1,5 +1,6 @@
 package com.fes.flashcard.installer.app;
 
+import com.epau.installer.utilities.TarGzFile;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;
@@ -61,5 +62,6 @@ public interface Resources {
 		Path tempFile = getTmpFile(POSTGRES_INIT_SQL);
 		println(tempFile);
 		Files.deleteIfExists(tempFile);
+		new TarGzFile(Resources.KARAF.openStream()).getEntries().forEach(IO::println);
 	}
 }

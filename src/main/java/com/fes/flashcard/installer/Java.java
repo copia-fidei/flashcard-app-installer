@@ -8,7 +8,9 @@ import java.util.List;
 import static java.lang.IO.println;
 import static java.lang.ProcessBuilder.Redirect.INHERIT;
 import static java.lang.ProcessBuilder.Redirect.PIPE;
+import static java.lang.ProcessBuilder.startPipeline;
 import static java.lang.String.valueOf;
+import static java.util.List.of;
 
 @NonNls
 public interface Java {
@@ -42,11 +44,9 @@ public interface Java {
 	}
 
 	static String getExecutable(int version) throws IOException {
-		@NonNls List<Process> processes = ProcessBuilder.startPipeline(List.of(
-				new ProcessBuilder("update-alternatives", "--list", "java")
-						.inheritIO().redirectOutput(PIPE),
-				new ProcessBuilder("grep", valueOf(version))
-						.redirectError(INHERIT)
+		@NonNls List<Process> processes = startPipeline(of(
+				new ProcessBuilder("update-alternatives", "--list", "java").inheritIO().redirectOutput(PIPE),
+				new ProcessBuilder("grep", valueOf(version)).redirectError(INHERIT)
 		));
 		String path;
 		try (var out = processes.getLast().inputReader()) {

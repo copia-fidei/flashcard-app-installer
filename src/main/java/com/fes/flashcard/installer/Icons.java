@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NonNls;
 
 import java.awt.Color;
 
+// TODO
 @NonNls
 public interface Icons {
 

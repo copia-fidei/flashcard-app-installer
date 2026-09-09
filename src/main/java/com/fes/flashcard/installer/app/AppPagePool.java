@@ -1,5 +1,8 @@
 package com.fes.flashcard.installer.app;
 
+import com.epau.installer.page.PageFrame;
+import com.epau.installer.page.PagePool;
+import com.epau.utilities.swing.operation.Operation;
 import com.fes.flashcard.installer.app.operations.ConfigureKarafOp;
 import com.fes.flashcard.installer.app.operations.ConfigurePostgresOp;
 import com.fes.flashcard.installer.app.operations.CreatePostgresDataSourceOp;
@@ -15,9 +18,6 @@ import com.fes.flashcard.installer.app.pages.KarafPage;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
 import com.fes.flashcard.installer.app.pages.RootPasswordPage;
 import com.fes.flashcard.installer.app.pages.RootPasswordPageData;
-import com.fes.flashcard.installer.operation.Operation;
-import com.fes.flashcard.installer.page.PageFrame;
-import com.fes.flashcard.installer.page.PagePool;
 
 import java.util.ArrayList;
 import java.util.List;

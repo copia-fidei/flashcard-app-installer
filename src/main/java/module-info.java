@@ -8,9 +8,19 @@ module com.fes.flashcard.installer {
 	requires com.formdev.flatlaf.extras;
 	requires org.apache.commons.compress;
 	requires pty4j;
+	requires org.postgresql.jdbc;
+	requires com.github.weisj.jsvg;
+
+	// TODO language
+//	requires com.epau.utilities.swing.operation;
+	requires com.epau.installer;
+	requires com.epau.utilities.nls;
+
+	opens com.fes.flashcard.installer.app to com.epau.utilities.nls;
+	opens com.fes.flashcard.installer.app.operations to com.epau.utilities.nls;
+	opens com.fes.flashcard.installer.app.pages to com.epau.utilities.nls;
 
 	opens icons.svgrepo;
 
-	requires org.postgresql.jdbc;
-	requires com.github.weisj.jsvg;
+
 }

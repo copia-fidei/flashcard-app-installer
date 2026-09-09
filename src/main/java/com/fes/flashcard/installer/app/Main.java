@@ -1,7 +1,7 @@
 package com.fes.flashcard.installer.app;
 
-import com.fes.flashcard.installer.page.PageFrame;
-import com.fes.flashcard.installer.utilities.Nls;
+import com.epau.installer.page.PageFrame;
+import com.epau.utilities.nls.Nls;
 
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;

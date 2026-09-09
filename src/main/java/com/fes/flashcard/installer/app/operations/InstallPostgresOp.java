@@ -1,15 +1,15 @@
 package com.fes.flashcard.installer.app.operations;
 
+import com.epau.installer.swing.DecisionDialog;
+import com.epau.installer.swing.Option;
+import com.epau.installer.utilities.WriterAdapter;
+import com.epau.utilities.nls.Nls;
+import com.epau.utilities.swing.operation.Cancelled;
+import com.epau.utilities.swing.operation.ErrorCode;
+import com.epau.utilities.swing.operation.Operation;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.PostgresState;
 import com.fes.flashcard.installer.app.pages.RootPasswordPageData;
-import com.fes.flashcard.installer.operation.Cancelled;
-import com.fes.flashcard.installer.operation.ErrorCode;
-import com.fes.flashcard.installer.operation.Operation;
-import com.fes.flashcard.installer.swing.DecisionDialog;
-import com.fes.flashcard.installer.swing.Option;
-import com.fes.flashcard.installer.utilities.Nls;
-import com.fes.flashcard.installer.utilities.WriterAdapter;
 import com.pty4j.PtyProcessBuilder;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;

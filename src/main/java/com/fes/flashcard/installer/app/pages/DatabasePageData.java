@@ -1,15 +1,15 @@
 package com.fes.flashcard.installer.app.pages;
 
+import com.epau.installer.page.PageData;
+import com.epau.installer.page.PageDataPool;
+import com.epau.installer.validation.Severity;
+import com.epau.installer.validation.ValidationResult;
+import com.epau.installer.validation.ValidationResults;
+import com.epau.utilities.nls.Nls;
 import com.fes.flashcard.installer.app.AuthMethod;
 import com.fes.flashcard.installer.app.Database;
 import com.fes.flashcard.installer.app.PgHba;
 import com.fes.flashcard.installer.app.Postgres;
-import com.fes.flashcard.installer.page.PageData;
-import com.fes.flashcard.installer.page.PageDataPool;
-import com.fes.flashcard.installer.utilities.Nls;
-import com.fes.flashcard.installer.validation.Severity;
-import com.fes.flashcard.installer.validation.ValidationResult;
-import com.fes.flashcard.installer.validation.ValidationResults;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;

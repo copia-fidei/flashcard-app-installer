@@ -1,17 +1,17 @@
 package com.fes.flashcard.installer.app.pages;
 
+import com.epau.installer.page.PageData;
+import com.epau.installer.page.PageDataPool;
+import com.epau.installer.utilities.Directory;
+import com.epau.installer.validation.ValidationResults;
+import com.epau.utilities.nls.Nls;
 import com.fes.flashcard.installer.Home;
-import com.fes.flashcard.installer.page.PageData;
-import com.fes.flashcard.installer.page.PageDataPool;
-import com.fes.flashcard.installer.utilities.Directory;
-import com.fes.flashcard.installer.utilities.Nls;
-import com.fes.flashcard.installer.validation.ValidationResults;
 import org.jetbrains.annotations.NonNls;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.fes.flashcard.installer.validation.Severity.WARNING;
+import static com.epau.installer.validation.Severity.WARNING;
 import static java.lang.IO.println;
 import static java.util.Objects.requireNonNull;
 

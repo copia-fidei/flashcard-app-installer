@@ -1,7 +1,7 @@
 package com.fes.flashcard.installer.app.pages;
 
-import com.fes.flashcard.installer.page.Page;
-import com.fes.flashcard.installer.utilities.Nls;
+import com.epau.installer.page.Page;
+import com.epau.utilities.nls.Nls;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

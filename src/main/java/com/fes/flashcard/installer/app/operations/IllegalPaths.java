@@ -1,7 +1,7 @@
 package com.fes.flashcard.installer.app.operations;
 
+import com.epau.utilities.nls.Nls;
 import com.fes.flashcard.installer.Home;
-import com.fes.flashcard.installer.utilities.Nls;
 
 import java.nio.file.Path;
 

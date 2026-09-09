@@ -1,8 +1,8 @@
 package com.fes.flashcard.installer.app.pages;
 
-import com.fes.flashcard.installer.page.Page;
-import com.fes.flashcard.installer.swing.DocumentAdapter;
-import com.fes.flashcard.installer.utilities.Nls;
+import com.epau.installer.page.Page;
+import com.epau.installer.swing.DocumentAdapter;
+import com.epau.utilities.nls.Nls;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.JButton;

@@ -1,17 +1,17 @@
 package com.fes.flashcard.installer.app.operations;
 
 
+import com.epau.installer.swing.DecisionDialog;
+import com.epau.installer.swing.Option;
+import com.epau.installer.utilities.Directory;
+import com.epau.installer.utilities.PosixConverter;
+import com.epau.installer.utilities.TarGzFile;
+import com.epau.installer.utilities.TextBuilder;
+import com.epau.utilities.nls.Nls;
+import com.epau.utilities.swing.operation.Counter;
+import com.epau.utilities.swing.operation.Operation;
 import com.fes.flashcard.installer.app.Resources;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
-import com.fes.flashcard.installer.operation.Counter;
-import com.fes.flashcard.installer.operation.Operation;
-import com.fes.flashcard.installer.swing.DecisionDialog;
-import com.fes.flashcard.installer.swing.Option;
-import com.fes.flashcard.installer.utilities.Directory;
-import com.fes.flashcard.installer.utilities.Nls;
-import com.fes.flashcard.installer.utilities.PosixConverter;
-import com.fes.flashcard.installer.utilities.TarGzFile;
-import com.fes.flashcard.installer.utilities.TextBuilder;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;

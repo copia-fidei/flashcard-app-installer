@@ -1,18 +1,18 @@
 package com.fes.flashcard.installer.app.operations;
 
+import com.epau.installer.utilities.TextBuilder;
+import com.epau.utilities.nls.Nls;
+import com.epau.utilities.swing.operation.ErrorCode;
+import com.epau.utilities.swing.operation.Operation;
 import com.fes.flashcard.installer.app.Karaf;
 import com.fes.flashcard.installer.app.pages.DatabasePageData;
 import com.fes.flashcard.installer.app.pages.KarafPageData;
-import com.fes.flashcard.installer.operation.ErrorCode;
-import com.fes.flashcard.installer.operation.Operation;
-import com.fes.flashcard.installer.utilities.Nls;
-import com.fes.flashcard.installer.utilities.TextBuilder;
 
 import java.io.IOException;
 
+import static com.epau.installer.utilities.Temporary.use;
 import static com.fes.flashcard.installer.app.Resources.H2_INIT_SQL;
 import static com.fes.flashcard.installer.app.Resources.getTmpFile;
-import static com.fes.flashcard.installer.utilities.Temporary.use;
 
 public class InstallH2Operation extends Operation {
 
