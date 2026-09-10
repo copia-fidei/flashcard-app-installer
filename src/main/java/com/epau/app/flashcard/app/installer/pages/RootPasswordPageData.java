@@ -39,9 +39,8 @@ public class RootPasswordPageData extends PageData {
 	}
 
 	@Override
-
 	public ValidationResults validate() {
-		var validationResults = new ValidationResults();
+		var results = new ValidationResults();
 		try {
 			// Clear sudo cache to ensure fresh authentication
 			new ProcessBuilder("sudo", "-k").start().waitFor(); //NON-NLS
@@ -51,7 +50,7 @@ public class RootPasswordPageData extends PageData {
 				writer.newLine();
 			}
 			if (process.waitFor() != 0) {
-				validationResults.add(nls.get("RootPasswordPageData.error.title.Incorrect_password"), nls.get("RootPasswordPageData.error.description.The_password_for_the_root_user_is_incorrect"), Severity.ERROR);
+				results.add(nls.get("RootPasswordPageData.error.title.Incorrect_password"), nls.get("RootPasswordPageData.error.description.The_password_for_the_root_user_is_incorrect"), Severity.ERROR);
 			}
 		} catch (IOException e) {
 			log.log(WARNING, "Failed to validate root password", e);
@@ -59,7 +58,7 @@ public class RootPasswordPageData extends PageData {
 			log.log(INFO, "Validation interrupted", e);
 			currentThread().interrupt();
 		}
-		return validationResults;
+		return results;
 	}
 
 	public char[] getRootPassword() {

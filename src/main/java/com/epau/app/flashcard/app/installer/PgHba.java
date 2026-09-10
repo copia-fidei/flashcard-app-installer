@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NonNls;
 
 import java.text.MessageFormat;
 
+/// Represents the PostgreSQL pg_hba.conf configuration file.
 public interface PgHba {
 
 	/// Entries that are added to pg_hba.conf, so that the user can connect to the database

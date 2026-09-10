@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import static java.util.List.of;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+/// Represents an installed Karaf.
 public class Karaf {
 
 	private static final Nls nls = new Nls(Karaf.class);

@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static com.epau.app.flashcard.app.installer.Resources.FLASHCARDS_APP_BUNDLE;
-import static com.epau.app.flashcard.app.installer.Resources.FLASHCARDS_APP_BUNDLE_NAME;
+import static com.epau.app.flashcard.app.installer.Resources.FLASHCARD_APP_BUNDLE_NAME;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -105,7 +105,7 @@ public class ConfigureKarafOp extends Operation {
 
 	// Deploy flashcards.jar in Karaf
 	private void deployBundle() throws IOException {
-		Path destination = karafLocation.resolve("deploy", FLASHCARDS_APP_BUNDLE_NAME);  //NON-NLS
+		Path destination = karafLocation.resolve("deploy", FLASHCARD_APP_BUNDLE_NAME);  //NON-NLS
 		try (var bundle = FLASHCARDS_APP_BUNDLE.openStream()) {
 			Files.copy(bundle, destination, REPLACE_EXISTING);
 		}

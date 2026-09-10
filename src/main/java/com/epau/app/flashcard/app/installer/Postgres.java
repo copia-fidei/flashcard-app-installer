@@ -12,6 +12,7 @@ import java.util.Optional;
 import static java.nio.file.Files.exists;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+/// Represents a PostgreSQL installation.
 @NonNls
 public class Postgres {
 
