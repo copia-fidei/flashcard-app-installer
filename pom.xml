@@ -18,8 +18,8 @@
         <module.name>com.epau.app.flashcard.app.installer</module.name>
         <main.class>com.epau.app.flashcard.app.installer.Main</main.class>
         <app.main>Flashcard App Installer</app.main>
-        <package.name>flashcard-app-installer</package.name>
-        <package.name.language>english</package.name.language>
+        <debian.package.name>flashcard-app-installer</debian.package.name>
+        <debian.package.name.language>english</debian.package.name.language>
     </properties>
 
     <dependencies>
@@ -213,7 +213,7 @@
                 <configuration>
                     <name>${app.main}</name>
                     <appVersion>${project.version}</appVersion>
-                    <linuxPackageName>${package.name}+${package.name.language}</linuxPackageName>
+                    <linuxPackageName>${debian.package.name}+${package.name.language}</linuxPackageName>
                     <icon>src/main/resources/icons/installer-app-logo.png</icon>
                     <linuxShortcut>true</linuxShortcut>
                     <modulePaths>
