@@ -239,11 +239,11 @@ public class DatabasePageData extends PageData {
 	}
 
 	private boolean canConnectToPostgresAdminByPassword() {
-		return execute(new String[]{"sudo", "--preserve-env=PGPASSWORD", "-u", postgresAdmin, "psql", "-c", "SELECT 1;"}, postgresAdminPassword, "Connection to" + postgresAdmin + " failed");
+		return execute(new String[]{"sudo", "--preserve-env=PGPASSWORD", "-u", postgresAdmin, "psql", "-c", "SELECT 1;"}, postgresAdminPassword, "Connection to '" + postgresAdmin + "' failed");
 	}
 
 	private boolean connectUser() {
-		return execute(new String[]{"psql", "-U", postgresUser, "-h", "localhost", "-d", dataSourceName, "-c", "SELECT 1;"}, postgresUserPassword, "Connection to" + postgresUser + " failed");
+		return execute(new String[]{"psql", "-U", postgresUser, "-h", "localhost", "-d", dataSourceName, "-c", "SELECT 1;"}, postgresUserPassword, "Connection to '" + postgresUser + "' failed");
 	}
 
 	private boolean execute(@NonNls String[] command, String password, @NonNls String error) {

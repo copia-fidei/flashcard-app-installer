@@ -1,4 +1,4 @@
-module com.fes.flashcard.installer {
+module com.epau.app.flashcard.app.installer {
 	requires java.desktop;
 	requires java.prefs;
 	requires java.sql;
@@ -11,17 +11,12 @@ module com.fes.flashcard.installer {
 	requires org.postgresql.jdbc;
 	requires com.github.weisj.jsvg;
 
-	// TODO language
-//	requires com.epau.utilities.swing.operation;
 	requires com.epau.installer;
 	requires com.epau.utilities.nls;
 
-	opens com.epau.app.flashcard.app.installer.app to com.epau.utilities.nls;
+	// TODO language
+	opens com.epau.app.flashcard.app.installer to com.epau.utilities.nls;
 	opens com.epau.app.flashcard.app.installer.operations to com.epau.utilities.nls;
 	opens com.epau.app.flashcard.app.installer.pages to com.epau.utilities.nls;
-
-	opens icons.svgrepo;
-	opens com.epau.app.flashcard.app.installer to com.epau.utilities.nls;
-
 
 }
