@@ -1,6 +1,5 @@
 package com.epau.app.flashcard.app.installer;
 
-import com.epau.installer.Java;
 import com.epau.utilities.nls.Nls;
 import com.epau.utilities.swing.operation.ErrorCode;
 import com.epau.utilities.swing.operation.Operation;

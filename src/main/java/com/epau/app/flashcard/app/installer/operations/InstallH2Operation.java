@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import static com.epau.app.flashcard.app.installer.Resources.H2_INIT_SQL;
 import static com.epau.app.flashcard.app.installer.Resources.getTmpFile;
-import static com.epau.installer.utilities.Temporary.use;
+import static com.epau.utilities.stream.io.TmpLocation.deleteAfterUse;
 
 public class InstallH2Operation extends Operation {
 
@@ -89,7 +89,7 @@ public class InstallH2Operation extends Operation {
 
 	// H2 database will be created on first connection
 	private void createTables(Karaf karaf) throws Exception {
-		use(getTmpFile(H2_INIT_SQL), file -> {
+		deleteAfterUse(getTmpFile(H2_INIT_SQL), file -> {
 			println(nls.get("InstallH2Operation.println.Execute_script_{0}", file));
 			karaf.executeSuccessfully("jdbc:execute " + dataSourceName + " RUNSCRIPT FROM '" + file + "'");
 			println(nls.get("InstallH2Operation.println.Tables_created"));

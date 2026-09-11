@@ -21,7 +21,7 @@ import static com.epau.app.flashcard.app.installer.Resources.POSTGRES_INIT_SQL;
 import static com.epau.app.flashcard.app.installer.Resources.getTmpFile;
 import static com.epau.app.flashcard.app.installer.pages.PostgresState.INSTALLED_BY_INSTALLER;
 import static com.epau.app.flashcard.app.installer.pages.PostgresState.NOT_INSTALLED;
-import static com.epau.installer.utilities.Temporary.use;
+import static com.epau.utilities.stream.io.TmpLocation.deleteAfterUse;
 import static java.sql.DriverManager.getConnection;
 import static java.text.MessageFormat.format;
 
@@ -249,7 +249,7 @@ public class ConfigurePostgresOp extends Operation {
 		println(nls.get("ConfigurePostgresOp.println.Create_database_and_tables"));
 		progress(2);
 
-		use(getTmpFile(POSTGRES_INIT_SQL), script -> {
+		deleteAfterUse(getTmpFile(POSTGRES_INIT_SQL), script -> {
 			println(nls.get("ConfigurePostgresOp.println.Execute"));
 			println(Files.readString(script));
 			var pb = loginCommand.get();

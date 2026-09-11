@@ -6,7 +6,7 @@
 
     <groupId>com.epau.app</groupId>
     <artifactId>flashcard-app-installer</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <java.version>25</java.version>
@@ -18,8 +18,6 @@
         <module.name>com.epau.app.flashcard.app.installer</module.name>
         <main.class>com.epau.app.flashcard.app.installer.Main</main.class>
         <app.main>Flashcard App Installer</app.main>
-        <debian.package.name>flashcard-app-installer</debian.package.name>
-        <debian.package.name.language>english</debian.package.name.language>
     </properties>
 
     <dependencies>
@@ -31,6 +29,11 @@
         <dependency>
             <groupId>com.epau.utilities.swing</groupId>
             <artifactId>swing-operation</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.epau.utilities.stream</groupId>
+            <artifactId>stream-utilities</artifactId>
             <version>1.0.0</version>
         </dependency>
 
@@ -213,7 +216,6 @@
                 <configuration>
                     <name>${app.main}</name>
                     <appVersion>${project.version}</appVersion>
-                    <linuxPackageName>${debian.package.name}+${package.name.language}</linuxPackageName>
                     <icon>src/main/resources/icons/installer-app-logo.png</icon>
                     <linuxShortcut>true</linuxShortcut>
                     <modulePaths>
@@ -225,47 +227,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>english</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-
-            <properties>
-                <package.name.language>english</package.name.language>
-            </properties>
-
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <excludes>
-                            <exclude>**/messages_de.properties</exclude>
-                        </excludes>
-                    </resource>
-                </resources>
-            </build>
-        </profile>
-
-        <profile>
-            <id>german</id>
-
-            <properties>
-                <package.name.language>german</package.name.language>
-            </properties>
-
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <excludes>
-                            <exclude>**/messages.properties</exclude>
-                        </excludes>
-                    </resource>
-                </resources>
-            </build>
-        </profile>
-    </profiles>
 </project>

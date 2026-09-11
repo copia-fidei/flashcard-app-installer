@@ -13,6 +13,7 @@ module com.epau.app.flashcard.app.installer {
 
 	requires com.epau.installer;
 	requires com.epau.utilities.nls;
+	requires com.epau.stream.utilities;
 
 	// TODO language
 	opens com.epau.app.flashcard.app.installer to com.epau.utilities.nls;

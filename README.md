@@ -52,10 +52,7 @@ Note: The **installer** for the flashcard application has been installed, not th
 
 # How to build this installer
 `mvn clean package`
-This creates a Debian package in target/jpackage, the same as in release.
-
-Use the -P option for a different language:
-`mvn clean package -P german`
+This creates a Debian package in target/jpackage, the same as in /releases.
 
 ## Maven POM explanation
 This application is a fully modular Java project. The build steps to achieve this are:

@@ -3,10 +3,15 @@ package com.epau.app.flashcard.app.installer;
 import com.epau.installer.page.PageFrame;
 import com.epau.utilities.nls.Nls;
 
+import java.util.logging.Logger;
+
+import static java.util.logging.Logger.getLogger;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Main {
+
+	private static final Logger LOG = getLogger(Main.class.getName());
 
 	static {
 		// system locale will be used, use below to override
