@@ -1,9 +1,9 @@
 package com.epau.app.flashcard.app.installer;
 
-import com.epau.utilities.nls.Nls;
-import com.epau.utilities.swing.operation.ErrorCode;
-import com.epau.utilities.swing.operation.Operation;
-import com.epau.utilities.swing.operation.Result;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.operation.ErrorCode;
+import com.epau.util.swing.operation.Operation;
+import com.epau.util.swing.operation.Result;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;

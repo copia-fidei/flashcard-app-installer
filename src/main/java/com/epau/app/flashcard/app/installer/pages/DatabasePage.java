@@ -1,11 +1,11 @@
 package com.epau.app.flashcard.app.installer.pages;
 
 import com.epau.app.flashcard.app.installer.Database;
-import com.epau.installer.page.Page;
-import com.epau.installer.page.PageDataPool;
-import com.epau.installer.swing.DocumentAdapter;
-import com.epau.installer.swing.TestFrames;
-import com.epau.utilities.nls.Nls;
+import com.epau.lib.swing.installer.page.Page;
+import com.epau.lib.swing.installer.page.PageDataPool;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.frame.TestFrames;
+import com.epau.util.swing.text.DocumentChangeListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -46,8 +46,8 @@ public class DatabasePage extends Page {
 	private final JTextField        portField          = new JTextField(20);
 	private final JTextField        hostField          = new JTextField(20);
 
-	private final DocumentAdapter documentListener = new DocumentAdapter(this::pageChanged);
-	private final ItemListener    comboBoxListener = _ -> pageChanged();
+	private final DocumentChangeListener documentListener = new DocumentChangeListener(this::pageChanged);
+	private final ItemListener           comboBoxListener = _ -> pageChanged();
 
 
 	public DatabasePage(DatabasePageData pageData, Runnable onValidationChanged) {

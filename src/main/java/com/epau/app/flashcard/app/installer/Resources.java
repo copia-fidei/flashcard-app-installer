@@ -1,6 +1,6 @@
 package com.epau.app.flashcard.app.installer;
 
-import com.epau.installer.utilities.TarGzFile;
+import com.epau.util.io.file.tar.gz.TarGzFile;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;

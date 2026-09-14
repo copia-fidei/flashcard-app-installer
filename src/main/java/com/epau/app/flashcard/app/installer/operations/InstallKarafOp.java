@@ -3,15 +3,15 @@ package com.epau.app.flashcard.app.installer.operations;
 
 import com.epau.app.flashcard.app.installer.Resources;
 import com.epau.app.flashcard.app.installer.pages.KarafPageData;
-import com.epau.installer.swing.DecisionDialog;
-import com.epau.installer.swing.Option;
-import com.epau.installer.utilities.Directory;
-import com.epau.installer.utilities.PosixConverter;
-import com.epau.installer.utilities.TarGzFile;
-import com.epau.installer.utilities.TextBuilder;
-import com.epau.utilities.nls.Nls;
-import com.epau.utilities.swing.operation.Counter;
-import com.epau.utilities.swing.operation.Operation;
+import com.epau.util.io.directory.Directory;
+import com.epau.util.io.file.tar.gz.TarGzFile;
+import com.epau.util.io.file.unix.PosixFilePermissionsConverter;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.operation.Counter;
+import com.epau.util.swing.operation.Operation;
+import com.epau.util.swing.option_dialog.Option;
+import com.epau.util.swing.option_dialog.OptionDialog;
+import com.epau.util.text.MultilineText;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -52,11 +52,11 @@ public class InstallKarafOp extends Operation {
 	}
 
 	public String getDescription() {
-		var test = new TextBuilder();
-		test.line(nls.get("InstallKarafOp.description.Install_Apache_Karaf"));
-		test.line(nls.get("InstallKarafOp.description.Check_if_Karaf_is_already_installed_in_{0}", karafDir));
-		test.line(nls.get("InstallKarafOp.description.Remove_existing_content_from_{0}", karafDir));
-		test.line(nls.get("InstallKarafOp.description.Extract_{0}_to_{1}", KARAF_ZIP_NAME, karafDir));
+		var test = new MultilineText();
+		test.add(nls.get("InstallKarafOp.description.Install_Apache_Karaf"));
+		test.add(nls.get("InstallKarafOp.description.Check_if_Karaf_is_already_installed_in_{0}", karafDir));
+		test.add(nls.get("InstallKarafOp.description.Remove_existing_content_from_{0}", karafDir));
+		test.add(nls.get("InstallKarafOp.description.Extract_{0}_to_{1}", KARAF_ZIP_NAME, karafDir));
 		return test.toString();
 	}
 
@@ -108,7 +108,7 @@ public class InstallKarafOp extends Operation {
 		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallKarafOp.button.Reinstall_Karaf"), nls.get("InstallKarafOp.tooltip.The_existing_installation_will_be_removed_and_reinstalled"));
 
 		String title = isFullyInstalled ? nls.get("InstallKarafOp.title.Karaf_is_already_installed") : nls.get("InstallKarafOp.title.Karaf_is_partially_installed");
-		return DecisionDialog.showDialog(title, getDescription(isFullyInstalled), List.of(reuseOption, reinstallOption), isFullyInstalled ? reuseOption : reinstallOption);
+		return OptionDialog.showDialog(title, getDescription(isFullyInstalled), List.of(reuseOption, reinstallOption), isFullyInstalled ? reuseOption : reinstallOption);
 	}
 
 	private String getDescription(boolean isFullyInstalled) {
@@ -209,7 +209,7 @@ public class InstallKarafOp extends Operation {
 						createFile(outputPath);
 					}
 					copy(tarGzArchive, outputPath, REPLACE_EXISTING);
-					setPosixFilePermissions(outputPath, PosixConverter.posixPermissionsFromDecimal(entry.getMode()));
+					setPosixFilePermissions(outputPath, PosixFilePermissionsConverter.permissionsFromDecimal(entry.getMode()));
 				}
 				setProgress(counter.up());
 				println(nls.get("InstallKarafOp.println.Extracted_{0}", name));

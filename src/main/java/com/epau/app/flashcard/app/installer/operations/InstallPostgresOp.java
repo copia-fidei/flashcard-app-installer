@@ -3,13 +3,13 @@ package com.epau.app.flashcard.app.installer.operations;
 import com.epau.app.flashcard.app.installer.pages.DatabasePageData;
 import com.epau.app.flashcard.app.installer.pages.PostgresState;
 import com.epau.app.flashcard.app.installer.pages.RootPasswordPageData;
-import com.epau.installer.swing.DecisionDialog;
-import com.epau.installer.swing.Option;
-import com.epau.installer.utilities.WriterAdapter;
-import com.epau.utilities.nls.Nls;
-import com.epau.utilities.swing.operation.Cancelled;
-import com.epau.utilities.swing.operation.ErrorCode;
-import com.epau.utilities.swing.operation.Operation;
+import com.epau.util.io.WriterAdapter;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.operation.Cancelled;
+import com.epau.util.swing.operation.ErrorCode;
+import com.epau.util.swing.operation.Operation;
+import com.epau.util.swing.option_dialog.Option;
+import com.epau.util.swing.option_dialog.OptionDialog;
 import com.pty4j.PtyProcessBuilder;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +22,8 @@ import java.util.regex.Pattern;
 public class InstallPostgresOp extends Operation {
 
 	private final static Nls nls = new Nls(InstallPostgresOp.class);
+
+	private final static String LINE = System.lineSeparator();
 
 	private final DatabasePageData     databasePageData;
 	private final RootPasswordPageData rootPasswordPageData;
@@ -36,7 +38,6 @@ public class InstallPostgresOp extends Operation {
 		this.rootPasswordPageData = rootPasswordPageData;
 		this.postgresVersion = databasePageData.getSelectedPostgresVersion();
 		this.postgresPackageName = "postgresql-" + postgresVersion;
-
 	}
 
 	public String getDescription() {
@@ -92,7 +93,7 @@ public class InstallPostgresOp extends Operation {
 		var reuseOption     = new Option(Choice.REUSE, nls.get("InstallPostgresOp.button.Reuse_PostgreSQL"), nls.get("InstallPostgresOp.tooltip.The_existing_installation_will_be_used"));
 		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallPostgresOp.button.Reinstall_PostgreSQL"), nls.get("InstallPostgresOp.tooltip.The_existing_installation_will_be_removed_and_reinstalled"));
 
-		return DecisionDialog.showDialog(nls.get("InstallPostgresOp.title.PostgreSQL_is_already_installed"), getDlgDescription(), List.of(reuseOption, reinstallOption), reuseOption);
+		return OptionDialog.showDialog(nls.get("InstallPostgresOp.title.PostgreSQL_is_already_installed"), getDlgDescription(), List.of(reuseOption, reinstallOption), reuseOption);
 	}
 
 	private String getDlgDescription() {
@@ -102,7 +103,7 @@ public class InstallPostgresOp extends Operation {
 	private void installPostgres() throws IOException, InterruptedException {
 		println(nls.get("InstallPostgresOp.println.Install_PostgreSQL_{0}", postgresVersion));
 		setProgress(20);
-		List<String> command = List.of("sudo", "apt", "install", postgresPackageName); //$NON-NLS
+		List<String> command = List.of("sudo", "apt", "install", "-y", postgresPackageName); //$NON-NLS
 		println(nls.get("InstallPostgresOp.println.Execute_{0}", String.join(" ", command)));
 		setProgress(40);
 		int exitCode = execute(new ProcessBuilder(command).start()).exitCode();
@@ -119,6 +120,24 @@ public class InstallPostgresOp extends Operation {
 
 	private static final Pattern YES_NO_PROMPT = Pattern.compile("\\[\\D+/(\\D+)]");
 
+	/// Implementation note:
+	/// During purging of the Postgres package, an interactive prompt appears in the terminal
+	/// asking whether the PostgreSQL database data should be removed as well.
+	///
+	/// An attempt was made to answer this prompt non-interactively using debconf-set-selections:
+	/// ```bash
+	/// sudo debconf-set-selections <<EOF
+	/// postgresql-14 postgresql-14/postrm_purge_data boolean false
+	/// postgresql-14 postgresql-14/postrm_purge_data seen true
+	/// EOF
+	/// ```
+	/// However, the PostgreSQL package's postrm script explicitly resets
+	/// postrm_purge_data to true immediately before the prompt is displayed.
+	/// I suspect this to be a bug in the postrm script, as debconf is intended to provide configuration values for package scripts.
+	///
+	/// Therefore, an explicit "no" is written to the input stream instead.
+	/// A localized "no" is extracted from the prompt via pattern matching.
+	/// If, because of a different locale, the pattern does not match, the result might be the loss of the database data.
 	private void purgePostgres() throws IOException, InterruptedException, ErrorCode {
 		setProgress(10);
 		println(nls.get("InstallPostgresOp.println.Remove_PostgreSQL_installation"));
@@ -143,14 +162,14 @@ public class InstallPostgresOp extends Operation {
 
 					if (str.toLowerCase().contains("[sudo]")) { // NON-NLS
 						writer.write(rootPasswordPageData.getRootPassword());
-						writer.write(System.lineSeparator());
+						writer.write(LINE);
 						writer.flush();
 					}
 					Matcher matcher = YES_NO_PROMPT.matcher(str);
 					if (matcher.find()) {
 						var no = matcher.group(1); // e.g. "nein", "no", "non", ...
 						writer.write(no);
-						writer.write(System.lineSeparator());
+						writer.write(LINE);
 						writer.flush();
 					}
 

@@ -3,10 +3,10 @@ package com.epau.app.flashcard.app.installer.operations;
 import com.epau.app.flashcard.app.installer.Karaf;
 import com.epau.app.flashcard.app.installer.pages.DatabasePageData;
 import com.epau.app.flashcard.app.installer.pages.KarafPageData;
-import com.epau.installer.utilities.TextBuilder;
-import com.epau.utilities.nls.Nls;
-import com.epau.utilities.swing.operation.ErrorCode;
-import com.epau.utilities.swing.operation.Operation;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.operation.ErrorCode;
+import com.epau.util.swing.operation.Operation;
+import com.epau.util.text.MultilineText;
 
 import java.io.IOException;
 
@@ -29,10 +29,10 @@ public class CreatePostgresDataSourceOp extends Operation {
 	}
 
 	public String getDescription() {
-		var text = new TextBuilder();
-		text.line("feature:install pax-jdbc-postgresql"); //$NON-NLS
-		text.line(nls.get("CreatePostgresDataSourceOp.description.Create_DataSource_for_PostgreSQL_database"));
-		text.line(nls.get("CreatePostgresDataSourceOp.description.Test_DataSource"));
+		var text = new MultilineText();
+		text.add("feature:install pax-jdbc-postgresql"); //$NON-NLS
+		text.add(nls.get("CreatePostgresDataSourceOp.description.Create_DataSource_for_PostgreSQL_database"));
+		text.add(nls.get("CreatePostgresDataSourceOp.description.Test_DataSource"));
 		return text.toString();
 	}
 

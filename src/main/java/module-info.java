@@ -11,13 +11,15 @@ module com.epau.app.flashcard.app.installer {
 	requires org.postgresql.jdbc;
 	requires com.github.weisj.jsvg;
 
-	requires com.epau.installer;
-	requires com.epau.utilities.nls;
-	requires com.epau.stream.utilities;
+	requires com.epau.lib.swing.installer;
+	requires com.epau.util.nls;
+	requires com.epau.util.stream;
+	requires com.epau.util.swing;
+	requires com.epau.util.io;
+	requires com.epau.util.text;
 
-	// TODO language
-	opens com.epau.app.flashcard.app.installer to com.epau.utilities.nls;
-	opens com.epau.app.flashcard.app.installer.operations to com.epau.utilities.nls;
-	opens com.epau.app.flashcard.app.installer.pages to com.epau.utilities.nls;
+	opens com.epau.app.flashcard.app.installer to com.epau.util.nls;
+	opens com.epau.app.flashcard.app.installer.operations to com.epau.util.nls;
+	opens com.epau.app.flashcard.app.installer.pages to com.epau.util.nls;
 
 }

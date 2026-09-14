@@ -1,10 +1,10 @@
 package com.epau.app.flashcard.app.installer.pages;
 
-import com.epau.installer.page.PageData;
-import com.epau.installer.page.PageDataPool;
-import com.epau.installer.validation.Severity;
-import com.epau.installer.validation.ValidationResults;
-import com.epau.utilities.nls.Nls;
+import com.epau.lib.swing.installer.page.PageData;
+import com.epau.lib.swing.installer.page.PageDataPool;
+import com.epau.lib.validation.Severity;
+import com.epau.lib.validation.ValidationResults;
+import com.epau.util.nls.Nls;
 
 import java.io.IOException;
 

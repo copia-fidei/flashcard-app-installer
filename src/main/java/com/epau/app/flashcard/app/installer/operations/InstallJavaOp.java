@@ -2,8 +2,8 @@ package com.epau.app.flashcard.app.installer.operations;
 
 import com.epau.app.flashcard.app.installer.Java;
 import com.epau.app.flashcard.app.installer.pages.JavaPageData;
-import com.epau.utilities.nls.Nls;
-import com.epau.utilities.swing.operation.Operation;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.operation.Operation;
 
 import static java.lang.System.lineSeparator;
 

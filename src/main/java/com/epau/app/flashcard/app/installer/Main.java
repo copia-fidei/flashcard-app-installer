@@ -1,7 +1,7 @@
 package com.epau.app.flashcard.app.installer;
 
-import com.epau.installer.page.PageFrame;
-import com.epau.utilities.nls.Nls;
+import com.epau.lib.swing.installer.page.PageFrame;
+import com.epau.util.nls.Nls;
 
 import java.util.logging.Logger;
 

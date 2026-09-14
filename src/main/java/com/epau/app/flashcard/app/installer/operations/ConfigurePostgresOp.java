@@ -5,10 +5,10 @@ import com.epau.app.flashcard.app.installer.PgHba;
 import com.epau.app.flashcard.app.installer.Postgres;
 import com.epau.app.flashcard.app.installer.pages.DatabasePageData;
 import com.epau.app.flashcard.app.installer.pages.PostgresState;
-import com.epau.installer.utilities.TextBuilder;
-import com.epau.utilities.nls.Nls;
-import com.epau.utilities.swing.operation.ErrorCode;
-import com.epau.utilities.swing.operation.Operation;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.operation.ErrorCode;
+import com.epau.util.swing.operation.Operation;
+import com.epau.util.text.MultilineText;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ import static com.epau.app.flashcard.app.installer.Resources.POSTGRES_INIT_SQL;
 import static com.epau.app.flashcard.app.installer.Resources.getTmpFile;
 import static com.epau.app.flashcard.app.installer.pages.PostgresState.INSTALLED_BY_INSTALLER;
 import static com.epau.app.flashcard.app.installer.pages.PostgresState.NOT_INSTALLED;
-import static com.epau.utilities.stream.io.TmpLocation.deleteAfterUse;
+import static com.epau.util.stream.io.TmpLocation.deleteAfterUse;
 import static java.sql.DriverManager.getConnection;
 import static java.text.MessageFormat.format;
 
@@ -55,17 +55,17 @@ public class ConfigurePostgresOp extends Operation {
 	}
 
 	public String getDescription() {
-		var text = new TextBuilder();
-		text.line(nls.get("ConfigurePostgresOp.description.Find_authentication_method_for_user_postgres"));
-		text.line(nls.get("ConfigurePostgresOp.description.Check_if_user_{0}_can_connect", user));
-		text.line(nls.get("ConfigurePostgresOp.description.Enable_connection_for_user_{0}", user));
-		text.line(nls.get("ConfigurePostgresOp.description.Set_PostgreSQL_port_to_{0}", port));
-		text.line(nls.get("ConfigurePostgresOp.description.Restart_PostgreSQL"));
-		text.line(nls.get("ConfigurePostgresOp.description.Create_user_{0}", user));
-		text.line(nls.get("ConfigurePostgresOp.description.Set_password_for_{0}", user));
-		text.line(nls.get("ConfigurePostgresOp.description.Create_database_{0}_and_tables", dbName));
-		text.line(nls.get("ConfigurePostgresOp.description.Grant_{0}_ownership_of_database_{1}", user, dbName));
-		text.line(nls.get("ConfigurePostgresOp.description.Test_JDBC_connection"));
+		var text = new MultilineText();
+		text.add(nls.get("ConfigurePostgresOp.description.Find_authentication_method_for_user_postgres"));
+		text.add(nls.get("ConfigurePostgresOp.description.Check_if_user_{0}_can_connect", user));
+		text.add(nls.get("ConfigurePostgresOp.description.Enable_connection_for_user_{0}", user));
+		text.add(nls.get("ConfigurePostgresOp.description.Set_PostgreSQL_port_to_{0}", port));
+		text.add(nls.get("ConfigurePostgresOp.description.Restart_PostgreSQL"));
+		text.add(nls.get("ConfigurePostgresOp.description.Create_user_{0}", user));
+		text.add(nls.get("ConfigurePostgresOp.description.Set_password_for_{0}", user));
+		text.add(nls.get("ConfigurePostgresOp.description.Create_database_{0}_and_tables", dbName));
+		text.add(nls.get("ConfigurePostgresOp.description.Grant_{0}_ownership_of_database_{1}", user, dbName));
+		text.add(nls.get("ConfigurePostgresOp.description.Test_JDBC_connection"));
 		return text.toString();
 	}
 
@@ -124,7 +124,7 @@ public class ConfigurePostgresOp extends Operation {
 		Supplier<ProcessBuilder> processBuilder;
 		if (authMethod.equals("peer")) { //NON-NLS
 			processBuilder = () -> new ProcessBuilder("sudo", "-u", "postgres", "psql"); //NON-NLS
-			if (getPostgresState() == INSTALLED_BY_INSTALLER) {
+			if (getPostgresState() == INSTALLED_BY_INSTALLER && !adminPassword.isBlank()) {
 				setAdminPassword(processBuilder);
 			}
 		} else if (AuthMethod.isPasswordBased(authMethod)) {
@@ -143,9 +143,6 @@ public class ConfigurePostgresOp extends Operation {
 	}
 
 	private void setAdminPassword(Supplier<ProcessBuilder> loginCommand) throws IOException, InterruptedException, ErrorCode {
-		if (adminPassword.isBlank()) {
-			return;
-		}
 		println(nls.get("ConfigurePostgresOp.println.Set_password_for_Postgres"));
 		progress(2);
 		var pb = loginCommand.get();

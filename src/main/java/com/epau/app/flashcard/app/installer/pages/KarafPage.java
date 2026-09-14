@@ -1,8 +1,8 @@
 package com.epau.app.flashcard.app.installer.pages;
 
-import com.epau.installer.page.Page;
-import com.epau.installer.swing.DocumentAdapter;
-import com.epau.utilities.nls.Nls;
+import com.epau.lib.swing.installer.page.Page;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.text.DocumentChangeListener;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.JButton;
@@ -41,7 +41,7 @@ public class KarafPage extends Page {
 			pageChanged();
 		}
 	};
-	private final DocumentAdapter textfieldListener    = new DocumentAdapter(this::pageChanged);
+	private final DocumentChangeListener textfieldListener = new DocumentChangeListener(this::pageChanged);
 
 	public KarafPage(KarafPageData pageData, Runnable onValidationChanged) {
 		super(pageData, onValidationChanged);

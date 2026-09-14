@@ -2,10 +2,10 @@ package com.epau.app.flashcard.app.installer.operations;
 
 import com.epau.app.flashcard.app.installer.Karaf;
 import com.epau.app.flashcard.app.installer.pages.KarafPageData;
-import com.epau.installer.utilities.TextBuilder;
-import com.epau.utilities.nls.Nls;
-import com.epau.utilities.swing.operation.ErrorCode;
-import com.epau.utilities.swing.operation.Operation;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.operation.ErrorCode;
+import com.epau.util.swing.operation.Operation;
+import com.epau.util.text.MultilineText;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;
@@ -30,26 +30,26 @@ public class ConfigureKarafOp extends Operation {
 	}
 
 	public String getDescription() {
-		var text = new TextBuilder();
-		text.line(nls.get("ConfigureKarafOp.description.Install_Karaf_Features"));
-		text.line(nls.get("ConfigureKarafOp.description.Activate_password_prompt"));
-		text.line(nls.get("ConfigureKarafOp.description.Start_Karaf_in_{0}", karafLocation));
-		text.line(nls.get("ConfigureKarafOp.description.Execute"));
-		text.line("feature:repo-add mvn:no.priv.bang.karaf/jersey/LATEST/xml/features"); //NON-NLS
-		text.line("feature:install jersey-karaf-feature"); //NON-NLS
-		text.line("feature:install war"); //NON-NLS
-		text.line("feature:install http"); //NON-NLS
-		text.line("feature:install jndi"); //NON-NLS
-		text.line("feature:install pax-jdbc-postgresql"); //NON-NLS
-		text.line("feature:install pax-jdbc-sqlite"); //NON-NLS
-		text.line("bundle:install mvn:org.glassfish.jersey.media/jersey-media-multipart/2.47"); //NON-NLS
-		text.line("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc/2.47"); //NON-NLS
-		text.line("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc-mustache/2.47"); //NON-NLS
-		text.line("bundle:install wrap:mvn:com.github.spullara.mustache.java/compiler/0.9.14"); //NON-NLS
-		text.line("bundle:install mvn:org.jvnet.mimepull/mimepull/1.9.15"); //NON-NLS
-		text.line("feature:install jdbc"); //NON-NLS
-		text.line(nls.get("ConfigureKarafOp.println.Copy_Flashcards_JAR_to_Karaf_deploy_folder"));
-		text.line(nls.get("ConfigureKarafOp.println.Stop_Karaf"));
+		var text = new MultilineText();
+		text.add(nls.get("ConfigureKarafOp.description.Install_Karaf_Features"));
+		text.add(nls.get("ConfigureKarafOp.description.Activate_password_prompt"));
+		text.add(nls.get("ConfigureKarafOp.description.Start_Karaf_in_{0}", karafLocation));
+		text.add(nls.get("ConfigureKarafOp.description.Execute"));
+		text.add("feature:repo-add mvn:no.priv.bang.karaf/jersey/LATEST/xml/features"); //NON-NLS
+		text.add("feature:install jersey-karaf-feature"); //NON-NLS
+		text.add("feature:install war"); //NON-NLS
+		text.add("feature:install http"); //NON-NLS
+		text.add("feature:install jndi"); //NON-NLS
+		text.add("feature:install pax-jdbc-postgresql"); //NON-NLS
+		text.add("feature:install pax-jdbc-sqlite"); //NON-NLS
+		text.add("bundle:install mvn:org.glassfish.jersey.media/jersey-media-multipart/2.47"); //NON-NLS
+		text.add("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc/2.47"); //NON-NLS
+		text.add("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc-mustache/2.47"); //NON-NLS
+		text.add("bundle:install wrap:mvn:com.github.spullara.mustache.java/compiler/0.9.14"); //NON-NLS
+		text.add("bundle:install mvn:org.jvnet.mimepull/mimepull/1.9.15"); //NON-NLS
+		text.add("feature:install jdbc"); //NON-NLS
+		text.add(nls.get("ConfigureKarafOp.println.Copy_Flashcards_JAR_to_Karaf_deploy_folder"));
+		text.add(nls.get("ConfigureKarafOp.println.Stop_Karaf"));
 		return text.toString();
 	}
 

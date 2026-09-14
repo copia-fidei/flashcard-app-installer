@@ -22,18 +22,38 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.epau</groupId>
-            <artifactId>installer</artifactId>
+            <groupId>com.epau.lib.swing.installer</groupId>
+            <artifactId>swing-installer</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.epau.utilities.swing</groupId>
+            <groupId>com.epau.util.swing</groupId>
             <artifactId>swing-operation</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.epau.utilities.stream</groupId>
-            <artifactId>stream-utilities</artifactId>
+            <groupId>com.epau.util.stream</groupId>
+            <artifactId>stream-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.epau.util.swing</groupId>
+            <artifactId>swing-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.epau.util.text</groupId>
+            <artifactId>text-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.epau.util.io</groupId>
+            <artifactId>io-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.epau.util.nls</groupId>
+            <artifactId>nls</artifactId>
             <version>1.0.0</version>
         </dependency>
 

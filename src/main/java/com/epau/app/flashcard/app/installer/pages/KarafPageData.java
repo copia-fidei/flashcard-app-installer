@@ -1,17 +1,17 @@
 package com.epau.app.flashcard.app.installer.pages;
 
-import com.epau.installer.page.PageData;
-import com.epau.installer.page.PageDataPool;
-import com.epau.installer.utilities.Directory;
-import com.epau.installer.validation.ValidationResults;
-import com.epau.utilities.nls.Nls;
 import com.epau.app.flashcard.app.installer.Home;
+import com.epau.lib.swing.installer.page.PageData;
+import com.epau.lib.swing.installer.page.PageDataPool;
+import com.epau.lib.validation.ValidationResults;
+import com.epau.util.io.directory.Directory;
+import com.epau.util.nls.Nls;
 import org.jetbrains.annotations.NonNls;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.epau.installer.validation.Severity.WARNING;
+import static com.epau.lib.validation.Severity.WARNING;
 import static java.lang.IO.println;
 import static java.util.Objects.requireNonNull;
 
@@ -83,7 +83,7 @@ public class KarafPageData extends PageData {
 		if (parentDir.getFileName().toString().equals(folderName)) {
 			results.add(nls.get("KarafPageData.warning.title.Suspicious_directory_path"), nls.get("KarafPageData.warning.description.Folder_and_parent_folder_have_the_same_name"), WARNING);
 		}
-		if (!new Directory(getKarafInstallationDir()).isEmpty()) {
+		if (Files.exists(getKarafInstallationDir()) && !new Directory(getKarafInstallationDir()).isEmpty()) {
 			results.add(nls.get("KarafPageData.warning.title.Folder_is_not_empty"), nls.get("KarafPageData.warning.description.The_selected_folder_is_not_empty_Its_contents_will_be_deleted_during_installation"), WARNING);
 		}
 		return results;

@@ -37,7 +37,7 @@ If you want to run this installer, be aware of the following risks:
   When this command is executed normally in a terminal, a prompt asks you to choose whether to delete or keep the database data. Choosing the wrong option could result in data loss.
   To avoid this, the installer automatically selects the option to keep the data. However, this behavior has only been tested on one machine.
 - Reinstalling Karaf may overwrite existing files.
-  - Karaf also contains the H2 database, which stores the flashcard data
+  - Karaf also contains the H2 database, which stores the flashcard data, those would be also overwritten.
 - You need to enter your `sudo` password.
 - The system-wide Java will be changed to Java 21. 
 This may break other applications that depend on higher versions of Java, but is required for Karaf to run.

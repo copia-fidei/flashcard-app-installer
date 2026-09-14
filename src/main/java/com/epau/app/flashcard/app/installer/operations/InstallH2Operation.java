@@ -3,16 +3,16 @@ package com.epau.app.flashcard.app.installer.operations;
 import com.epau.app.flashcard.app.installer.Karaf;
 import com.epau.app.flashcard.app.installer.pages.DatabasePageData;
 import com.epau.app.flashcard.app.installer.pages.KarafPageData;
-import com.epau.installer.utilities.TextBuilder;
-import com.epau.utilities.nls.Nls;
-import com.epau.utilities.swing.operation.ErrorCode;
-import com.epau.utilities.swing.operation.Operation;
+import com.epau.util.nls.Nls;
+import com.epau.util.swing.operation.ErrorCode;
+import com.epau.util.swing.operation.Operation;
+import com.epau.util.text.MultilineText;
 
 import java.io.IOException;
 
 import static com.epau.app.flashcard.app.installer.Resources.H2_INIT_SQL;
 import static com.epau.app.flashcard.app.installer.Resources.getTmpFile;
-import static com.epau.utilities.stream.io.TmpLocation.deleteAfterUse;
+import static com.epau.util.stream.io.TmpLocation.deleteAfterUse;
 
 public class InstallH2Operation extends Operation {
 
@@ -35,12 +35,12 @@ public class InstallH2Operation extends Operation {
 	}
 
 	public String getDescription() {
-		var text = new TextBuilder();
-		text.line(nls.get("InstallH2Operation.description.Install_H2_in_Karaf"));
-		text.line("feature:install pax-jdbc-h2"); //NON-NLS
-		text.line(nls.get("InstallH2Operation.description.Create_DataSource"));
-		text.line(nls.get("InstallH2Operation.description.Create_database_tables"));
-		text.line(nls.get("InstallH2Operation.description.Test_DataSource"));
+		var text = new MultilineText();
+		text.add(nls.get("InstallH2Operation.description.Install_H2_in_Karaf"));
+		text.add("feature:install pax-jdbc-h2"); //NON-NLS
+		text.add(nls.get("InstallH2Operation.description.Create_DataSource"));
+		text.add(nls.get("InstallH2Operation.description.Create_database_tables"));
+		text.add(nls.get("InstallH2Operation.description.Test_DataSource"));
 		return text.toString();
 	}
 
