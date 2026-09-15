@@ -159,6 +159,9 @@ public class DatabasePageData extends PageData {
 					results.addError(nls.get("DatabasePageData.error.title.Invalid_port"), nls.get("DatabasePageData.error.description.Port_must_be_a_number"), 0);
 				}
 			}
+			if (postgresUserPassword.isBlank()) {
+				results.add(nls.get("DatabasePageData.error.title.Empty_user_password"), nls.get("DatabasePageData.error.description.A_user_password_is_required"), Severity.ERROR);
+			}
 			if (isPostgresInstalled()) {
 				validateAdminPassword(results);
 				validateUserPassword(results);
@@ -206,9 +209,6 @@ public class DatabasePageData extends PageData {
 	}
 
 	private void validateUserPassword(ValidationResults validationResults) {
-		if (postgresUserPassword.isBlank()) {
-			validationResults.add(nls.get("DatabasePageData.error.title.Empty_user_password"), nls.get("DatabasePageData.error.description.A_user_password_is_required"), Severity.ERROR);
-		}
 		try {
 			Optional<String> userAuthMethodOpt = postgres.getAuthMethod(postgresUser, "host", dataSourceName);
 			if (userAuthMethodOpt.isEmpty()) {
