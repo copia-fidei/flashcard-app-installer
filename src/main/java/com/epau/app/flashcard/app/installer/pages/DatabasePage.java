@@ -1,8 +1,8 @@
 package com.epau.app.flashcard.app.installer.pages;
 
 import com.epau.app.flashcard.app.installer.Database;
-import com.epau.lib.swing.installer.page.Page;
-import com.epau.lib.swing.installer.page.PageDataPool;
+import com.epau.lib.swing.wizard.page.Page;
+import com.epau.lib.swing.wizard.page.PageDataPool;
 import com.epau.util.nls.Nls;
 import com.epau.util.swing.frame.TestFrames;
 import com.epau.util.swing.text.DocumentChangeListener;

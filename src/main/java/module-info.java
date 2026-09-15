@@ -11,7 +11,7 @@ module com.epau.app.flashcard.app.installer {
 	requires org.postgresql.jdbc;
 	requires com.github.weisj.jsvg;
 
-	requires com.epau.lib.swing.installer;
+	requires com.epau.lib.swing.wizard;
 	requires com.epau.util.nls;
 	requires com.epau.util.stream;
 	requires com.epau.util.swing;

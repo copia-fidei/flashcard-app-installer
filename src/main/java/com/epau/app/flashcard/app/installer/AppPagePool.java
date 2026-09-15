@@ -15,8 +15,8 @@ import com.epau.app.flashcard.app.installer.pages.KarafPage;
 import com.epau.app.flashcard.app.installer.pages.KarafPageData;
 import com.epau.app.flashcard.app.installer.pages.RootPasswordPage;
 import com.epau.app.flashcard.app.installer.pages.RootPasswordPageData;
-import com.epau.lib.swing.installer.page.PageFrame;
-import com.epau.lib.swing.installer.page.PagePool;
+import com.epau.lib.swing.wizard.page.PageFrame;
+import com.epau.lib.swing.wizard.page.PagePool;
 import com.epau.util.swing.operation.Operation;
 
 import java.util.ArrayList;

@@ -22,8 +22,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.epau.lib.swing.installer</groupId>
-            <artifactId>swing-installer</artifactId>
+            <groupId>com.epau.lib.swing.wizard</groupId>
+            <artifactId>swing-wizard</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>

@@ -1,8 +1,8 @@
 package com.epau.app.flashcard.app.installer.pages;
 
 import com.epau.app.flashcard.app.installer.Home;
-import com.epau.lib.swing.installer.page.PageData;
-import com.epau.lib.swing.installer.page.PageDataPool;
+import com.epau.lib.swing.wizard.page.PageData;
+import com.epau.lib.swing.wizard.page.PageDataPool;
 import com.epau.lib.validation.ValidationResults;
 import com.epau.util.io.directory.Directory;
 import com.epau.util.nls.Nls;

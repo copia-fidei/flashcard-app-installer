@@ -1,6 +1,6 @@
 package com.epau.app.flashcard.app.installer.pages;
 
-import com.epau.lib.swing.installer.page.Page;
+import com.epau.lib.swing.wizard.page.Page;
 import com.epau.util.nls.Nls;
 
 import javax.swing.JLabel;
