@@ -28,8 +28,8 @@ public class RootPasswordPage extends Page {
 
 	private final DelayedDocumentListener documentListener = new DelayedDocumentListener();
 
-	public RootPasswordPage(RootPasswordPageData pageData, Runnable onValidationChanged) {
-		super(pageData, onValidationChanged);
+	public RootPasswordPage(RootPasswordPageData pageData) {
+		super(pageData);
 		this.rootpasswordPageData = pageData;
 	}
 
@@ -87,16 +87,17 @@ public class RootPasswordPage extends Page {
 
 	class DelayedDocumentListener implements DocumentListener {
 
+		private static final int DELAY = 1500;
+
 		private final Timer timer;
 
 		DelayedDocumentListener() {
-			this.timer = new Timer(1500, _ -> pageChanged());
+			this.timer = new Timer(DELAY, _ -> pageChanged());
 			this.timer.setRepeats(false);
 		}
 
 		private void handleEvent() {
-			isValid = false;
-			onValidationChanged.run();
+			fireValidationStarted(); // this will disable the next button
 			timer.restart();
 		}
 

@@ -24,7 +24,7 @@
         <dependency>
             <groupId>com.epau.lib.swing.wizard</groupId>
             <artifactId>swing-wizard</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.epau.util.swing</groupId>

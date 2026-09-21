@@ -43,8 +43,8 @@ public class KarafPage extends Page {
 	};
 	private final DocumentChangeListener textfieldListener = new DocumentChangeListener(this::pageChanged);
 
-	public KarafPage(KarafPageData pageData, Runnable onValidationChanged) {
-		super(pageData, onValidationChanged);
+	public KarafPage(KarafPageData pageData) {
+		super(pageData);
 		this.karafPageData = pageData;
 	}
 

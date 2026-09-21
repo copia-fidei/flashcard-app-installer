@@ -47,10 +47,10 @@ public class AppPagePool extends PagePool {
 		pageDataPool.add(javaPageData);
 
 		// order is important
-		pages.add(new RootPasswordPage(rootPwPageData, this::updateButtons));
-		pages.add(new KarafPage(karafPageData, this::updateButtons));
-		pages.add(new DatabasePage(databasePageData, this::updateButtons));
-		pages.add(new JavaPage(javaPageData, this::updateButtons));
+		pages.add(new RootPasswordPage(rootPwPageData));
+		pages.add(new KarafPage(karafPageData));
+		pages.add(new DatabasePage(databasePageData));
+		pages.add(new JavaPage(javaPageData));
 	}
 
 	@Override

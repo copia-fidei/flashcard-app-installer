@@ -50,8 +50,8 @@ public class DatabasePage extends Page {
 	private final ItemListener           comboBoxListener = _ -> pageChanged();
 
 
-	public DatabasePage(DatabasePageData pageData, Runnable onValidationChanged) {
-		super(pageData, onValidationChanged);
+	public DatabasePage(DatabasePageData pageData) {
+		super(pageData);
 		this.databasePageData = pageData;
 	}
 
@@ -275,7 +275,7 @@ public class DatabasePage extends Page {
 		EventQueue.invokeLater(() -> {
 			var pageDataPool = new PageDataPool();
 			var pageData     = new DatabasePageData(pageDataPool);
-			var page         = new DatabasePage(pageData, () -> {});
+			var page         = new DatabasePage(pageData);
 			page.build();
 			page.willBecomeVisible();
 			TestFrames.showComponent("Database Configuration", page.content); //NON-NLS

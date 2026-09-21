@@ -21,8 +21,8 @@ public class JavaPage extends Page {
 
 	private final JTextField javaPackageField = new JTextField();
 
-	public JavaPage(JavaPageData pageData, Runnable onValidationChanged) {
-		super(pageData, onValidationChanged);
+	public JavaPage(JavaPageData pageData) {
+		super(pageData);
 
 		this.javaPageData = pageData;
 	}
