@@ -245,6 +245,56 @@
                     <destination>${project.build.directory}/jpackage</destination>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.7.1</version>
+                <configuration>
+                    <licenseMerges>
+                        <licenseMerge>
+                            Apache License, Version 2.0|The Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache-2.0
+                        </licenseMerge>
+                    </licenseMerges>
+                    <excludedScopes>test</excludedScopes>
+                </configuration>
+            </plugin>
+
+<!--license verification-->
+<!--            <plugin>-->
+<!--                <groupId>se.ayoy.maven-plugins</groupId>-->
+<!--                <artifactId>ayoy-license-verifier-maven-plugin</artifactId>-->
+<!--                <version>1.1.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>verify</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--&lt;!&ndash;                    <licenseFile>${project.basedir}/licenses/licenses.xml</licenseFile>&ndash;&gt;-->
+<!--                    <excludedMissingLicensesFile>${project.basedir}/licenses/allowedMissingLicense.xml</excludedMissingLicensesFile>-->
+<!--                    <failOnForbidden>true</failOnForbidden>-->
+<!--                    <failOnMissing>false</failOnMissing>-->
+<!--                    <failOnUnknown>true</failOnUnknown>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <version>2.9.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>makeAggregateBom</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

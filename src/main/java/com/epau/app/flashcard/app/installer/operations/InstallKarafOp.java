@@ -5,7 +5,6 @@ import com.epau.app.flashcard.app.installer.Resources;
 import com.epau.app.flashcard.app.installer.pages.KarafPageData;
 import com.epau.util.io.directory.Directory;
 import com.epau.util.io.file.tar.gz.TarGzFile;
-import com.epau.util.io.file.unix.PosixFilePermissionsConverter;
 import com.epau.util.nls.Nls;
 import com.epau.util.swing.operation.Counter;
 import com.epau.util.swing.operation.Operation;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.epau.app.flashcard.app.installer.Resources.KARAF_ZIP_NAME;
+import static com.epau.util.io.file.unix.PosixFilePermissionsConverter.getPermissionsFromDecimal;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.createDirectories;
@@ -209,7 +209,7 @@ public class InstallKarafOp extends Operation {
 						createFile(outputPath);
 					}
 					copy(tarGzArchive, outputPath, REPLACE_EXISTING);
-					setPosixFilePermissions(outputPath, PosixFilePermissionsConverter.permissionsFromDecimal(entry.getMode()));
+					setPosixFilePermissions(outputPath, getPermissionsFromDecimal(entry.getMode()));
 				}
 				setProgress(counter.up());
 				println(nls.get("InstallKarafOp.println.Extracted_{0}", name));
