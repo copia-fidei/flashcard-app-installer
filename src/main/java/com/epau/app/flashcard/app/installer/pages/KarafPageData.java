@@ -13,6 +13,7 @@ import java.nio.file.Path;
 
 import static com.epau.lib.validation.Severity.WARNING;
 import static java.lang.IO.println;
+import static java.nio.file.Files.isRegularFile;
 import static java.util.Objects.requireNonNull;
 
 public class KarafPageData extends PageData {
@@ -68,7 +69,7 @@ public class KarafPageData extends PageData {
 		if (!parentDir.startsWith(Home.PATH)) {
 			results.addError(nls.get("KarafPageData.error.title.Invalid_parent_directory"), nls.get("KarafPageData.error.description.The_selected_parent_directory_must_be_under_home"), 0);
 		}
-		if (Files.isRegularFile(parentDir)) {
+		if (isRegularFile(parentDir)) {
 			results.addError(nls.get("KarafPageData.error.title.Invalid_parent_directory"), nls.get("KarafPageData.error.description.A_file_is_selected_Only_directories_can_be_selected"), 1);
 		}
 		if (folderName.isBlank()) {

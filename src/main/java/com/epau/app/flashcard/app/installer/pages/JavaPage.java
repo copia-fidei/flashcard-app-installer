@@ -1,6 +1,6 @@
 package com.epau.app.flashcard.app.installer.pages;
 
-import com.epau.lib.swing.wizard.page.Page;
+import com.epau.lib.swing.wizard.page.NoOpPage;
 import com.epau.util.nls.Nls;
 
 import javax.swing.JLabel;
@@ -13,7 +13,7 @@ import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
 
-public class JavaPage extends Page {
+public class JavaPage extends NoOpPage {
 
 	private final Nls nls = new Nls(this);
 
@@ -27,7 +27,6 @@ public class JavaPage extends Page {
 		this.javaPageData = pageData;
 	}
 
-
 	@Override
 	public void build() {
 		var javaPackageLabel = new JLabel(nls.get("JavaPage.label.Package_name"));
@@ -40,24 +39,9 @@ public class JavaPage extends Page {
 	}
 
 	@Override
-	protected void updatePageData() {}
-
-	@Override
-	protected void addListeners() {}
-
-	@Override
-	protected void removeListeners() {}
-
-	@Override
 	protected void fillGUI() {
 		javaPackageField.setText(javaPageData.getJavaPackageName());
 	}
-
-	@Override
-	public void updateGUI() {}
-
-	@Override
-	public void updateDependantValues() {}
 
 	@Override
 	public String getTitle() {

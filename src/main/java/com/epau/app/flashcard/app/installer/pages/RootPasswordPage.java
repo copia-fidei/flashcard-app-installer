@@ -1,7 +1,8 @@
 package com.epau.app.flashcard.app.installer.pages;
 
-import com.epau.lib.swing.wizard.page.Page;
+import com.epau.lib.swing.wizard.page.NoOpPage;
 import com.epau.util.nls.Nls;
+import com.epau.util.swing.text.AbstractDocumentListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -9,7 +10,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
@@ -18,7 +18,7 @@ import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
 
-public class RootPasswordPage extends Page {
+public class RootPasswordPage extends NoOpPage {
 
 	private final Nls nls = new Nls(this);
 
@@ -76,16 +76,7 @@ public class RootPasswordPage extends Page {
 		rootpasswordPageData.setRootPassword(passwordField.getPassword());
 	}
 
-	@Override
-	protected void fillGUI() {}
-
-	@Override
-	public void updateGUI() {}
-
-	@Override
-	public void updateDependantValues() {}
-
-	class DelayedDocumentListener implements DocumentListener {
+	class DelayedDocumentListener extends AbstractDocumentListener {
 
 		private static final int DELAY = 1500;
 
@@ -96,24 +87,10 @@ public class RootPasswordPage extends Page {
 			this.timer.setRepeats(false);
 		}
 
-		private void handleEvent() {
+		@Override
+		protected void update(DocumentEvent e) {
 			fireValidationStarted(); // this will disable the next button
 			timer.restart();
-		}
-
-		@Override
-		public void insertUpdate(DocumentEvent e) {
-			handleEvent();
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent e) {
-			handleEvent();
-		}
-
-		@Override
-		public void changedUpdate(DocumentEvent e) {
-			handleEvent();
 		}
 	}
 

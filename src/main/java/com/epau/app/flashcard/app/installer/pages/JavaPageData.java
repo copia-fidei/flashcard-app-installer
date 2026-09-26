@@ -1,14 +1,11 @@
 package com.epau.app.flashcard.app.installer.pages;
 
-import com.epau.lib.swing.wizard.page.PageData;
+import com.epau.lib.swing.wizard.page.NoOpPageData;
 import com.epau.lib.swing.wizard.page.PageDataPool;
-import com.epau.lib.validation.ValidationResults;
 import org.jetbrains.annotations.NonNls;
 
-import java.util.List;
-
 @NonNls
-public class JavaPageData extends PageData {
+public class JavaPageData extends NoOpPageData {
 
 	/// The Java version that must be installed and activated.
 	public static final int TARGET_JAVA_VERSION = 21;
@@ -18,20 +15,6 @@ public class JavaPageData extends PageData {
 
 	public JavaPageData(PageDataPool pageDataPool) {
 		super(pageDataPool);
-	}
-
-	@Override
-	public void load() {}
-
-	@Override
-	public void save() {}
-
-	@Override
-	public void loadDefaults() {}
-
-	@Override
-	public ValidationResults validate() {
-		return new ValidationResults(List.of());
 	}
 
 	public String getJavaPackageName() {
