@@ -51,6 +51,17 @@ This may break other applications that depend on higher versions of Java, but is
 Note: The **installer** for the flashcard application has been installed, not the flashcard application itself.
 
 # How to build this installer
+Clone these repos and invoke mvn install in each of them.
+- https://github.com/copia-fidei/swing-wizard
+- https://github.com/copia-fidei/validation-library
+- https://github.com/copia-fidei/text-utilities
+- https://github.com/copia-fidei/swing-operation
+- https://github.com/copia-fidei/swing-utilities
+- https://github.com/copia-fidei/io-utilities
+- https://github.com/copia-fidei/stream-utilities
+- https://github.com/copia-fidei/nls
+
+Then clone this repo and invoke
 `mvn clean package`
 This creates a Debian package in target/jpackage, the same as in /releases.
 
