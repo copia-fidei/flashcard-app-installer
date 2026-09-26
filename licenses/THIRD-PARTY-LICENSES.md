@@ -1,46 +1,46 @@
 # Third-Party Licenses
 
 ## Apache Commons Codec
-Copyright 2002-2026 The Apache Software Foundation
-License: Apache License 2.0
-Source code: https://github.com/apache/commons-codec
+Copyright 2002-2026 The Apache Software Foundation  
+License: Apache License 2.0  
+Source code: https://github.com/apache/commons-codec  
 
 ## Apache Commons Compress
-Copyright 2002-2026 The Apache Software Foundation
-License: Apache License 2.0
-Source code: https://github.com/apache/commons-compress
+Copyright 2002-2026 The Apache Software Foundation  
+License: Apache License 2.0  
+Source code: https://github.com/apache/commons-compress  
 
 ## Apache Commons IO
-Copyright 2002-2026 The Apache Software Foundation
-License: Apache License 2.0
-Source code: https://github.com/apache/commons-io
+Copyright 2002-2026 The Apache Software Foundation  
+License: Apache License 2.0  
+Source code: https://github.com/apache/commons-io  
 
 ## Apache Commons Lang
-Copyright 2001-2026 The Apache Software Foundation
-License: Apache License 2.0
-Source code: https://github.com/apache/commons-lang
+Copyright 2001-2026 The Apache Software Foundation  
+License: Apache License 2.0  
+Source code: https://github.com/apache/commons-lang  
 
 ## FlatLaf
 Including FlatLaf Extras.
 
-License: Apache License 2.0
-Source code: https://github.com/JFormDesigner/FlatLaf
+License: Apache License 2.0  
+Source code: https://github.com/JFormDesigner/FlatLaf  
 
 ## JetBrains Java Annotations
-License: Apache License 2.0
-Source code: https://github.com/JetBrains/java-annotations
+License: Apache License 2.0  
+Source code: https://github.com/JetBrains/java-annotations  
 
 ## Kotlin Stdlib
-License: Apache License 2.0
-Copyright 2010-2024 JetBrains s.r.o and respective authors and developers
-Source code: https://github.com/jetbrains/kotlin
+License: Apache License 2.0  
+Copyright 2010-2024 JetBrains s.r.o and respective authors and developers  
+Source code: https://github.com/jetbrains/kotlin  
 
 ## Java Native Access
 Including Java Native Access Platform.
 
-Version 5.14.0
-Apache License, Version 2.0
-Source code: https://github.com/java-native-access
+Version 5.14.0  
+Apache License, Version 2.0  
+Source code: https://github.com/java-native-access  
 
 ## Checker Qual
 Source code: https://github.com/typetools/checker-framework/tree/master/checker-qual
@@ -120,11 +120,11 @@ OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## PostgreSQL JDBC Driver
-License: BSD 2-Clause "Simplified" License
-Source code: https://github.com/pgjdbc/pgjdbc
+License: BSD 2-Clause "Simplified" License  
+Source code: https://github.com/pgjdbc/pgjdbc  
 
-Copyright (c) 1997, PostgreSQL Global Development Group
-All rights reserved.
+Copyright (c) 1997, PostgreSQL Global Development Group  
+All rights reserved.  
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -148,28 +148,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
 ## pty4j
-License: Eclipse Public License 1.0
-Source code: https://github.com/JetBrains/pty4j
-
-# Third-Party Binary Modifications
-JPMS module descriptors have been added to the following JARs using the ModiTect Maven Plugin.
-- JNA (net.java.dev.jna:jna)
-- JNA Platform (net.java.dev.jna:jna-platform)
-- PostgreSQL JDBC Driver (org.postgresql:postgresql)
-- pty4j (org.jetbrains.pty4j:pty4j) 
-
-The resulting modules are incorporated into the runtime image by `jlink`.
+License: Eclipse Public License 1.0  
+Source code: https://github.com/JetBrains/pty4j  
 
 # JPackage
-The Debian package in /releases is generated using jpackage and includes the third-party dependencies listed above.
-Some of these dependencies have been modified before running jpackage; see "Third-Party Binary Modifications".
+The Debian package in /releases is generated using `jpackage` and includes the third-party dependencies listed above.
+Some of these dependencies have been modified before running `jpackage`; see "Third-Party Modifications".
 
 ## OpenJDK
 The Debian package includes Ubuntu's OpenJDK 25 runtime (25.0.4.1+1-1-22.04.4-Ubuntu).
 The OpenJDK runtime's applicable copyright notices and license texts can be viewed under {APPNAME}/lib/runtime/legal/ 
 after installation of the Debian package.
 
-## Third-Party Binary Modifications
+## Third-Party Modifications
 JPMS module descriptors have been added to the following third-party JARs using the ModiTect Maven Plugin
 before being included in the Debian package:
 - JNA (net.java.dev.jna:jna)
@@ -180,11 +171,11 @@ before being included in the Debian package:
 
 # Icons
 ## hourglass-done-svgrepo-com.svg
-License: Apache License 2.0
-Download link: https://www.svgrepo.com/svg/396666/hourglass-done
-Icons pack: Noto Emoji
-Source: https://github.com/googlefonts/noto-emoji/blob/main/2D/svg/emoji_u231b.svg
-Source license: https://github.com/googlefonts/noto-emoji/blob/main/2D/svg/LICENSE
+License: Apache License 2.0  
+Download link: https://www.svgrepo.com/svg/396666/hourglass-done  
+Icons pack: Noto Emoji  
+Source: https://github.com/googlefonts/noto-emoji/blob/main/2D/svg/emoji_u231b.svg  
+Source license: https://github.com/googlefonts/noto-emoji/blob/main/2D/svg/LICENSE  
 
 Copyright 2013 Google, Inc. All Rights Reserved.
 
@@ -231,6 +222,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 The remaining icons are in the public domain.
 
 # Apache Karaf
-apache-karaf-4.4.11.tar.gz is included in the installer.
-License: Apache License 2.0
-Download: https://karaf.apache.org/download
+apache-karaf-4.4.11.tar.gz is included in the installer.  
+License: Apache License 2.0  
+Download: https://karaf.apache.org/download  
