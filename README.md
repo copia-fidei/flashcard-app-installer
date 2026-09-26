@@ -13,7 +13,7 @@ A Java Swing-based installer for this flashcard management application: https://
 Each installation step is displayed with a separate progress bar and log/error messages.
 
 For the installation, it uses 
-- Linux system commands
+- Linux system commands, e.g.:
   - APT (Advanced Package Tool), e.g. `sudo apt install postgresql-14`
   - others: dpkg-query, update-alternatives, systemctl...
 - file system operations:
@@ -28,7 +28,7 @@ Some operations are run as sudo (Root).
 - Linux system with all system utilities the installer calls.
 - Internet access (for APT)
 - Root password (for sudo)
-- A system-wide Java installation is not required to run the installer itself. However, the installer installs Java 21 as part of the installation.
+- A system-wide Java installation is not required to run the installer itself. However, the installer will install Java 21 on the system.
 
 # Risks of usage
 If you want to run this installer, be aware of the following risks:
