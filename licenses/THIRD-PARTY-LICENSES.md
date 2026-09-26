@@ -200,7 +200,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-# Siemens Industrial Experience Icons
+## Siemens Industrial Experience Icons
 - Icon: warning-filled.svg  
 Download link: https://www.svgrepo.com/svg/486508/warning-filled
 - Icon: error-svgrepo-com.svg  
@@ -227,5 +227,10 @@ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEM
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Public Domain Icons
+## Public Domain Icons
 The remaining icons are in the public domain.
+
+# Apache Karaf
+apache-karaf-4.4.11.tar.gz is included in the installer.
+License: Apache License 2.0
+Download: https://karaf.apache.org/download
