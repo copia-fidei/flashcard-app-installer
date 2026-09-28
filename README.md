@@ -5,7 +5,7 @@ A Java Swing-based installer for this flashcard management application: https://
 - Database: PostgreSQL or H2
 - Java 21
 - Apache Karaf application server (Karaf)
-- Flashcard application + dependencies
+- Flashcard application + dependencies (OSGi-bundles)
 
 # How the installer works
 1. Wizard pages appear with configuration options (e.g. user, password).
@@ -17,7 +17,7 @@ For the installation, it uses
   - APT (Advanced Package Tool), e.g. `sudo apt install postgresql-14`
   - others: dpkg-query, update-alternatives, systemctl...
 - file system operations:
-  - extract Karaf as ZIP archive to the desired location
+  - extract Karaf from the ZIP to the desired location
   - modify configuration files
 - the psql (PostgreSQL) terminal front-end (to create databases, roles, passwords...)
 - the Karaf console (to install OSGi-bundles, H2 database, database drivers...)
@@ -51,15 +51,14 @@ This may break other applications that depend on higher versions of Java, but is
 Note: The **installer** for the flashcard application has been installed, not the flashcard application itself.
 
 # How to build this installer
-Clone these repos and invoke mvn install in each of them.
-- https://github.com/copia-fidei/swing-wizard
-- https://github.com/copia-fidei/validation-library
-- https://github.com/copia-fidei/text-utilities
-- https://github.com/copia-fidei/swing-operation
-- https://github.com/copia-fidei/swing-utilities
-- https://github.com/copia-fidei/io-utilities
-- https://github.com/copia-fidei/stream-utilities
-- https://github.com/copia-fidei/nls
+Clone and build (`mvn install`) these repositories in the following order:
+1. https://github.com/copia-fidei/nls
+2. https://github.com/copia-fidei/io-utilities
+3. https://github.com/copia-fidei/stream-utilities
+4. https://github.com/copia-fidei/text-utilities
+5. https://github.com/copia-fidei/validation-library
+6. https://github.com/copia-fidei/swing-operation
+7. https://github.com/copia-fidei/swing-wizard
 
 Then clone this repo and invoke
 `mvn clean package`
