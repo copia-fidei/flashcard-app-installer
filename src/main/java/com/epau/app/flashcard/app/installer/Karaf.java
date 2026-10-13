@@ -111,6 +111,7 @@ public class Karaf {
 	}
 
 	/// A command executed on Karaf, with user and password.
+	/// FIXME: reproducing this in Bash required neither user nor password
 	@NonNls
 	private class KarafCommand {
 

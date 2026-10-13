@@ -1,5 +1,5 @@
 # Flashcard Application Installer
-A Java Swing-based installer for this flashcard management application: https://github.com/copia-fidei/flashcards
+A Java Swing-based installer for this flashcard management application: https://github.com/copia-fidei/flashcard-app
 
 # Installed components
 - Database: PostgreSQL or H2
@@ -40,6 +40,7 @@ If you want to run this installer, be aware of the following risks:
   - Karaf also contains the H2 database, which stores the flashcard data, those would be also overwritten.
 - You need to enter your `sudo` password.
 - The system-wide Java will be changed to Java 21. 
+- Your database will be modified.
 This may break other applications that depend on higher versions of Java, but is required for Karaf to run.
 
 # How to use this installer

@@ -21,12 +21,12 @@ public interface Resources {
 	String KARAF_ZIP_NAME            = "apache-karaf-4.4.11.tar.gz";
 	String FLASHCARD_APP_BUNDLE_NAME = "flashcards.jar";
 	String POSTGRES_INIT_SQL_NAME    = "postgres-init.sql";
-	String H2_INIT_SQL_NAME           = "h2-init.sql";
+	String H2_INIT_SQL_NAME          = "h2-init.sql";
 
-	URL    KARAF                      = getResource(KARAF_ZIP_NAME);
-	URL    FLASHCARDS_APP_BUNDLE      = getResource(FLASHCARD_APP_BUNDLE_NAME);
-	URL    POSTGRES_INIT_SQL          = getResource(POSTGRES_INIT_SQL_NAME);
-	URL    H2_INIT_SQL                = getResource(H2_INIT_SQL_NAME);
+	URL    KARAF                     = getResource(KARAF_ZIP_NAME);
+	URL    FLASHCARD_APP_BUNDLE      = getResource(FLASHCARD_APP_BUNDLE_NAME);
+	URL    POSTGRES_INIT_SQL         = getResource(POSTGRES_INIT_SQL_NAME);
+	URL    H2_INIT_SQL               = getResource(H2_INIT_SQL_NAME);
 
 	private static URL getResource(String name) {
 		return requireNonNull(Resources.class.getResource("/" + name));

@@ -21,8 +21,8 @@ public class Main {
 
 	private static final Nls nls = new Nls(Main.class);
 
-	@SuppressWarnings("unused")
-	static void main(String[] args) {
+	@SuppressWarnings({"unused", "UnnecessaryModifier"})
+	public static void main(String[] args) {
 		invokeLater(() -> {
 			var pageFrame = new PageFrame(nls.get("Main.title.app"));
 			var pagePool  = new AppPagePool(pageFrame);

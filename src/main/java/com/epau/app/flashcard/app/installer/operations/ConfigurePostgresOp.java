@@ -263,6 +263,7 @@ public class ConfigurePostgresOp extends Operation {
 		println(nls.get("ConfigurePostgresOp.println.Grant_ownership_of_database_{0}_to_{1}", dbName, user));
 		progress(2);
 
+		// FIXME: Is GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {1}; needed?
 		@NonNls String sql = format("""
 				GRANT ALL PRIVILEGES ON DATABASE {0} TO {1};
 				GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {1};
