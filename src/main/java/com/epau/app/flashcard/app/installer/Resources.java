@@ -1,6 +1,7 @@
 package com.epau.app.flashcard.app.installer;
 
 import com.epau.util.io.file.tar.gz.TarGzFile;
+import com.epau.util.io.file.unix.Chmod;
 import org.jetbrains.annotations.NonNls;
 
 import java.io.IOException;
@@ -10,8 +11,6 @@ import java.nio.file.Path;
 
 import static java.lang.IO.println;
 import static java.nio.file.Files.createTempFile;
-import static java.nio.file.Files.setPosixFilePermissions;
-import static java.nio.file.attribute.PosixFilePermissions.fromString;
 import static java.util.Objects.requireNonNull;
 
 /// all files in /resources
@@ -48,11 +47,7 @@ public interface Resources {
 			Files.write(tmp, is.readAllBytes());
 		}
 		// Make file readable by others
-		try {
-			setPosixFilePermissions(tmp, fromString("rw-r--r--")); //$NON-NLS
-		} catch (UnsupportedOperationException e) {
-			// On non-POSIX systems (e.g., Windows), skip permission setting
-		}
+		Chmod.set(tmp, "rw-r--r--"); //NON-NLS
 		return tmp;
 	}
 
@@ -62,6 +57,6 @@ public interface Resources {
 		Path tempFile = getTmpFile(POSTGRES_INIT_SQL);
 		println(tempFile);
 		Files.deleteIfExists(tempFile);
-		new TarGzFile(Resources.KARAF.openStream()).getEntries().forEach(IO::println);
+		new TarGzFile(KARAF).printEntries();
 	}
 }

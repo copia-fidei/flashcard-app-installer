@@ -9,15 +9,23 @@ import com.epau.util.swing.operation.Cancelled;
 import com.epau.util.swing.operation.ErrorCode;
 import com.epau.util.swing.operation.Operation;
 import com.epau.util.swing.option_dialog.Option;
-import com.epau.util.swing.option_dialog.OptionDialog;
 import com.pty4j.PtyProcessBuilder;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Matcher;
+import java.util.Map;
 import java.util.regex.Pattern;
+
+import static com.epau.app.flashcard.app.installer.Runner.getOutputOf;
+import static com.epau.app.flashcard.app.installer.operations.Choice.KEEP;
+import static com.epau.app.flashcard.app.installer.operations.Choice.REINSTALL;
+import static com.epau.app.flashcard.app.installer.pages.PostgresState.ALREADY_INSTALLED;
+import static com.epau.app.flashcard.app.installer.pages.PostgresState.INSTALLED_BY_INSTALLER;
+import static com.epau.util.swing.option_dialog.OptionDialog.showDialog;
+import static java.lang.String.join;
 
 public class InstallPostgresOp extends Operation {
 
@@ -25,19 +33,20 @@ public class InstallPostgresOp extends Operation {
 
 	private final static String LINE = System.lineSeparator();
 
-	private final DatabasePageData     databasePageData;
 	private final RootPasswordPageData rootPasswordPageData;
 
 	private final         String postgresVersion;
 	private final @NonNls String postgresPackageName;
 
+	private final Map<String, PostgresState> installStates;
+
 	public InstallPostgresOp(DatabasePageData databasePageData, RootPasswordPageData rootPasswordPageData) {
 		super(nls.get("InstallPostgresOp.title"), nls.get("InstallPostgresOp.description"));
 
-		this.databasePageData = databasePageData;
 		this.rootPasswordPageData = rootPasswordPageData;
 		this.postgresVersion = databasePageData.getSelectedPostgresVersion();
 		this.postgresPackageName = "postgresql-" + postgresVersion;
+		this.installStates = databasePageData.getPostgresInstallStates();
 	}
 
 	public String getDescription() {
@@ -50,9 +59,9 @@ public class InstallPostgresOp extends Operation {
 		println(nls.get("InstallPostgresOp.println.Check_if_PostgreSQL_installed"));
 		setProgress(2);
 		switch (isPostgresInstalled()) {
-			case FULLY -> {
+			case COMPLETELY -> {
 				println(nls.get("InstallPostgresOp.println.PostgreSQL_is_already_installed"));
-				databasePageData.getPostgresInstallStates().put(postgresVersion, PostgresState.ALREADY_INSTALLED);
+				installStates.put(postgresVersion, ALREADY_INSTALLED);
 				handleExistingPostgres();
 			}
 			case NOT -> installPostgres();
@@ -62,20 +71,15 @@ public class InstallPostgresOp extends Operation {
 	}
 
 	private Installed isPostgresInstalled() throws IOException, InterruptedException {
-		var process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", postgresPackageName).start(); //$NON-NLS
-		process.waitFor();
-		String status;
-		try (var reader = process.inputReader()) {
-			status = reader.readAllAsString();
-		}
-		return status.startsWith("ii") ? Installed.FULLY : Installed.NOT; //$NON-NLS
+		String output = getOutputOf("dpkg-query", "-f=${db:Status-Abbrev}", "-W", postgresPackageName); //$NON-NLS
+		return output.startsWith("ii") ? Installed.COMPLETELY : Installed.NOT; //$NON-NLS
 	}
 
 	private void handleExistingPostgres() throws Exception {
 		setProgress(3);
-		Choice choice = (Choice) showConflictDialog().id();
+		var choice = getChoice();
 		setProgress(4);
-		if (choice == Choice.REINSTALL) {
+		if (choice == REINSTALL) {
 			setProgress(5);
 			println(nls.get("InstallPostgresOp.println.Reinstall_PostgreSQL"));
 			purgePostgres();
@@ -89,24 +93,52 @@ public class InstallPostgresOp extends Operation {
 		setProgress(99);
 	}
 
-	private Option showConflictDialog() throws Exception {
-		var reuseOption     = new Option(Choice.REUSE, nls.get("InstallPostgresOp.button.Reuse_PostgreSQL"), nls.get("InstallPostgresOp.tooltip.The_existing_installation_will_be_used"));
-		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallPostgresOp.button.Reinstall_PostgreSQL"), nls.get("InstallPostgresOp.tooltip.The_existing_installation_will_be_removed_and_reinstalled"));
-
-		return OptionDialog.showDialog(nls.get("InstallPostgresOp.title.PostgreSQL_is_already_installed"), getDlgDescription(), List.of(reuseOption, reinstallOption), reuseOption);
+	private Choice getChoice() throws Exception {
+		if (GraphicsEnvironment.isHeadless()) {
+			println("PostgreSQL is already installed. Decide");
+			println("1) Keep installation (default)");
+			println("2) Reinstall");
+			var console = System.console();
+			for (int attempt = 1; attempt <= 3; attempt++) {
+				switch (console.readLine("Enter your choice: ")) {
+					case "1", "1)" -> {
+						return KEEP;
+					}
+					case "2", "2)" -> {
+						return REINSTALL;
+					}
+					default -> console.printf("Invalid choice. Failed attempts (%d/3).%n", attempt);
+				}
+			}
+			IO.println("Maximum number of attempts exceeded. Defaulting to option 1.");
+			return KEEP;
+		} else {
+			return (Choice) showConflictDialog().id();
+		}
 	}
 
-	private String getDlgDescription() {
+	private Option showConflictDialog() throws Exception {
+		var keepOption      = new Option(KEEP, 	    nls.get("InstallPostgresOp.button.Reuse_PostgreSQL"), 	  nls.get("InstallPostgresOp.tooltip.The_existing_installation_will_be_used"));
+		var reinstallOption = new Option(REINSTALL, nls.get("InstallPostgresOp.button.Reinstall_PostgreSQL"), nls.get("InstallPostgresOp.tooltip.The_existing_installation_will_be_removed_and_reinstalled"));
+
+		return showDialog(dialogTitle(), dialogDescription(), List.of(keepOption, reinstallOption), keepOption);
+	}
+
+	private static String dialogTitle() {
+		return nls.get("InstallPostgresOp.title.PostgreSQL_is_already_installed");
+	}
+
+	private String dialogDescription() {
 		return nls.get("InstallPostgresOp.description.{0}_is_already_installed_on_the_system", postgresPackageName);
 	}
 
 	private void installPostgres() throws IOException, InterruptedException {
 		println(nls.get("InstallPostgresOp.println.Install_PostgreSQL_{0}", postgresVersion));
 		setProgress(20);
-		List<String> command = List.of("sudo", "apt", "install", "-y", postgresPackageName); //$NON-NLS
-		println(nls.get("InstallPostgresOp.println.Execute_{0}", String.join(" ", command)));
+		String[] command = {"sudo", "apt", "install", "-y", postgresPackageName}; //$NON-NLS
+		println(nls.get("InstallPostgresOp.println.Execute_{0}", join(" ", command)));
 		setProgress(40);
-		int exitCode = execute(new ProcessBuilder(command).start()).exitCode();
+		int exitCode = execute(command).exitCode();
 		setProgress(60);
 		if (exitCode != 0) {
 			println(nls.get("InstallPostgresOp.println.Error_installing_PostgreSQL"));
@@ -115,7 +147,7 @@ public class InstallPostgresOp extends Operation {
 		setProgress(80);
 		println(nls.get("InstallPostgresOp.println.PostgreSQL_installed_successfully"));
 
-		databasePageData.getPostgresInstallStates().put(postgresVersion, PostgresState.INSTALLED_BY_INSTALLER);
+		installStates.put(postgresVersion, INSTALLED_BY_INSTALLER);
 	}
 
 	private static final Pattern YES_NO_PROMPT = Pattern.compile("\\[\\D+/(\\D+)]");
@@ -165,7 +197,7 @@ public class InstallPostgresOp extends Operation {
 						writer.write(LINE);
 						writer.flush();
 					}
-					Matcher matcher = YES_NO_PROMPT.matcher(str);
+					var matcher = YES_NO_PROMPT.matcher(str);
 					if (matcher.find()) {
 						var no = matcher.group(1); // e.g. "nein", "no", "non", ...
 						writer.write(no);
@@ -173,7 +205,7 @@ public class InstallPostgresOp extends Operation {
 						writer.flush();
 					}
 
-					publish(str);
+					print(str);
 				}
 			});
 		}
@@ -188,6 +220,6 @@ public class InstallPostgresOp extends Operation {
 	}
 
 	private enum Installed {
-		NOT, FULLY
+		NOT, COMPLETELY
 	}
 }

@@ -1,7 +1,6 @@
 package com.epau.app.flashcard.app.installer.operations;
 
 
-import com.epau.app.flashcard.app.installer.Resources;
 import com.epau.app.flashcard.app.installer.pages.KarafPageData;
 import com.epau.util.io.directory.Directory;
 import com.epau.util.io.file.tar.gz.TarGzFile;
@@ -9,12 +8,12 @@ import com.epau.util.nls.Nls;
 import com.epau.util.swing.operation.Counter;
 import com.epau.util.swing.operation.Operation;
 import com.epau.util.swing.option_dialog.Option;
-import com.epau.util.swing.option_dialog.OptionDialog;
 import com.epau.util.text.MultilineText;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,8 +24,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Set;
 
+import static com.epau.app.flashcard.app.installer.Resources.KARAF;
 import static com.epau.app.flashcard.app.installer.Resources.KARAF_ZIP_NAME;
+import static com.epau.app.flashcard.app.installer.operations.Choice.KEEP;
+import static com.epau.app.flashcard.app.installer.operations.Choice.REINSTALL;
 import static com.epau.util.io.file.unix.PosixFilePermissionsConverter.getPermissionsFromDecimal;
+import static com.epau.util.swing.option_dialog.OptionDialog.showDialog;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.createDirectories;
@@ -89,9 +92,9 @@ public class InstallKarafOp extends Operation {
 
 	private void handleExistingInstallation(boolean isFullyInstalled) throws Exception {
 		setProgress(3);
-		Choice choice = (Choice) showConflictDialog(isFullyInstalled).id();
+		var choice = getChoice(isFullyInstalled);
 		setProgress(4);
-		if (choice == Choice.REINSTALL) {
+		if (choice == REINSTALL) {
 			setProgress(5);
 			println(nls.get("InstallKarafOp.println.Remove_existing_installation"));
 			removeKaraf();
@@ -103,20 +106,43 @@ public class InstallKarafOp extends Operation {
 		setProgress(99);
 	}
 
-	private Option showConflictDialog(boolean isFullyInstalled) throws Exception {
-		var reuseOption     = new Option(Choice.REUSE, nls.get("InstallKarafOp.button.Reuse_Karaf"), nls.get("InstallKarafOp.tooltip.The_existing_installation_will_be_used"));
-		var reinstallOption = new Option(Choice.REINSTALL, nls.get("InstallKarafOp.button.Reinstall_Karaf"), nls.get("InstallKarafOp.tooltip.The_existing_installation_will_be_removed_and_reinstalled"));
+	// TODO NLS
+	private Choice getChoice(boolean isInstalledCompletely) throws Exception {
+		if (GraphicsEnvironment.isHeadless()) {
+			println("Karaf is already installed. Decide");
+			println("1) Keep installation (default)");
+			println("2) Reinstall");
+			var console = System.console();
+			for (int attempt = 1; attempt <= 3; attempt++) {
+				switch (console.readLine("Enter your choice: ")) {
+					case "1", "1)" -> {
+						return KEEP;
+					}
+					case "2", "2)" -> {
+						return REINSTALL;
+					}
+					default -> console.printf("Invalid choice. Failed attempts (%d/3).%n", attempt);
+				}
+			}
+			IO.println("Maximum number of attempts exceeded. Defaulting to option 1.");
+			return KEEP;
+		} else {
+			return (Choice) showConflictDialog(isInstalledCompletely).id();
+		}
+	}
 
-		String title = isFullyInstalled ? nls.get("InstallKarafOp.title.Karaf_is_already_installed") : nls.get("InstallKarafOp.title.Karaf_is_partially_installed");
-		return OptionDialog.showDialog(title, getDescription(isFullyInstalled), List.of(reuseOption, reinstallOption), isFullyInstalled ? reuseOption : reinstallOption);
+	private Option showConflictDialog(boolean isInstalledCompletely) throws Exception {
+		return showDialog(getTitle(isInstalledCompletely), getDescription(isInstalledCompletely), List.of(KEEP_OPTION, REINSTALL_OPTION), isInstalledCompletely ? KEEP_OPTION : REINSTALL_OPTION);
+	}
+
+	private  String getTitle(boolean isFullyInstalled) {
+		return isFullyInstalled ? nls.get("InstallKarafOp.title.Karaf_is_already_installed") : nls.get("InstallKarafOp.title.Karaf_is_partially_installed");
 	}
 
 	private String getDescription(boolean isFullyInstalled) {
-		if (isFullyInstalled) {
-			return nls.get("InstallKarafOp.description.A_Karaf_installation_was_found_in_directory_{0}", karafDir);
-		} else {
-			return nls.get("InstallKarafOp.description.An_incomplete_Karaf_installation_was_found_in_directory_{0}", karafDir);
-		}
+		return isFullyInstalled ?
+				nls.get("InstallKarafOp.description.A_Karaf_installation_was_found_in_directory_{0}", karafDir) :
+				nls.get("InstallKarafOp.description.An_incomplete_Karaf_installation_was_found_in_directory_{0}", karafDir);
 	}
 
 	int karafTarEntriesCount = 0;
@@ -126,7 +152,7 @@ public class InstallKarafOp extends Operation {
 		if (!exists(karafDir)) {
 			return Installed.NOT;
 		}
-		Set<String> karafTarEntries  = new TarGzFile(Resources.KARAF).getEntriesWithoutTopLevelDirectory();
+		Set<String> karafTarEntries  = new TarGzFile(KARAF).getEntriesWithoutTopLevelDirectory();
 		Set<String> karafDirChildren = new Directory(karafDir).getDescendants();
 		karafTarEntriesCount = karafTarEntries.size();
 		karafDirFileCount = karafDirChildren.size();
@@ -143,7 +169,7 @@ public class InstallKarafOp extends Operation {
 		println(nls.get("InstallKarafOp.println.Create_installation_directory_{0}", karafDir));
 		createDirectories(karafDir);
 		println(nls.get("InstallKarafOp.println.Extract_Karaf_{0}", KARAF_ZIP_NAME));
-		extractTarGz(Resources.KARAF.openStream(), karafDir);
+		extractTarGz(KARAF.openStream(), karafDir);
 		println(nls.get("InstallKarafOp.println.Karaf_extracted_to_{0}", karafDir));
 		println(nls.get("InstallKarafOp.println.Karaf_successfully_installed"));
 	}
@@ -216,6 +242,9 @@ public class InstallKarafOp extends Operation {
 			}
 		}
 	}
+
+	private static final Option REINSTALL_OPTION = new Option(REINSTALL, nls.get("InstallKarafOp.button.Reinstall_Karaf"), nls.get("InstallKarafOp.tooltip.The_existing_installation_will_be_removed_and_reinstalled"));
+	private static final Option KEEP_OPTION      = new Option(KEEP, 	 nls.get("InstallKarafOp.button.Reuse_Karaf"), 	   nls.get("InstallKarafOp.tooltip.The_existing_installation_will_be_used"));
 
 	private enum Installed {
 		NOT, PARTIALLY, FULLY

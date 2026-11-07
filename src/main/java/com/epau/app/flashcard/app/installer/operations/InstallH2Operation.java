@@ -21,7 +21,6 @@ public class InstallH2Operation extends Operation {
 	private final KarafPageData    karafPageData;
 	private final DatabasePageData databasePageData;
 
-	private final String h2Version;
 	private final String dataSourceName;
 
 	public InstallH2Operation(KarafPageData karafPageData, DatabasePageData databasePageData) {
@@ -29,7 +28,6 @@ public class InstallH2Operation extends Operation {
 
 		this.karafPageData = karafPageData;
 		this.databasePageData = databasePageData;
-		this.h2Version = databasePageData.getSelectedH2Version();
 
 		dataSourceName = databasePageData.getDataSourceName();
 	}
@@ -83,7 +81,7 @@ public class InstallH2Operation extends Operation {
 		println(nls.get("InstallH2Operation.println.Delete_old_DataSource_{0}", dataSourceName));
 		karaf.execute("jdbc:ds-delete " + dataSourceName);
 		String url = "\"jdbc:h2:${karaf.data}/database/h2/" + databasePageData.getDbName() + ";MODE=PostgreSQL\""; //NON-NLS
-		karaf.execute("jdbc:ds-create " + "-dc org.h2.Driver " + "-url " + url + " " + "-u " + databasePageData.getH2User() + " " + dataSourceName);
+		karaf.execute("jdbc:ds-create -dc org.h2.Driver -url " + url + " -u " + databasePageData.getH2User() + " " + dataSourceName);
 		println(nls.get("InstallH2Operation.println.DataSource_created_{0}", dataSourceName));
 	}
 

@@ -18,52 +18,58 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 
+import static com.epau.app.flashcard.app.installer.Database.PostgreSQL;
 import static java.lang.Thread.currentThread;
-import static java.util.Arrays.stream;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Logger.getLogger;
 
 public class DatabasePageData extends PageData {
 
 	private final Nls nls = new Nls(this);
 
 	// Preferences keys
-	private static final String KEY_DB_TYPE                   = "db.type";
-	private static final String KEY_SELECTED_POSTGRES_VERSION = "db.postgres.selected.version";
-	private static final String KEY_VERSION_H2                = "db.h2.selected.version";
-	private static final String KEY_POSTGRES_ADMIN            = "db.postgres.admin";
-	private static final String KEY_POSTGRES_ADMIN_PASSWORD   = "db.postgres.admin.password";
-	private static final String KEY_POSTGRES_PORT             = "db.postgres.port";
-	private static final String KEY_POSTGRES_HOST             = "db.postgres.host";
-	private static final String KEY_POSTGRES_USER             = "db.postgres.user";
-	private static final String KEY_POSTGRES_USER_PASSWORD    = "db.postgres.user.password";
-	private static final String KEY_H2_ADMIN                  = "db.h2.admin";
-	private static final String KEY_H2_ADMIN_PASSWORD         = "db.h2.admin.password";
+	private interface Key {
+		String DB_TYPE                   = "db.type";
+		String SELECTED_POSTGRES_VERSION = "db.postgres.selected.version";
+		String VERSION_H2                = "db.h2.selected.version";
+		String POSTGRES_ADMIN            = "db.postgres.admin";
+		String POSTGRES_ADMIN_PASSWORD   = "db.postgres.admin.password";
+		String POSTGRES_PORT             = "db.postgres.port";
+		String POSTGRES_HOST             = "db.postgres.host";
+		String POSTGRES_USER             = "db.postgres.user";
+		String POSTGRES_USER_PASSWORD    = "db.postgres.user.password";
+		String H2_ADMIN                  = "db.h2.admin";
+		String H2_ADMIN_PASSWORD         = "db.h2.admin.password";
+	}
 
 	// default values
-	private static final         String DEFAULT_SELECTED_POSTGRES_VERSION = "14";
-	private static final @NonNls String DEFAULT_POSTGRES_ADMIN            = "postgres";
-	private static final         String DEFAULT_POSTGRES_ADMIN_PASSWORD   = "";
-	private static final         String DEFAULT_POSTGRES_PORT             = "5432";
-	private static final         String DEFAULT_POSTGRES_USER_PASSWORD    = "";
-	private static final         String DEFAULT_SELECTED_H2_VERSION       = "2.4";
+	@NonNls
+	private interface Default {
+		//String SELECTED_POSTGRES_VERSION = "14";
+		String POSTGRES_ADMIN 		   = "postgres";
+		String POSTGRES_ADMIN_PASSWORD = "";
+		String POSTGRES_PORT           = "5432";
+		String POSTGRES_USER_PASSWORD  = "flashcards";
+		String SELECTED_H2_VERSION     = "2.4";
+	}
+
 
 	// version options
 	private static final String[] POSTGRES_VERSIONS_ALL       = {"10", "11", "12", "13", "14", "15", "16", "17", "18"};
-	private static final String[] POSTGRES_VERSIONS_AVAILABLE = filterAvailablePostgresVersions();
+	private static final String[] POSTGRES_VERSIONS_AVAILABLE = PostgresVersions.filterAvailable(POSTGRES_VERSIONS_ALL);
+	// TODO remove
 	private static final String[] H2_VERSIONS                 = {"2.2.224"};
 
 	// values
-	private               Database database                = Database.PostgreSQL;
-	private               String   selectedPostgresVersion = DEFAULT_SELECTED_POSTGRES_VERSION;
-	private               String   selectedH2Version       = DEFAULT_SELECTED_H2_VERSION;
-	private               String   postgresAdmin           = DEFAULT_POSTGRES_ADMIN;
-	private               String   postgresAdminPassword   = DEFAULT_POSTGRES_ADMIN_PASSWORD;
-	private               String   postgresPort            = DEFAULT_POSTGRES_PORT;
+	private               Database database                = PostgreSQL;
+	private               String   selectedPostgresVersion = getLastAvailablePostgresVersion();
+	private               String   selectedH2Version       = Default.SELECTED_H2_VERSION;
+	private               String   postgresAdmin           = Default.POSTGRES_ADMIN;
+	private               String   postgresAdminPassword   = Default.POSTGRES_ADMIN_PASSWORD;
+	private               String   postgresPort            = Default.POSTGRES_PORT;
 	private final @NonNls String   postgresHost            = "localhost";
 	private final @NonNls String   postgresUser            = "flashcards";
-	private               String   postgresUserPassword    = DEFAULT_POSTGRES_USER_PASSWORD;
+	private               String   postgresUserPassword    = Default.POSTGRES_USER_PASSWORD;
 	private final @NonNls String   h2User                  = "sa";
 	private final @NonNls String   dbName                  = "collections";
 
@@ -74,98 +80,82 @@ public class DatabasePageData extends PageData {
 		super(pageDataPool);
 	}
 
-	private static String[] filterAvailablePostgresVersions() {
-		return stream(POSTGRES_VERSIONS_ALL).filter(DatabasePageData::isPostgresVersionAvailable).toArray(String[]::new);
-	}
-
-	private static boolean isPostgresVersionAvailable(String version) {
-		try {
-			Process process = new ProcessBuilder("apt-cache", "policy", "postgresql-" + version).start(); //$NON-NLS
-			String  output;
-			try (var reader = process.inputReader()) {
-				output = reader.readAllAsString();
-			}
-			process.waitFor();
-			return output.lines().count() > 1; // If the package does not exist the output will have only one line
-		} catch (IOException | InterruptedException e) {
-			getLogger(DatabasePageData.class.getName()).log(SEVERE, "Could not determine availability of PostgreSQL " + version, e); //$NON-NLS
-			return false;
-		}
-	}
 
 	@Override
 	public void load() {
-		database                = Database.valueOf(preferences.get(KEY_DB_TYPE, Database.PostgreSQL.name()));
-		selectedPostgresVersion = preferences.get(KEY_SELECTED_POSTGRES_VERSION, DEFAULT_SELECTED_POSTGRES_VERSION);
-		selectedH2Version       = preferences.get(KEY_VERSION_H2, 				 DEFAULT_SELECTED_H2_VERSION);
-		postgresAdmin           = preferences.get(KEY_POSTGRES_ADMIN, 			 DEFAULT_POSTGRES_ADMIN);
-		postgresAdminPassword   = preferences.get(KEY_POSTGRES_ADMIN_PASSWORD,   DEFAULT_POSTGRES_ADMIN_PASSWORD);
-		postgresPort            = preferences.get(KEY_POSTGRES_PORT, 			 DEFAULT_POSTGRES_PORT);
-		postgresUserPassword    = preferences.get(KEY_POSTGRES_USER_PASSWORD, 	 DEFAULT_POSTGRES_USER_PASSWORD);
+		database                = Database.valueOf(preferences.get(Key.DB_TYPE, PostgreSQL.name()));
+		selectedPostgresVersion = preferences.get(Key.SELECTED_POSTGRES_VERSION, getLastAvailablePostgresVersion());
+		selectedH2Version       = preferences.get(Key.VERSION_H2, 				 Default.SELECTED_H2_VERSION);
+		postgresAdmin           = preferences.get(Key.POSTGRES_ADMIN, 			 Default.POSTGRES_ADMIN);
+		postgresAdminPassword   = preferences.get(Key.POSTGRES_ADMIN_PASSWORD,   Default.POSTGRES_ADMIN_PASSWORD);
+		postgresPort            = preferences.get(Key.POSTGRES_PORT, 			 Default.POSTGRES_PORT);
+		postgresUserPassword    = preferences.get(Key.POSTGRES_USER_PASSWORD, 	 Default.POSTGRES_USER_PASSWORD);
 	}
 
 
 	@Override
 	public void save() {
-		preferences.put(KEY_DB_TYPE, database.name());
-		preferences.put(KEY_SELECTED_POSTGRES_VERSION, selectedPostgresVersion);
-		preferences.put(KEY_VERSION_H2, selectedH2Version);
-		preferences.put(KEY_POSTGRES_ADMIN, postgresAdmin);
-		preferences.put(KEY_POSTGRES_ADMIN_PASSWORD, postgresAdminPassword);
-		preferences.put(KEY_POSTGRES_PORT, postgresPort);
-		preferences.put(KEY_POSTGRES_HOST, postgresHost);
-		preferences.put(KEY_POSTGRES_USER, postgresUser);
-		preferences.put(KEY_POSTGRES_USER_PASSWORD, postgresUserPassword);
-		preferences.put(KEY_H2_ADMIN, h2User);
+		preferences.put(Key.DB_TYPE, database.name());
+		preferences.put(Key.SELECTED_POSTGRES_VERSION, selectedPostgresVersion);
+		preferences.put(Key.VERSION_H2, selectedH2Version);
+		preferences.put(Key.POSTGRES_ADMIN, postgresAdmin);
+		preferences.put(Key.POSTGRES_ADMIN_PASSWORD, postgresAdminPassword);
+		preferences.put(Key.POSTGRES_PORT, postgresPort);
+		preferences.put(Key.POSTGRES_HOST, postgresHost);
+		preferences.put(Key.POSTGRES_USER, postgresUser);
+		preferences.put(Key.POSTGRES_USER_PASSWORD, postgresUserPassword);
+		preferences.put(Key.H2_ADMIN, h2User);
 	}
 
 	@Override
 	public void loadDefaults() {
-		database                = Database.PostgreSQL;
-		selectedPostgresVersion = DEFAULT_SELECTED_POSTGRES_VERSION;
-		selectedH2Version       = DEFAULT_SELECTED_H2_VERSION;
-		postgresAdmin           = DEFAULT_POSTGRES_ADMIN;
-		postgresAdminPassword   = DEFAULT_POSTGRES_ADMIN_PASSWORD;
-		postgresPort            = DEFAULT_POSTGRES_PORT;
-		postgresUserPassword    = DEFAULT_POSTGRES_USER_PASSWORD;
+		database                = PostgreSQL;
+		selectedPostgresVersion = getLastAvailablePostgresVersion();
+		selectedH2Version       = Default.SELECTED_H2_VERSION;
+		postgresAdmin           = Default.POSTGRES_ADMIN;
+		postgresAdminPassword   = Default.POSTGRES_ADMIN_PASSWORD;
+		postgresPort            = Default.POSTGRES_PORT;
+		postgresUserPassword    = Default.POSTGRES_USER_PASSWORD;
 
-		preferences.remove(KEY_DB_TYPE);
-		preferences.remove(KEY_SELECTED_POSTGRES_VERSION);
-		preferences.remove(KEY_VERSION_H2);
-		preferences.remove(KEY_POSTGRES_ADMIN);
-		preferences.remove(KEY_POSTGRES_ADMIN_PASSWORD);
-		preferences.remove(KEY_POSTGRES_PORT);
-		preferences.remove(KEY_POSTGRES_HOST);
-		preferences.remove(KEY_POSTGRES_USER);
-		preferences.remove(KEY_POSTGRES_USER_PASSWORD);
-		preferences.remove(KEY_H2_ADMIN);
-		preferences.remove(KEY_H2_ADMIN_PASSWORD);
+		preferences.remove(Key.DB_TYPE);
+		preferences.remove(Key.SELECTED_POSTGRES_VERSION);
+		preferences.remove(Key.VERSION_H2);
+		preferences.remove(Key.POSTGRES_ADMIN);
+		preferences.remove(Key.POSTGRES_ADMIN_PASSWORD);
+		preferences.remove(Key.POSTGRES_PORT);
+		preferences.remove(Key.POSTGRES_HOST);
+		preferences.remove(Key.POSTGRES_USER);
+		preferences.remove(Key.POSTGRES_USER_PASSWORD);
+		preferences.remove(Key.H2_ADMIN);
+		preferences.remove(Key.H2_ADMIN_PASSWORD);
 	}
 
 	@Override
 	public ValidationResults validate() {
 		var results = new ValidationResults();
 
-		if (database == Database.PostgreSQL) {
-			if (postgresPort.isBlank()) {
-				results.addError(nls.get("DatabasePageData.error.title.Empty_port"), nls.get("DatabasePageData.error.description.Port_must_not_be_empty"), 1);
-			} else {
-				try {
-					int portNum = Integer.parseInt(postgresPort);
-					if (portNum < 1 || portNum > 65535) {
-						results.addError(nls.get("DatabasePageData.error.title.Invalid_port"), nls.get("DatabasePageData.error.description.Port_should_be_between_1_and_65535"), 0);
-					}
-				} catch (NumberFormatException e) {
-					results.addError(nls.get("DatabasePageData.error.title.Invalid_port"), nls.get("DatabasePageData.error.description.Port_must_be_a_number"), 0);
+		if (database != PostgreSQL) {
+			return results;
+		}
+
+		if (postgresPort.isBlank()) {
+			results.addError(nls.get("DatabasePageData.error.title.Empty_port"), nls.get("DatabasePageData.error.description.Port_must_not_be_empty"), 1);
+		} else {
+			try {
+				int portNum = Integer.parseInt(postgresPort);
+				if (portNum < 1 || portNum > 65535) {
+					results.addError(nls.get("DatabasePageData.error.title.Invalid_port"), nls.get("DatabasePageData.error.description.Port_should_be_between_1_and_65535"), 0);
 				}
+			} catch (NumberFormatException e) {
+				results.addError(nls.get("DatabasePageData.error.title.Invalid_port"), nls.get("DatabasePageData.error.description.Port_must_be_a_number"), 0);
 			}
-			if (postgresUserPassword.isBlank()) {
-				results.add(nls.get("DatabasePageData.error.title.Empty_user_password"), nls.get("DatabasePageData.error.description.A_user_password_is_required"), Severity.ERROR);
-			}
-			if (isPostgresInstalled()) {
-				validateAdminPassword(results);
-				validateUserPassword(results);
-			}
+		}
+		if (postgresUserPassword.isBlank()) {
+			results.add(nls.get("DatabasePageData.error.title.Empty_user_password"), nls.get("DatabasePageData.error.description.A_user_password_is_required"), Severity.ERROR);
+		}
+		if (isPostgresInstalled()) {
+			validateAdminPassword(results);
+			validateUserPassword(results);
 		}
 
 		return results;
@@ -210,7 +200,7 @@ public class DatabasePageData extends PageData {
 
 	private void validateUserPassword(ValidationResults validationResults) {
 		try {
-			Optional<String> userAuthMethodOpt = postgres.getAuthMethod(postgresUser, "host", dataSourceName);
+			Optional<String> userAuthMethodOpt = postgres.getAuthMethod(postgresUser, "host", dbName);
 			if (userAuthMethodOpt.isEmpty()) {
 				validationResults.add(unableToConnect());
 				return;
@@ -337,7 +327,7 @@ public class DatabasePageData extends PageData {
 	}
 
 	public String getDbName() {
-		return dataSourceName;
+		return dbName;
 	}
 
 	public String[] getPostgresVersions() {
@@ -356,5 +346,9 @@ public class DatabasePageData extends PageData {
 
 	public Map<String, PostgresState> getPostgresInstallStates() {
 		return postgresInstallStates;
+	}
+
+	private static String getLastAvailablePostgresVersion() {
+		return POSTGRES_VERSIONS_AVAILABLE[POSTGRES_VERSIONS_AVAILABLE.length - 1];
 	}
 }

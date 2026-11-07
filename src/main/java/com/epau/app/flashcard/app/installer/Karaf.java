@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import static java.lang.String.join;
 import static java.util.List.of;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -96,7 +97,7 @@ public class Karaf {
 	}
 
 	private void __executeSuccessfully(String... args) throws IOException, InterruptedException, ErrorCode {
-		operation.execute(getBuilder(args)).throwIfNonZeroExit(nls.get("Karaf.Command_failed_{0}", String.join(" ", args)));
+		operation.execute(getBuilder(args)).throwIfNonZeroExit(nls.get("Karaf.Command_failed_{0}", join(" ", args)));
 	}
 
 	private Result _execute(KarafCommand command) throws IOException, InterruptedException {

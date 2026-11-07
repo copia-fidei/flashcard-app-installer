@@ -10,8 +10,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
@@ -53,12 +51,12 @@ public class RootPasswordPage extends NoOpPage {
 		description.setFocusable(false);
 		var label = new JLabel(nls.get("RootPasswordPage.label.Sudo_password"));
 
-		content.add(description,   new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(label, 		   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(passwordField, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		add(description,   0, 0, 2, 1, 1.0, 0.0, LINE_START, HORIZONTAL,10, 10, 10, 10, 0, 0);
+		add(label, 		   0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE,       0, 10, 10, 10, 0, 0);
+		add(passwordField, 1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL,10, 10, 10, 10, 0, 0);
 
 		// Filler
-		content.add(new JPanel(), new GridBagConstraints(0, 2, 2, 1, 1.0, 1.0, LINE_START, BOTH, new Insets(10, 10, 10, 10), 0, 0));
+		add(new JPanel(), 0, 2, 2, 1, 1.0, 1.0, LINE_START, BOTH, 10, 10, 10, 10, 0, 0);
 	}
 
 	@Override

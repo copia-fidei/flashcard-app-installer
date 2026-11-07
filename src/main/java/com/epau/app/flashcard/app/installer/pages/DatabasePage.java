@@ -5,7 +5,6 @@ import com.epau.lib.swing.wizard.page.Page;
 import com.epau.lib.swing.wizard.page.PageDataPool;
 import com.epau.util.nls.Nls;
 import com.epau.util.swing.frame.TestFrames;
-import com.epau.util.swing.text.DocumentChangeListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -16,18 +15,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import java.awt.Component;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.ItemListener;
-import java.io.IOException;
 
 import static com.epau.app.flashcard.app.installer.Database.PostgreSQL;
+import static java.awt.EventQueue.invokeLater;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
 import static java.awt.GridBagConstraints.NONE;
-import static java.util.logging.Level.WARNING;
 
 public class DatabasePage extends Page {
 
@@ -45,10 +39,6 @@ public class DatabasePage extends Page {
 	private final JTextField        dbNameField        = new JTextField(20);
 	private final JTextField        portField          = new JTextField(20);
 	private final JTextField        hostField          = new JTextField(20);
-
-	private final DocumentChangeListener documentListener = new DocumentChangeListener(this::pageChanged);
-	private final ItemListener           comboBoxListener = _ -> pageChanged();
-
 
 	public DatabasePage(DatabasePageData pageData) {
 		super(pageData);
@@ -85,32 +75,32 @@ public class DatabasePage extends Page {
 		hostField.setEditable(false);
 		userField.setEditable(false);
 
-		content.add(databaseLabel, 			  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(dbImplementationComboBox, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(versionLabel, 			  new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(versionsComboBox, 		  new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(adminLabel, 			  new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(adminField, 			  new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(adminPasswordLabel, 	  new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(adminPasswordField, 	  new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(hostLabel,				  new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(hostField,				  new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(portLabel,				  new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(portField,				  new GridBagConstraints(1, 5, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(dbNameLabel, 			  new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(dbNameField, 			  new GridBagConstraints(1, 6, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(userLabel, 				  new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(userField, 				  new GridBagConstraints(1, 7, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		content.add(userPasswordLabel, 		  new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, LINE_START, NONE, 		new Insets(10, 10, 10, 10), 0, 0));
-		content.add(userPasswordField, 		  new GridBagConstraints(1, 8, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		add(databaseLabel, 			  0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, 		10, 10, 10, 10, 0, 0);
+		add(dbImplementationComboBox, 1, 0, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, 10, 10, 10, 10, 0, 0);
+		add(versionLabel, 			  0, 1, 1, 1, 0.0, 0.0, LINE_START, NONE, 		10, 10, 10, 10, 0, 0);
+		add(versionsComboBox, 		  1, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL,	10, 10, 10, 10, 0, 0);
+		add(adminLabel, 			  0, 2, 1, 1, 0.0, 0.0, LINE_START, NONE,	 	10, 10, 10, 10, 0, 0);
+		add(adminField, 			  1, 2, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL,	10, 10, 10, 10, 0, 0);
+		add(adminPasswordLabel, 	  0, 3, 1, 1, 0.0, 0.0, LINE_START, NONE,	 	10, 10, 10, 10, 0, 0);
+		add(adminPasswordField, 	  1, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL,	10, 10, 10, 10, 0, 0);
+		add(hostLabel,				  0, 4, 1, 1, 0.0, 0.0, LINE_START, NONE,	 	10, 10, 10, 10, 0, 0);
+		add(hostField,				  1, 4, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL,	10, 10, 10, 10, 0, 0);
+		add(portLabel,				  0, 5, 1, 1, 0.0, 0.0, LINE_START, NONE, 		10, 10, 10, 10, 0, 0);
+		add(portField,				  1, 5, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, 10, 10, 10, 10, 0, 0);
+		add(dbNameLabel, 			  0, 6, 1, 1, 0.0, 0.0, LINE_START, NONE, 		10, 10, 10, 10, 0, 0);
+		add(dbNameField, 			  1, 6, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL,	10, 10, 10, 10, 0, 0);
+		add(userLabel, 				  0, 7, 1, 1, 0.0, 0.0, LINE_START, NONE, 		10, 10, 10, 10, 0, 0);
+		add(userField, 				  1, 7, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL,	10, 10, 10, 10, 0, 0);
+		add(userPasswordLabel, 		  0, 8, 1, 1, 0.0, 0.0, LINE_START, NONE, 		10, 10, 10, 10, 0, 0);
+		add(userPasswordField, 		  1, 8, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, 10, 10, 10, 10, 0, 0);
 		// Filler
-		content.add(new JPanel(), 			  new GridBagConstraints(0, 9, 2, 1, 1.0, 1.0, LINE_START, BOTH, 		new Insets(10, 10, 10, 10), 0, 0));
+		add(new JPanel(), 			  0, 9, 2, 1, 1.0, 1.0, LINE_START, BOTH, 		10, 10, 10, 10, 0, 0);
 
 		new SwingWorker<Void, Void>() {
 
 			@Override
 			protected Void doInBackground() {
-				findOutIsPostgresInstalled();
+				PostgresVersions.findOutInstallStates(databasePageData.getPostgresInstallStates(), databasePageData.getPostgresVersions());
 				return null;
 			}
 
@@ -121,30 +111,9 @@ public class DatabasePage extends Page {
 		}.execute();
 	}
 
-	private void findOutIsPostgresInstalled() {
-		for (String version : databasePageData.getPostgresVersions()) {
-			try {
-				var process = new ProcessBuilder("dpkg-query", "-f=${db:Status-Abbrev}", "-W", "postgresql" + "-" + version).start(); //$NON-NLS
-				process.waitFor();
-
-				String status;
-				try (var reader = process.inputReader()) {
-					status = reader.readAllAsString();
-				}
-				if (status.startsWith("ii")) { //$NON-NLS
-					databasePageData.getPostgresInstallStates().put(version, PostgresState.ALREADY_INSTALLED);
-				} else {
-					databasePageData.getPostgresInstallStates().put(version, PostgresState.NOT_INSTALLED);
-				}
-			} catch (IOException | InterruptedException e) {
-				log.log(WARNING, "Failed to find out if Postgres packages are installed", e); //$NON-NLS
-			}
-		}
-	}
-
 	protected void addListeners() {
-		dbImplementationComboBox.addItemListener(comboBoxListener);
-		versionsComboBox.addItemListener(comboBoxListener);
+		dbImplementationComboBox.addItemListener(itemListener);
+		versionsComboBox.addItemListener(itemListener);
 		adminField.getDocument().addDocumentListener(documentListener);
 		adminPasswordField.getDocument().addDocumentListener(documentListener);
 		userField.getDocument().addDocumentListener(documentListener);
@@ -154,8 +123,8 @@ public class DatabasePage extends Page {
 
 	@Override
 	protected void removeListeners() {
-		dbImplementationComboBox.removeItemListener(comboBoxListener);
-		versionsComboBox.removeItemListener(comboBoxListener);
+		dbImplementationComboBox.removeItemListener(itemListener);
+		versionsComboBox.removeItemListener(itemListener);
 		adminField.getDocument().removeDocumentListener(documentListener);
 		adminPasswordField.getDocument().removeDocumentListener(documentListener);
 		userField.getDocument().removeDocumentListener(documentListener);
@@ -272,7 +241,7 @@ public class DatabasePage extends Page {
 
 	// For testing
 	static void main() {
-		EventQueue.invokeLater(() -> {
+		invokeLater(() -> {
 			var pageDataPool = new PageDataPool();
 			var pageData     = new DatabasePageData(pageDataPool);
 			var page         = new DatabasePage(pageData);

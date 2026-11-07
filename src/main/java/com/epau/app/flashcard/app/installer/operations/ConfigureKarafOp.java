@@ -14,6 +14,7 @@ import java.nio.file.Path;
 
 import static com.epau.app.flashcard.app.installer.Resources.FLASHCARD_APP_BUNDLE;
 import static com.epau.app.flashcard.app.installer.Resources.FLASHCARD_APP_BUNDLE_NAME;
+import static com.epau.app.flashcard.app.installer.operations.AppBundleDeps.DEPENDENCIES;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -22,11 +23,15 @@ public class ConfigureKarafOp extends Operation {
 	private static final Nls nls = new Nls(ConfigureKarafOp.class);
 
 	private final Path karafLocation;
+	private final Path usersPropertiesFile;
+	private final Path deployFolder;
 
 	public ConfigureKarafOp(KarafPageData karafPageData) {
 		super(nls.get("ConfigureKarafOp.title"), nls.get("ConfigureKarafOp.description"));
 
-		this.karafLocation = karafPageData.getKarafInstallationDir();
+		this.karafLocation       = karafPageData.getKarafInstallationDir();
+		this.usersPropertiesFile = karafLocation.resolve("etc/users.properties");
+		this.deployFolder        = karafLocation.resolve("deploy", FLASHCARD_APP_BUNDLE_NAME); //NON-NLS
 	}
 
 	public String getDescription() {
@@ -35,19 +40,9 @@ public class ConfigureKarafOp extends Operation {
 		text.add(nls.get("ConfigureKarafOp.description.Activate_password_prompt"));
 		text.add(nls.get("ConfigureKarafOp.description.Start_Karaf_in_{0}", karafLocation));
 		text.add(nls.get("ConfigureKarafOp.description.Execute"));
-		text.add("feature:repo-add mvn:no.priv.bang.karaf/jersey/LATEST/xml/features"); //NON-NLS
-		text.add("feature:install jersey-karaf-feature"); //NON-NLS
-		text.add("feature:install war"); //NON-NLS
-		text.add("feature:install http"); //NON-NLS
-		text.add("feature:install jndi"); //NON-NLS
-		text.add("feature:install pax-jdbc-postgresql"); //NON-NLS
-		text.add("feature:install pax-jdbc-sqlite"); //NON-NLS
-		text.add("bundle:install mvn:org.glassfish.jersey.media/jersey-media-multipart/2.47"); //NON-NLS
-		text.add("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc/2.47"); //NON-NLS
-		text.add("bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc-mustache/2.47"); //NON-NLS
-		text.add("bundle:install wrap:mvn:com.github.spullara.mustache.java/compiler/0.9.14"); //NON-NLS
-		text.add("bundle:install mvn:org.jvnet.mimepull/mimepull/1.9.15"); //NON-NLS
-		text.add("feature:install jdbc"); //NON-NLS
+
+		DEPENDENCIES.forEach(text::add);
+
 		text.add(nls.get("ConfigureKarafOp.println.Copy_Flashcards_JAR_to_Karaf_deploy_folder"));
 		text.add(nls.get("ConfigureKarafOp.println.Stop_Karaf"));
 		return text.toString();
@@ -69,23 +64,13 @@ public class ConfigureKarafOp extends Operation {
 			karaf.start();
 			progress(3);
 
-			execute(karaf, "feature:repo-add mvn:no.priv.bang.karaf/jersey/LATEST/xml/features");
-			execute(karaf, "feature:install jersey-karaf-feature");
-			execute(karaf, "feature:install war");
-			execute(karaf, "feature:install http");
-			execute(karaf, "feature:install jndi");
-			execute(karaf, "feature:install pax-jdbc-postgresql");
-			execute(karaf, "feature:install pax-jdbc-sqlite");
-			execute(karaf, "bundle:install mvn:org.glassfish.jersey.media/jersey-media-multipart/2.47");
-			execute(karaf, "bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc/2.47");
-			execute(karaf, "bundle:install mvn:org.glassfish.jersey.ext/jersey-mvc-mustache/2.47");
-			execute(karaf, "bundle:install wrap:mvn:com.github.spullara.mustache.java/compiler/0.9.14");
-			execute(karaf, "bundle:install mvn:org.jvnet.mimepull/mimepull/1.9.15");
-			execute(karaf, "feature:install jdbc");
+			for (String installDependency : DEPENDENCIES) {
+				execute(karaf, installDependency);
+			}
 
 			println(nls.get("ConfigureKarafOp.println.Copy_Flashcards_JAR_to_Karaf_deploy_folder"));
 			progress(3);
-			deployBundle();
+			deployAppBundle();
 			progress(3);
 		} finally {
 			println(nls.get("ConfigureKarafOp.println.Stop_Karaf"));
@@ -103,23 +88,20 @@ public class ConfigureKarafOp extends Operation {
 		progress(3);
 	}
 
-	// Deploy flashcards.jar in Karaf
-	private void deployBundle() throws IOException {
-		Path destination = karafLocation.resolve("deploy", FLASHCARD_APP_BUNDLE_NAME);  //NON-NLS
+	private void deployAppBundle() throws IOException {
 		try (var bundle = FLASHCARD_APP_BUNDLE.openStream()) {
-			Files.copy(bundle, destination, REPLACE_EXISTING);
+			Files.copy(bundle, deployFolder, REPLACE_EXISTING);
 		}
 	}
 
 	private void activatePasswordLogin() throws IOException {
-		Path usersFile = karafLocation.resolve("etc/users.properties");
-		var  lines     = readAllLines(usersFile);
+		var lines = readAllLines(usersPropertiesFile);
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			if (line.startsWith("#karaf =") || line.startsWith("#_g_\\:admingroup")) {  //NON-NLS
 				lines.set(i, line.substring(1));
 			}
 		}
-		Files.write(usersFile, lines);
+		Files.write(usersPropertiesFile, lines);
 	}
 }

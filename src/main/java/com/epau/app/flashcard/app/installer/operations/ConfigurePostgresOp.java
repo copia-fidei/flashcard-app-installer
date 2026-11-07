@@ -71,7 +71,7 @@ public class ConfigurePostgresOp extends Operation {
 
 	@Override
 	protected String doInBackground() throws Exception {
-		if (getPostgresState() == NOT_INSTALLED) {
+		if (postgresState() == NOT_INSTALLED) {
 			throw new Exception(nls.get("ConfigurePostgresOp.println.PostgreSQL_{0}_is_not_installed", postgresVersion));
 		}
 		progress(2);
@@ -107,7 +107,7 @@ public class ConfigurePostgresOp extends Operation {
 		return nls.get("ConfigurePostgresOp.println.Configuration_completed");
 	}
 
-	private PostgresState getPostgresState() {
+	private PostgresState postgresState() {
 		// needs to fetch the latest value
 		return databasePageData.getPostgresInstallStates().get(postgresVersion);
 	}
@@ -115,7 +115,7 @@ public class ConfigurePostgresOp extends Operation {
 	private void setPort() throws IOException, InterruptedException, ErrorCode {
 		println(nls.get("ConfigurePostgresOp.description.Set_PostgreSQL_port_to_{0}", port));
 		progress(2);
-		execute(new ProcessBuilder("sudo", "sed", "-Ei", "s/^([[:space:]]*port[[:space:]]*=?[[:space:]]*)[0-9]+/\\1" + port + "/", postgres.getConfigurationFile())) //NON-NLS
+		execute("sudo", "sed", "-Ei", "s/^([[:space:]]*port[[:space:]]*=?[[:space:]]*)[0-9]+/\\1" + port + "/", postgres.getConfigurationFile()) //NON-NLS
 				.throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Set_port_failed_for_{0}", port));
 	}
 
@@ -124,7 +124,7 @@ public class ConfigurePostgresOp extends Operation {
 		Supplier<ProcessBuilder> processBuilder;
 		if (authMethod.equals("peer")) { //NON-NLS
 			processBuilder = () -> new ProcessBuilder("sudo", "-u", "postgres", "psql"); //NON-NLS
-			if (getPostgresState() == INSTALLED_BY_INSTALLER && !adminPassword.isBlank()) {
+			if (postgresState() == INSTALLED_BY_INSTALLER && !adminPassword.isBlank()) {
 				setAdminPassword(processBuilder);
 			}
 		} else if (AuthMethod.isPasswordBased(authMethod)) {
@@ -190,7 +190,7 @@ public class ConfigurePostgresOp extends Operation {
 	private void restartPostgres() throws IOException, InterruptedException, ErrorCode {
 		println(nls.get("ConfigurePostgresOp.println.Restart_PostgreSQL"));
 		progress(2);
-		execute(new ProcessBuilder("sudo", "systemctl", "restart", "postgresql.service")) //NON-NLS
+		execute("sudo", "systemctl", "restart", "postgresql.service") //NON-NLS
 				.throwIfNonZeroExit(nls.get("ConfigurePostgresOp.println.Restart_PostgreSQL_failed"));
 		println(nls.get("ConfigurePostgresOp.println.PostgreSQL_restarted"));
 		setProgress(40);
@@ -263,7 +263,6 @@ public class ConfigurePostgresOp extends Operation {
 		println(nls.get("ConfigurePostgresOp.println.Grant_ownership_of_database_{0}_to_{1}", dbName, user));
 		progress(2);
 
-		// FIXME: Is GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {1}; needed?
 		@NonNls String sql = format("""
 				GRANT ALL PRIVILEGES ON DATABASE {0} TO {1};
 				GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {1};

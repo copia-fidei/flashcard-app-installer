@@ -6,7 +6,7 @@
 
     <groupId>com.epau.app</groupId>
     <artifactId>flashcard-app-installer</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <properties>
         <java.version>25</java.version>
@@ -18,18 +18,19 @@
         <module.name>com.epau.app.flashcard.app.installer</module.name>
         <main.class>com.epau.app.flashcard.app.installer.Main</main.class>
         <app.main>Flashcard App Installer</app.main>
+        <skip.jpackage>false</skip.jpackage>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.epau.lib.swing.wizard</groupId>
             <artifactId>swing-wizard</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.epau.util.swing</groupId>
             <artifactId>swing-operation</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.epau.util.stream</groupId>
@@ -81,7 +82,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.13</version>
+            <version>42.7.14</version>
             <scope>compile</scope> <!-- explicit -->
         </dependency>
         <dependency>
@@ -234,6 +235,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <skip>${skip.jpackage}</skip>
                     <name>${app.main}</name>
                     <appVersion>${project.version}</appVersion>
                     <icon>src/main/resources/icons/installer-app-logo.png</icon>

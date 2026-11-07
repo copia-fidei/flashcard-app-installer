@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NonNls;
 import java.io.IOException;
 import java.util.List;
 
+import static com.epau.app.flashcard.app.installer.Runner.getFirstLineOf;
 import static java.lang.IO.println;
+import static java.lang.Integer.parseInt;
 import static java.lang.ProcessBuilder.Redirect.INHERIT;
 import static java.lang.ProcessBuilder.Redirect.PIPE;
 import static java.lang.ProcessBuilder.startPipeline;
@@ -16,13 +18,7 @@ import static java.util.List.of;
 public interface Java {
 
 	static String getCurrentExecutable() throws InterruptedException, IOException {
-		var findPath = new ProcessBuilder("readlink", "-f", "/usr/bin/java").start(); //$NON-NLS
-		String path;
-		try (var out = findPath.inputReader()) {
-			path = out.readLine();
-		}
-		findPath.waitFor();
-		return path;
+		return getFirstLineOf("readlink", "-f", "/usr/bin/java");
 	}
 
 	static String getCurrentHome() throws InterruptedException, IOException {
@@ -34,13 +30,7 @@ public interface Java {
 	}
 
 	static int getCurrentVersion() throws IOException, InterruptedException {
-		var getVersion = new ProcessBuilder(getCurrentExecutable(), "--version").start(); //NON-NLS
-		int version;
-		try (var out = getVersion.inputReader()) {
-			version = Integer.parseInt(out.readLine().replaceFirst("^[^0-9]*([0-9]+).*", "$1")); //NON-NLS
-		}
-		getVersion.waitFor();
-		return version;
+		return parseInt(getFirstLineOf(getCurrentExecutable(), "--version").replaceFirst("^[^0-9]*([0-9]+).*", "$1"));
 	}
 
 	static String getExecutable(int version) throws IOException {

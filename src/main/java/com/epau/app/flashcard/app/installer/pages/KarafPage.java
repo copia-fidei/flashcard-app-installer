@@ -2,7 +2,6 @@ package com.epau.app.flashcard.app.installer.pages;
 
 import com.epau.lib.swing.wizard.page.Page;
 import com.epau.util.nls.Nls;
-import com.epau.util.swing.text.DocumentChangeListener;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.JButton;
@@ -11,8 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.ActionListener;
 
 import static java.awt.GridBagConstraints.BOTH;
@@ -36,12 +33,11 @@ public class KarafPage extends Page {
 
 	private final JButton selectParentDirBtn = new JButton(nls.get("KarafPage.button.Browse"));
 
-	private final ActionListener  selectButtonListener = _ -> {
+	private final ActionListener selectButtonListener = _ -> {
 		if (fileChooser.showOpenDialog(getContent()) == APPROVE_OPTION) {
 			pageChanged();
 		}
 	};
-	private final DocumentChangeListener textfieldListener = new DocumentChangeListener(this::pageChanged);
 
 	public KarafPage(KarafPageData pageData) {
 		super(pageData);
@@ -66,14 +62,14 @@ public class KarafPage extends Page {
 		parentDirField.setEditable(false);
 		parentDirField.setFocusable(false);
 
-		content.add(parentDirLabel, 	new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, LINE_START, NONE, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(parentDirField, 	new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(selectParentDirBtn, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, LINE_START, NONE, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(folderNameLabel, 	new GridBagConstraints(0, 2, 2, 1, 1.0, 0.0, LINE_START, NONE, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(folderNameField, 	new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(fullPathText, 		new GridBagConstraints(0, 4, 1, 1, 1.0, 0.0, FIRST_LINE_START, BOTH, new Insets(10, 10, 0, 10), 0, 0));
+		add(parentDirLabel, 	0, 0, 2, 1, 0.0, 0.0, LINE_START, NONE, 		10, 10, 0, 10, 0, 0);
+		add(parentDirField, 	0, 1, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL,	10, 10, 0, 10, 0, 0);
+		add(selectParentDirBtn, 1, 1, 1, 1, 1.0, 0.0, LINE_START, NONE,			10, 10, 0, 10, 0, 0);
+		add(folderNameLabel, 	0, 2, 2, 1, 1.0, 0.0, LINE_START, NONE,			10, 10, 0, 10, 0, 0);
+		add(folderNameField, 	0, 3, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL,	10, 10, 0, 10, 0, 0);
+		add(fullPathText, 		0, 4, 1, 1, 1.0, 0.0, FIRST_LINE_START, BOTH,	10, 10, 0, 10, 0, 0);
 
-		content.add(new JPanel(), new GridBagConstraints(0, 5, 1, 1, 1.0, 1.0, FIRST_LINE_START, BOTH, new Insets(10, 10, 0, 10), 0, 0));
+		add(new JPanel(), 		0, 5, 1, 1, 1.0, 1.0, FIRST_LINE_START, BOTH, 10, 10, 0, 10, 0, 0);
 	}
 
 	@Override
@@ -85,13 +81,13 @@ public class KarafPage extends Page {
 	@Override
 	protected void addListeners() {
 		selectParentDirBtn.addActionListener(selectButtonListener);
-		folderNameField.getDocument().addDocumentListener(textfieldListener);
+		folderNameField.getDocument().addDocumentListener(documentListener);
 	}
 
 	@Override
 	protected void removeListeners() {
 		selectParentDirBtn.removeActionListener(selectButtonListener);
-		folderNameField.getDocument().removeDocumentListener(textfieldListener);
+		folderNameField.getDocument().removeDocumentListener(documentListener);
 
 	}
 

@@ -8,6 +8,7 @@ import com.epau.util.nls.Nls;
 
 import java.io.IOException;
 
+import static com.epau.app.flashcard.app.installer.Runner.execute;
 import static java.lang.Thread.currentThread;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.WARNING;
@@ -43,7 +44,7 @@ public class RootPasswordPageData extends PageData {
 		var results = new ValidationResults();
 		try {
 			// Clear sudo cache to ensure fresh authentication
-			new ProcessBuilder("sudo", "-k").start().waitFor(); //NON-NLS
+			execute("sudo", "-k"); //NON-NLS
 			var process = new ProcessBuilder("sudo", "-S", "true").start(); //NON-NLS
 			try (var writer = process.outputWriter()) {
 				writer.write(rootPassword);

@@ -6,8 +6,6 @@ import com.epau.util.nls.Nls;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.LINE_START;
@@ -33,9 +31,9 @@ public class JavaPage extends NoOpPage {
 
 		javaPackageField.setEditable(false);
 
-		content.add(javaPackageLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, 	   new Insets(10, 10, 0, 10), 0, 0));
-		content.add(javaPackageField, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		content.add(new JPanel(),  	  new GridBagConstraints(0, 1, 1, 1, 0.0, 1.0, LINE_START, HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		add(javaPackageLabel, 0, 0, 1, 1, 0.0, 0.0, LINE_START, NONE, 	   10, 10, 0, 10, 0, 0);
+		add(javaPackageField, 1, 0, 1, 1, 1.0, 0.0, LINE_START, HORIZONTAL, 10, 10, 0, 10, 0, 0);
+		add(new JPanel(),  	  0, 1, 1, 1, 0.0, 1.0, LINE_START, HORIZONTAL, 10, 10, 0, 10, 0, 0);
 	}
 
 	@Override

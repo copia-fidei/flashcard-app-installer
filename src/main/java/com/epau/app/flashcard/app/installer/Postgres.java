@@ -4,13 +4,10 @@ import org.jetbrains.annotations.NonNls;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 
 import static java.nio.file.Files.exists;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 /// Represents a PostgreSQL installation.
 @NonNls
@@ -40,19 +37,13 @@ public class Postgres {
 	}
 
 	public Optional<String> getAuthMethod(String user, String connectionType, String database) throws IOException, InterruptedException {
-		var process = new ProcessBuilder("sudo", "grep", "-E", "all|" + user, getAuthFile()).start(); //NON-NLS
-		var output = new StringWriter();
-		try (var stdout = process.inputReader()) {
-			stdout.transferTo(output);
-		}
-		process.waitFor(2, SECONDS);
-		List<String> lines = output.toString().lines()
-			.filter(line -> !line.isBlank())
-			.filter(line -> !line.trim().startsWith("#"))
-			.filter(line -> !line.contains("replication"))  //NON-NLS
-			.toList();
+		var relevantLines = Runner.getLines("sudo", "grep", "-E", "all|" + user, getAuthFile()).stream() //NON-NLS
+					  .filter(line -> !line.isBlank())
+					  .filter(line -> !line.trim().startsWith("#"))
+					  .filter(line -> !line.contains("replication"))  //NON-NLS
+					  .toList();
 
-		for (String line : lines) {
+		for (String line : relevantLines) {
 			String[] parts = line.split("\\s+"); //NON-NLS
 			if (parts.length >= 4) {
 				String foundConnectionType = parts[0];

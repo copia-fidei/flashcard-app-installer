@@ -3,15 +3,11 @@ CREATE DATABASE collections;
 \c collections
 
 CREATE TABLE IF NOT EXISTS collections(
-	name TEXT NOT NULL,
-	PRIMARY KEY (name)
+	name TEXT NOT NULL PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS flashcards(
-	collection TEXT NOT NULL,
+	collection TEXT NOT NULL REFERENCES collections(name),
 	front TEXT NOT NULL,
-	back TEXT NOT NULL,
-	CONSTRAINT fk_collection
-      FOREIGN KEY(collection)
-        REFERENCES collections(name)
+	back TEXT NOT NULL
 );
