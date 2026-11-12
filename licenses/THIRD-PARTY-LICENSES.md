@@ -1,4 +1,6 @@
 # Third-Party Licenses
+This document lists only the licenses of the dependencies that are included in the final Debian artifact, 
+which resides in ../releases and was built in the maven module ../installer.
 
 ## Apache Commons Codec
 Copyright 2002-2026 The Apache Software Foundation  
