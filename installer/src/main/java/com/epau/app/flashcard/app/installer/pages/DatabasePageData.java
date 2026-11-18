@@ -5,7 +5,6 @@ import com.epau.app.flashcard.app.installer.Database;
 import com.epau.app.flashcard.app.installer.PgHba;
 import com.epau.app.flashcard.app.installer.Postgres;
 import com.epau.lib.swing.wizard.page.PageData;
-import com.epau.lib.swing.wizard.page.PageDataPool;
 import com.epau.lib.validation.Severity;
 import com.epau.lib.validation.ValidationResult;
 import com.epau.lib.validation.ValidationResults;
@@ -57,7 +56,6 @@ public class DatabasePageData extends PageData {
 	// version options
 	private static final String[] POSTGRES_VERSIONS_ALL       = {"10", "11", "12", "13", "14", "15", "16", "17", "18"};
 	private static final String[] POSTGRES_VERSIONS_AVAILABLE = PostgresVersions.filterAvailable(POSTGRES_VERSIONS_ALL);
-	// TODO remove
 	private static final String[] H2_VERSIONS                 = {"2.2.224"};
 
 	// values
@@ -74,12 +72,6 @@ public class DatabasePageData extends PageData {
 	private final @NonNls String   dbName                  = "collections";
 
 	private final @NonNls String dataSourceName = "collections";
-
-
-	public DatabasePageData(PageDataPool pageDataPool) {
-		super(pageDataPool);
-	}
-
 
 	@Override
 	public void load() {

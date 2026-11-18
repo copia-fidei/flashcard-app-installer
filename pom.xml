@@ -232,6 +232,9 @@
                             </modulePaths>
                             <module>${module.name}/${main.class}</module>
                             <destination>${project.build.directory}/jpackage</destination>
+                            <javaOptions>
+                                <option>--add-opens=java.base/java.util=assertj.swing</option>
+                            </javaOptions>
                             <additionalOptions>
                                 <option>--jlink-options</option>
                                 <option>--bind-services</option>

@@ -1,7 +1,6 @@
 package com.epau.app.flashcard.app.installer.pages;
 
 import com.epau.lib.swing.wizard.page.PageData;
-import com.epau.lib.swing.wizard.page.PageDataPool;
 import com.epau.lib.validation.Severity;
 import com.epau.lib.validation.ValidationResults;
 import com.epau.util.nls.Nls;
@@ -19,10 +18,6 @@ public class RootPasswordPageData extends PageData {
 
 	// Do not store the root password of the user!!!
 	private char[] rootPassword = new char[0];
-
-	public RootPasswordPageData(PageDataPool pageDataPool) {
-		super(pageDataPool);
-	}
 
 	@Override
 	public void load() {

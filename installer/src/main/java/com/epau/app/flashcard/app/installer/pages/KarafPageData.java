@@ -2,7 +2,6 @@ package com.epau.app.flashcard.app.installer.pages;
 
 import com.epau.app.flashcard.app.installer.Home;
 import com.epau.lib.swing.wizard.page.PageData;
-import com.epau.lib.swing.wizard.page.PageDataPool;
 import com.epau.lib.validation.ValidationResults;
 import com.epau.util.io.directory.Directory;
 import com.epau.util.nls.Nls;
@@ -31,10 +30,6 @@ public class KarafPageData extends PageData {
 	// Values
 	private Path   parentDir  = DEFAULT_PARENT_DIR;
 	private String folderName = DEFAULT_FOLDER_NAME;
-
-	public KarafPageData(PageDataPool pageDataPool) {
-		super(pageDataPool);
-	}
 
 	// Test
 	static void main() {

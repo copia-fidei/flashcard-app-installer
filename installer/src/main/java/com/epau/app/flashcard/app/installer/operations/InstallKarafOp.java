@@ -31,6 +31,7 @@ import static com.epau.app.flashcard.app.installer.operations.Choice.REINSTALL;
 import static com.epau.util.io.file.unix.PosixFilePermissionsConverter.getPermissionsFromDecimal;
 import static com.epau.util.swing.option_dialog.OptionDialog.showDialog;
 import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.TERMINATE;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Files.createFile;
@@ -106,26 +107,9 @@ public class InstallKarafOp extends Operation {
 		setProgress(99);
 	}
 
-	// TODO NLS
 	private Choice getChoice(boolean isInstalledCompletely) throws Exception {
 		if (GraphicsEnvironment.isHeadless()) {
-			println("Karaf is already installed. Decide");
-			println("1) Keep installation (default)");
-			println("2) Reinstall");
-			var console = System.console();
-			for (int attempt = 1; attempt <= 3; attempt++) {
-				switch (console.readLine("Enter your choice: ")) {
-					case "1", "1)" -> {
-						return KEEP;
-					}
-					case "2", "2)" -> {
-						return REINSTALL;
-					}
-					default -> console.printf("Invalid choice. Failed attempts (%d/3).%n", attempt);
-				}
-			}
-			IO.println("Maximum number of attempts exceeded. Defaulting to option 1.");
-			return KEEP;
+			return ChoiceFromCommandline.get(this, "Karaf"); //NON-NLS
 		} else {
 			return (Choice) showConflictDialog(isInstalledCompletely).id();
 		}
@@ -185,7 +169,7 @@ public class InstallKarafOp extends Operation {
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 					if (isCancelled()) {
-						return FileVisitResult.TERMINATE;
+						return TERMINATE;
 					}
 					println(nls.get("InstallKarafOp.println.File_{0}_is_being_deleted", file));
 					delete(file);
@@ -196,7 +180,7 @@ public class InstallKarafOp extends Operation {
 				@Override
 				public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
 					if (isCancelled()) {
-						return FileVisitResult.TERMINATE;
+						return TERMINATE;
 					}
 					if (exc == null) {
 						println(nls.get("InstallKarafOp.println.Directory_{0}_is_being_deleted", dir));

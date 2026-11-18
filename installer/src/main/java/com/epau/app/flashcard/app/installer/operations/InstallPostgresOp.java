@@ -95,23 +95,7 @@ public class InstallPostgresOp extends Operation {
 
 	private Choice getChoice() throws Exception {
 		if (GraphicsEnvironment.isHeadless()) {
-			println("PostgreSQL is already installed. Decide");
-			println("1) Keep installation (default)");
-			println("2) Reinstall");
-			var console = System.console();
-			for (int attempt = 1; attempt <= 3; attempt++) {
-				switch (console.readLine("Enter your choice: ")) {
-					case "1", "1)" -> {
-						return KEEP;
-					}
-					case "2", "2)" -> {
-						return REINSTALL;
-					}
-					default -> console.printf("Invalid choice. Failed attempts (%d/3).%n", attempt);
-				}
-			}
-			IO.println("Maximum number of attempts exceeded. Defaulting to option 1.");
-			return KEEP;
+			return ChoiceFromCommandline.get(this, "PostgreSQL"); //NON-NLS
 		} else {
 			return (Choice) showConflictDialog().id();
 		}

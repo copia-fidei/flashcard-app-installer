@@ -28,10 +28,10 @@ public class AppPagePool extends PagePool {
 
 	@Override
 	protected void addPages() {
-		karafPageData    = new KarafPageData(pageDataPool);
-		databasePageData = new DatabasePageData(pageDataPool);
-		javaPageData     = new JavaPageData(pageDataPool);
-		rootPwPageData   = new RootPasswordPageData(pageDataPool);
+		karafPageData    = new KarafPageData();
+		databasePageData = new DatabasePageData();
+		javaPageData     = new JavaPageData();
+		rootPwPageData   = new RootPasswordPageData();
 
 		pageDataPool.add(rootPwPageData);
 		pageDataPool.add(karafPageData);

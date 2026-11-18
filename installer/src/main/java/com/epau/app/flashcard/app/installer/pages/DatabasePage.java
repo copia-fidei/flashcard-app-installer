@@ -2,7 +2,6 @@ package com.epau.app.flashcard.app.installer.pages;
 
 import com.epau.app.flashcard.app.installer.Database;
 import com.epau.lib.swing.wizard.page.Page;
-import com.epau.lib.swing.wizard.page.PageDataPool;
 import com.epau.util.nls.Nls;
 import com.epau.util.swing.frame.TestFrames;
 
@@ -242,9 +241,8 @@ public class DatabasePage extends Page {
 	// For testing
 	static void main() {
 		invokeLater(() -> {
-			var pageDataPool = new PageDataPool();
-			var pageData     = new DatabasePageData(pageDataPool);
-			var page         = new DatabasePage(pageData);
+			var pageData = new DatabasePageData();
+			var page     = new DatabasePage(pageData);
 			page.build();
 			page.willBecomeVisible();
 			TestFrames.showComponent("Database Configuration", page.content); //NON-NLS

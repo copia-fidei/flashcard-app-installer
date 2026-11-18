@@ -14,7 +14,7 @@ import static java.lang.IO.println;
 // INFO: not done, just an idea
 /// A headless interactive way to run the app
 @NonNls
-public class Headless {
+class Headless {
 
 	private static final String HELP = """
 			Usage:
@@ -37,10 +37,15 @@ public class Headless {
 
 		var pageDataPool = new PageDataPool();
 		// order is important
-		var rootPwPageData = new RootPasswordPageData(pageDataPool);
-		var _              = new KarafPageData(pageDataPool);
-		var _              = new DatabasePageData(pageDataPool);
-		var _              = new JavaPageData(pageDataPool);
+		var rootPwPageData = new RootPasswordPageData();
+		var karafPageData  = new KarafPageData();
+		var databasePageData = new DatabasePageData();
+		var javaPageData   = new JavaPageData();
+
+		pageDataPool.add(rootPwPageData);
+		pageDataPool.add(karafPageData);
+		pageDataPool.add(databasePageData);
+		pageDataPool.add(javaPageData);
 
 		var listIterator = pageDataPool.listIterator();
 		PageData currentPage  = rootPwPageData; // first page

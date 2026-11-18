@@ -31,6 +31,10 @@ public class RootPasswordPage extends NoOpPage {
 		this.rootpasswordPageData = pageData;
 	}
 
+	public interface Name {
+		String PASSWORD_FIELD = "root.passwordField";
+	}
+
 	@Override
 	public String getTitle() {
 		return nls.get("RootPasswordPage.page.title.Root_password");
@@ -43,6 +47,8 @@ public class RootPasswordPage extends NoOpPage {
 
 	@Override
 	public void build() {
+		passwordField.setName(Name.PASSWORD_FIELD);
+
 		var description = new JTextArea(nls.get("RootPasswordPage.description.The_installation_and_configuration_of_the_database_must_be_done_as_Root_sudo"));
 		description.setLineWrap(true);
 		description.setWrapStyleWord(true);
