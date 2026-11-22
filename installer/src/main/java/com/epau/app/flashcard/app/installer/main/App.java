@@ -9,14 +9,14 @@ import javax.swing.WindowConstants;
 
 import static javax.swing.SwingUtilities.invokeLater;
 
+/// this gui application
 public class App {
 
-	private PageFrame   frame;
 	private AppPagePool pagePool;
 
 	void run() {
 		invokeLater(() -> {
-			frame    = new PageFrame(nls.get("App.title.app"));
+			var frame = new PageFrame(nls.get("App.title.app"));
 			pagePool = new AppPagePool(frame);
 
 			pagePool.init();
@@ -30,10 +30,6 @@ public class App {
 	}
 
 	private static final Nls nls = new Nls(Main.class);
-
-	public PageFrame getFrame() {
-		return frame;
-	}
 
 	public PagePool getPagePool() {
 		return pagePool;

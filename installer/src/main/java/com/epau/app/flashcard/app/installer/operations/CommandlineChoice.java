@@ -8,7 +8,7 @@ import static com.epau.app.flashcard.app.installer.operations.Choice.REINSTALL;
 import static java.lang.IO.println;
 
 @NonNls
-interface ChoiceFromCommandline {
+interface CommandlineChoice {
 
 	static Choice get(Operation op, String application) {
 		op.println(application + " is already installed. Decide");

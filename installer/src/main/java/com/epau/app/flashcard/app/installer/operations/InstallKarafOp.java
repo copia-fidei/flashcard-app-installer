@@ -109,7 +109,7 @@ public class InstallKarafOp extends Operation {
 
 	private Choice getChoice(boolean isInstalledCompletely) throws Exception {
 		if (GraphicsEnvironment.isHeadless()) {
-			return ChoiceFromCommandline.get(this, "Karaf"); //NON-NLS
+			return CommandlineChoice.get(this, "Karaf"); //NON-NLS
 		} else {
 			return (Choice) showConflictDialog(isInstalledCompletely).id();
 		}

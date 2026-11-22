@@ -22,7 +22,7 @@ interface PostgresVersions {
 	private static boolean isAvailable(String version) {
 		try {
 			// If the package does not exist the output will have only one line
-			return getOutputOf("apt-cache", "policy", "postgresql-" + version).lines().count() > 1;
+			return getOutputOf("apt-cache", "policy", "postgresql-" + version).lines().count() > 1; //NON-NLS
 		} catch (IOException | InterruptedException e) {
 			log.log(SEVERE, "Could not determine availability of PostgreSQL " + version, e); //$NON-NLS
 			return false;

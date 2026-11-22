@@ -95,7 +95,7 @@ public class InstallPostgresOp extends Operation {
 
 	private Choice getChoice() throws Exception {
 		if (GraphicsEnvironment.isHeadless()) {
-			return ChoiceFromCommandline.get(this, "PostgreSQL"); //NON-NLS
+			return CommandlineChoice.get(this, "PostgreSQL"); //NON-NLS
 		} else {
 			return (Choice) showConflictDialog().id();
 		}

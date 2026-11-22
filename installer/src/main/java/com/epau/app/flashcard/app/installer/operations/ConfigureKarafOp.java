@@ -14,7 +14,7 @@ import java.nio.file.Path;
 
 import static com.epau.app.flashcard.app.installer.Resources.FLASHCARD_APP_BUNDLE;
 import static com.epau.app.flashcard.app.installer.Resources.FLASHCARD_APP_BUNDLE_NAME;
-import static com.epau.app.flashcard.app.installer.operations.AppBundleDeps.DEPENDENCIES;
+import static com.epau.app.flashcard.app.installer.operations.App.DEPENDENCIES;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
